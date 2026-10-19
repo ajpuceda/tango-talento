@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tango Talento: Simulación de Capital Humano</title>
+<title>Tango Talento: Simulación Estratégica de Capital Humano (15 Años)</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 :root{
@@ -14,154 +14,200 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh}
-button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;padding:8px 14px;font-weight:600;transition:all .15s}
+button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;padding:8px 14px;font-weight:600;transition:all .15s;font-size:.85rem}
 button:disabled{opacity:.35;cursor:not-allowed}
+input,select{font-family:inherit;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 10px;font-size:.85rem}
 h1,h2,h3{font-weight:700}
 .hidden{display:none!important}
-/* ===== HEADER ===== */
-#gameHeader{background:linear-gradient(135deg,#1b2540,#141b2e);border-bottom:2px solid var(--border);padding:14px 24px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
-#gameHeader .title{font-size:1.3rem;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
-.kpis{display:flex;gap:10px;flex-wrap:wrap}
-.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 14px;min-width:110px}
-.kpi .lab{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-.kpi .val{font-size:1.05rem;font-weight:700;margin-top:2px}
-.kpi .val.pos{color:var(--green)} .kpi .val.neg{color:var(--red)}
-#teamBadge{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border-radius:8px;padding:8px 16px;font-weight:700}
-/* ===== MAIN LAYOUT ===== */
-#mainContent{max-width:1440px;margin:0 auto;padding:20px;display:flex;flex-direction:column;gap:18px}
-.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px}
-.panel h2{font-size:1.05rem;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+/* HEADER */
+#gameHeader{background:linear-gradient(135deg,#1b2540,#141b2e);border-bottom:2px solid var(--border);padding:12px 20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+#gameHeader .title{font-size:1.1rem;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
+.kpis{display:flex;gap:8px;flex-wrap:wrap}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:6px 12px;min-width:100px}
+.kpi .lab{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.kpi .val{font-size:1rem;font-weight:700;margin-top:1px}
+.pos{color:var(--green)} .neg{color:var(--red)}
+#teamBadge{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border-radius:8px;padding:8px 14px;font-weight:700;font-size:.85rem}
+.hdr-actions{display:flex;gap:8px}
+/* LAYOUT */
+#mainContent{max-width:1440px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
+.panel h2{font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
 .panel h2 .sub{font-size:.7rem;color:var(--muted);font-weight:400}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-@media(max-width:1100px){.grid2,.grid3{grid-template-columns:1fr}}
-/* ===== EMPLOYEE CARDS ===== */
-.emp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
-.emp{background:var(--card2);border-left:4px solid var(--border);border-radius:10px;padding:12px}
+.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
+.grid2b{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:1100px){.grid2,.grid2b{grid-template-columns:1fr}}
+/* EMPLOYEE CARDS */
+.emp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:10px}
+.emp{background:var(--card2);border-left:4px solid var(--border);border-radius:10px;padding:10px}
 .emp.rojo{border-left-color:var(--red)} .emp.azul{border-left-color:var(--accent)} .emp.verde{border-left-color:var(--green)} .emp.amarillo{border-left-color:var(--yellow)}
-.emp .head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
-.emp .name{font-weight:700}
+.emp .head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
 .fris{font-size:.6rem;padding:2px 8px;border-radius:10px;font-weight:700;text-transform:uppercase}
 .fris.rojo{background:var(--red);color:#fff}.fris.azul{background:var(--accent);color:#fff}.fris.verde{background:var(--green);color:#fff}.fris.amarillo{background:var(--yellow);color:#1a1a1a}
-.emp .meta{font-size:.75rem;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
-.tag{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1px 7px;font-size:.68rem}
-.sat-bar{height:8px;background:var(--bg);border-radius:4px;overflow:hidden;margin:6px 0}
-.sat-fill{height:100%;border-radius:4px;transition:width .3s}
-.emp .actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.btn-mini{font-size:.68rem;padding:5px 9px;background:var(--bg2);border:1px solid var(--border);color:var(--text)}
+.emp .meta{font-size:.72rem;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.tag{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1px 7px;font-size:.66rem}
+.sat-bar{height:7px;background:var(--bg);border-radius:4px;overflow:hidden;margin:4px 0}
+.sat-fill{height:100%;border-radius:4px}
+.warn{font-size:.63rem;color:var(--orange);margin-top:4px}
+.actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.btn-mini{font-size:.66rem;padding:4px 8px;background:var(--bg2);border:1px solid var(--border);color:var(--text)}
 .btn-mini:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
-.btn-mini.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.btn-train{border-color:#7c5cff!important} .btn-train.active{background:#7c5cff;color:#fff}
-.btn-sal{border-color:var(--green)!important} .btn-sal.active{background:var(--green);color:#fff}
-.warn{font-size:.65rem;color:var(--orange);margin-top:6px}
-/* ===== MARKET CARDS ===== */
-.cand,.proj{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px}
-.cand .head,.proj .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.proj .req{font-size:.72rem;color:var(--muted);margin:6px 0}
-.req-pill{display:inline-block;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;margin-right:6px;font-size:.68rem}
-.req-pill.ok{border-color:var(--green);color:var(--green)}
-.req-pill.no{border-color:var(--red);color:var(--red)}
+.btn-mini.done{background:var(--green);color:#fff;border-color:var(--green)}
+.course-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;padding-top:6px;border-top:1px dashed var(--border)}
+/* PROJECTS */
+.proj{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px}
+.proj .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:4px}
+.slot{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px;margin-top:6px;font-size:.75rem}
+.slot.ok{border-color:var(--green)} .slot.bad{border-color:var(--orange)}
+.slot select{width:100%;margin-top:5px;font-size:.78rem}
+.req-pill{display:inline-block;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;margin:2px 4px 2px 0;font-size:.66rem}
+.req-pill.ok{border-color:var(--green);color:var(--green)} .req-pill.no{border-color:var(--red);color:var(--red)}
 .btn-main{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
-.btn-main:hover:not(:disabled){transform:translateY(-1px)}
-.btn-accept{background:var(--green);color:#fff} .btn-accept:hover:not(:disabled){opacity:.9}
+.btn-accept{background:var(--green);color:#fff}
 .btn-danger{background:var(--red);color:#fff}
-/* ===== TURN CONTROL / INTERMISSION ===== */
-#turnControlBar{position:sticky;bottom:0;background:linear-gradient(0deg,rgba(15,20,32,.97),rgba(15,20,32,.88));border-top:2px solid var(--border);padding:14px 24px;display:flex;gap:14px;justify-content:center;align-items:center;z-index:60}
-#interScreen,#finalScreen{position:fixed;inset:0;background:rgba(10,14,24,.96);z-index:100;overflow:auto;padding:30px 20px}
-.center-box{max-width:960px;margin:20px auto;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px}
-.center-box h1{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:16px;font-size:1.6rem}
-table.rank{width:100%;border-collapse:collapse;margin:14px 0}
-table.rank th{color:var(--muted);font-size:.7rem;text-transform:uppercase;text-align:left;padding:8px;border-bottom:2px solid var(--border)}
-table.rank td{padding:10px 8px;border-bottom:1px solid var(--border);font-size:.9rem}
+/* CONTROL BAR */
+#turnControlBar{position:sticky;bottom:0;background:linear-gradient(0deg,rgba(15,20,32,.97),rgba(15,20,32,.9));border-top:2px solid var(--border);padding:12px 20px;display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;z-index:60}
+.big-btn{font-size:.95rem;padding:12px 26px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+.big-btn:hover:not(:disabled){transform:translateY(-1px)}
+/* OVERLAYS */
+.overlay{position:fixed;inset:0;background:rgba(10,14,24,.97);z-index:100;overflow:auto;padding:26px 16px}
+.center-box{max-width:980px;margin:12px auto;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:26px}
+.center-box h1{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:14px;font-size:1.5rem}
+table.rank{width:100%;border-collapse:collapse;margin:12px 0}
+table.rank th{color:var(--muted);font-size:.65rem;text-transform:uppercase;text-align:left;padding:7px;border-bottom:2px solid var(--border)}
+table.rank td{padding:9px 7px;border-bottom:1px solid var(--border);font-size:.85rem}
 table.rank tr.me td{background:rgba(77,163,255,.08)}
-.big-btn{font-size:1rem;padding:14px 32px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;margin-top:10px}
-.big-btn:hover{transform:translateY(-2px)}
-.chart-wrap{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px;margin:14px 0}
-#log{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px;max-height:220px;overflow:auto;font-size:.75rem}
-#log div{padding:3px 0;border-bottom:1px dashed rgba(44,58,92,.5)}
+#log{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px;max-height:190px;overflow:auto;font-size:.72rem}
+#log div{padding:2px 0;border-bottom:1px dashed rgba(44,58,92,.5)}
 #log .good{color:var(--green)} #log .bad{color:var(--red)} #log .info{color:var(--muted)}
-.winner-card{background:linear-gradient(135deg,#23365c,#1a2338);border:1px solid var(--accent);border-radius:14px;padding:20px;margin:14px 0}
-.pedag{background:var(--bg2);border-left:4px solid var(--accent2);border-radius:8px;padding:14px;margin:10px 0;font-size:.88rem;line-height:1.5}
-.badge-pos{color:var(--green);font-weight:700} .badge-neg{color:var(--red);font-weight:700}
-.section-title{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 8px}
-#salaryChangeHint{font-size:.75rem;color:var(--muted);margin-top:4px}
+.chart-wrap{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px;margin:12px 0}
+.winner-card{background:linear-gradient(135deg,#23365c,#1a2338);border:1px solid var(--accent);border-radius:14px;padding:18px;margin:12px 0}
+.pedag{background:var(--bg2);border-left:4px solid var(--accent2);border-radius:8px;padding:12px;margin:8px 0;font-size:.83rem;line-height:1.5}
+.section-title{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 8px}
+/* WELCOME */
+#welcome{position:fixed;inset:0;background:linear-gradient(135deg,#141b2e,#0f1420);z-index:200;overflow:auto;display:flex;align-items:center;justify-content:center;padding:20px}
+.welcome-box{max-width:640px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:34px}
+.welcome-box h1{font-size:1.7rem;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:8px}
+.team-name-row{display:flex;gap:8px;align-items:center;margin:8px 0}
+.team-name-row input{flex:1}
+.num-btns{display:flex;gap:8px;margin:12px 0}
+.num-btns button{flex:1;padding:14px;font-size:1.1rem;background:var(--bg2);border:2px solid var(--border);color:var(--text)}
+.num-btns button.sel{border-color:var(--accent);background:rgba(77,163,255,.15);color:var(--accent)}
+/* HELP MODAL + FLOATING BTN */
+#helpBtn{position:fixed;right:18px;bottom:80px;z-index:90;background:linear-gradient(90deg,var(--accent2),var(--accent));color:#fff;border-radius:50px;padding:12px 18px;font-size:.85rem;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+#helpModal .help-tab{background:var(--bg2);border:1px solid var(--border);border-radius:8px 8px 0 0;padding:8px 14px;color:var(--muted);font-size:.8rem}
+#helpModal .help-tab.on{background:var(--card2);color:var(--accent);border-bottom-color:var(--card2)}
+.help-body{background:var(--card2);border:1px solid var(--border);border-radius:0 10px 10px 10px;padding:16px;font-size:.85rem;line-height:1.6;max-height:55vh;overflow:auto}
+.help-body h3{color:var(--accent);margin:10px 0 4px}
+.color-dot{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px}
+/* BOARD OVERLAY */
+.board-toggle{background:var(--card2);border:1px solid var(--border);color:var(--text)}
+.board-toggle:hover{border-color:var(--accent);color:var(--accent)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.filters select,.filters input{font-size:.78rem;padding:6px 8px}
+.cand-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+.retire-note{background:rgba(231,76,60,.12);border:1px solid var(--red);border-radius:8px;padding:8px;font-size:.75rem;margin:6px 0}
+@media(max-width:800px){#helpBtn{bottom:100px}}
 </style>
 </head>
 <body>
-<div id="gameHeader">
-  <span id="teamBadge">Equipo —</span>
-  <span class="title">Tango Talento: Simulación de Capital Humano</span>
-  <div class="kpis">
-    <div class="kpi"><div class="lab">Mes</div><div class="val" id="kpiMonth">1 / 12</div></div>
-    <div class="kpi"><div class="lab">Presupuesto</div><div class="val" id="kpiCash">$0</div></div>
-    <div class="kpi"><div class="lab">Margen de Beneficio</div><div class="val" id="kpiMargin">$0</div></div>
-    <div class="kpi"><div class="lab">Índice Rotación</div><div class="val" id="kpiRot">0%</div></div>
-    <div class="kpi"><div class="lab">Índice Innovación</div><div class="val" id="kpiInno">0%</div></div>
-    <div class="kpi"><div class="lab">Satisf. Media</div><div class="val" id="kpiSat">—</div></div>
+
+<div id="welcome">
+  <div class="welcome-box">
+    <h1>💃 Tango Talento</h1>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:18px">Simulación estratégica de capital humano a <b>15 años</b>. Gestiona talento, retención y clientes compitiendo con hasta 6 equipos.</p>
+    <h3 style="margin-bottom:8px">¿Cuántos equipos van a competir?</h3>
+    <div class="num-btns" id="numTeamBtns"></div>
+    <div id="nameRows"></div>
+    <button class="big-btn" id="btnStart" style="width:100%;margin-top:16px">🚀 Iniciar Simulación — Año 1, Trimestre 1</button>
   </div>
 </div>
 
-<div id="mainContent">
+<div id="gameHeader" class="hidden">
+  <span id="teamBadge">—</span>
+  <span class="title">Tango Talento · 15 Años</span>
+  <div class="kpis">
+    <div class="kpi"><div class="lab">Año / Trim.</div><div class="val" id="kpiTime">1·T1</div></div>
+    <div class="kpi"><div class="lab">Presupuesto</div><div class="val" id="kpiCash">$0</div></div>
+    <div class="kpi"><div class="lab">Margen</div><div class="val" id="kpiMargin">$0</div></div>
+    <div class="kpi"><div class="lab">Rotación Hist.</div><div class="val" id="kpiRot">0%</div></div>
+    <div class="kpi"><div class="lab">Innovación</div><div class="val" id="kpiInno">0%</div></div>
+    <div class="kpi"><div class="lab">Satisf. Media</div><div class="val" id="kpiSat">—</div></div>
+  </div>
+  <div class="hdr-actions">
+    <button class="board-toggle" id="btnBoard">📊 Tablero de Competencia</button>
+    <button class="board-toggle" id="btnHelp2">❓ Manual</button>
+  </div>
+</div>
+
+<div id="mainContent" class="hidden">
   <div class="panel">
-    <h2>📋 Resumen del Turno <span class="sub" id="turnPhase">Fase de decisiones</span></h2>
+    <h2>📋 Resumen del Turno <span class="sub" id="turnPhase"></span></h2>
     <div id="log"></div>
   </div>
-
   <div class="grid2">
     <div class="panel">
-      <h2>👥 Plantilla del Equipo <span class="sub" id="rosterCount"></span></h2>
+      <h2>👥 Plantilla <span class="sub" id="rosterCount"></span></h2>
       <div class="emp-grid" id="roster"></div>
     </div>
     <div>
       <div class="panel">
         <h2>🌍 Decisiones Globales</h2>
-        <p style="font-size:.8rem;color:var(--muted);margin-bottom:10px">Inversión en clima laboral ($5,000): sube la satisfacción de toda la plantilla.</p>
+        <p style="font-size:.75rem;color:var(--muted);margin-bottom:8px">Clima Laboral ($5,000): +10% satisfacción de toda la plantilla.</p>
         <button class="btn-main" id="btnClimate">🎉 Invertir en Clima Laboral ($5,000)</button>
-        <div id="salaryChangeHint">Sin aumentos de salario confirmados este turno.</div>
       </div>
-      <div class="panel" style="margin-top:18px">
-        <h2>💼 Proyectos Activos</h2>
-        <div id="activeProjects"><p style="color:var(--muted);font-size:.8rem">Sin proyectos activos.</p></div>
+      <div class="panel" style="margin-top:14px">
+        <h2>💼 Proyectos Activos <span class="sub">asigna personal a cada slot</span></h2>
+        <div id="activeProjects"></div>
       </div>
     </div>
   </div>
-
-  <div class="grid2">
+  <div class="grid2b">
     <div class="panel">
-      <h2>🧑‍💼 Mercado Laboral <span class="sub">4 candidatos por turno</span></h2>
-      <div id="jobMarket"></div>
+      <h2>🧑‍💼 Bolsa de Empleo Nacional <span class="sub" id="poolCount"></span></h2>
+      <div class="filters" id="poolFilters"></div>
+      <div class="cand-list" id="jobMarket"></div>
     </div>
     <div class="panel">
-      <h2>📈 Mercado de Clientes <span class="sub">4 proyectos por turno</span></h2>
+      <h2>📈 Mercado de Clientes <span class="sub">4 oportunidades por trimestre</span></h2>
       <div id="projMarket"></div>
     </div>
   </div>
 </div>
 
-<div id="turnControlBar">
-  <button class="big-btn" id="btnEndTurn">✅ Finalizar Turno del Equipo</button>
-  <button class="big-btn hidden" id="btnPassControl">🔒 Pasar el control al Equipo →</button>
+<div id="turnControlBar" class="hidden">
+  <button class="big-btn" id="btnEndTurn">✅ Finalizar Trimestre</button>
+  <button class="big-btn" id="btnFastYear" style="background:linear-gradient(90deg,#7c5cff,#4da3ff)">⚡ Avanzar Año (auto)</button>
+  <button class="big-btn hidden" id="btnPassControl">🔒 Pasar el control al siguiente equipo →</button>
 </div>
 
-<div id="interScreen" class="hidden"></div>
-<div id="finalScreen" class="hidden"></div>
+<button id="helpBtn" class="hidden">❓ Ayuda / Manual de Gestión</button>
+
+<div id="interScreen" class="overlay hidden"></div>
+<div id="finalScreen" class="overlay hidden"></div>
+<div id="boardScreen" class="overlay hidden"></div>
+<div id="helpModal" class="overlay hidden"></div>
 
 <script>
 "use strict";
-/* ============ DATOS BASE ============ */
-const FIRST=["Sofía","Mateo","Valentina","Lautaro","Camila","Thiago","Martina","Bautista","Julieta","Franco","Agustina","Bruno","Delfina","Santiego","Renata","Nicolás","Juliána","Emilio","Isabella","Facundo","Mía","Ramiro","Elena","Dante","Paula","Iván","Luciana","Gonzalo","Abril","Tomás","Catalina","Joaquín","Emma","Santiago","Olivia","Felipe","Renatita","Máximo","Zoe","Álvaro","Fabiana","Cristian","Noelia","Esteban","Milagros","Ariel","Constanza","Ignacio","Josefina","Matías"];
-const LAST=["García","Rodríguez","Fernández","López","Martínez","Díaz","Álvarez","Romero","Ruiz","Herrera","Molina","Sosa"," Castro","Ferreira","Acosta","Medina","Quiroga","Vega","Peralta","Coronel","Ledesma","Ponce","Ibarra","Salazar","Aguirre","Bianchi","Duarte","Escobar","Paz","Rojas"];
+/* ================= DATOS BASE ================= */
+const FIRST=["Sofía","Mateo","Valentina","Lautaro","Camila","Thiago","Martina","Bautista","Julieta","Franco","Agustina","Bruno","Delfina","Renata","Nicolás","Emilio","Isabella","Facundo","Mía","Ramiro","Elena","Dante","Paula","Iván","Luciana","Gonzalo","Abril","Tomás","Catalina","Joaquín","Emma","Santiago","Olivia","Felipe","Máximo","Zoe","Álvaro","Fabiana","Cristian","Noelia","Esteban","Milagros","Ariel","Constanza","Ignacio","Josefina","Matías","Lucía","Agustín","Manuela"];
+const LAST=["García","Rodríguez","Fernández","López","Martínez","Díaz","Álvarez","Romero","Ruiz","Herrera","Molina","Sosa","Castro","Ferreira","Acosta","Medina","Quiroga","Vega","Peralta","Coronel","Ledesma","Ponce","Ibarra","Salazar","Aguirre","Bianchi","Duarte","Escobar","Paz","Rojas"];
 const COLORS=["rojo","azul","verde","amarillo"];
 const EXP=["Junior","Mid","Senior"];
-const PROJECT_TYPES=[
- {key:"innovacion",name:"Innovación",desc:"Proyecto de tecnología e innovación"},
- {key:"complejo",name:"Complejo/Auditoría",desc:"Proyecto complejo o auditoría exigente"},
- {key:"tradicional",name:"Tradicional",desc:"Cliente tradicional y operaciones estables"}
-];
-const MONTHS_PER_GAME=12, NUM_TEAMS=6, START_CASH=100000;
-const TRAINING_COST=1500, HIRING_FEE=3000, VACANT_PROJECT_PENALTY=2000, CLIMATE_COST=5000;
+const YEARS=15, TRIMESTERS_PER_YEAR=4, TOTAL_TURNS=YEARS*TRIMESTERS_PER_YEAR;
+const START_CASH=100000;
+const HIRING_FEE=3000, VACANT_PENALTY=2000, CLIMATE_COST=5000, RETIRE_AGE=65;
 const ONBOARD_TURNS=2;
+const BASE_INCOME=6000;
+const CATALOG={
+  tecnico:{name:"Curso Técnico",cost:1000,desc:"+2 pts de progreso de nivel"},
+  sinergia:{name:"Taller de Sinergia y Clima",cost:1500,desc:"+30% satisfacción (ideal Verdes)"},
+  liderazgo:{name:"Programa de Liderazgo Financiero",cost:2500,desc:"Desbloquea bono de eficiencia (Rojo/Azul)"},
+  mentoria:{name:"Mentoría Senior-Junior",cost:500,desc:"Junior sube de nivel gratis tras 4 turnos con un Senior en su proyecto"}
+};
 const COLOR_NAMES={rojo:"Rojo (Ambicioso)",azul:"Azul (Analista)",verde:"Verde (Empático)",amarillo:"Amarillo (Creativo)"};
+const COLOR_MOTIVE={rojo:"Le motivan el poder, los logros y el reconocimiento. Exige aumentos o promoción cada 3 turnos.",azul:"Le motivan la seguridad, las reglas y la calidad. Leal, sufre con la rotación de compañeros.",verde:"Le motivan las personas y la armonía. Sensible al clima laboral; si renuncia, golpea la moral de todos.",amarillo:"Le motivan la variedad y la creatividad. Se aburre tras 3 turnos en el mismo proyecto."};
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 const pick=(arr)=>arr[rand(0,arr.length-1)];
 const fmt=(n)=>"$"+Math.round(n).toLocaleString("en-US");
@@ -169,78 +215,90 @@ const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const cap=(s)=>s.charAt(0).toUpperCase()+s.slice(1);
 let EMP_SEQ=1;
 
-/* ============ EMPLEADOS ============ */
+/* ================= EMPLEADOS ================= */
 function makeEmployee(market){
-  const age=rand(18,65);
+  const age=rand(20,58);
   let exp = age<25 ? (Math.random()<.8?"Junior":"Mid") : age<38 ? pick(["Junior","Mid","Mid","Senior"]) : age<50 ? pick(["Mid","Senior","Senior"]) : "Senior";
   const salBase = exp==="Junior"?rand(1600,2100):exp==="Mid"?rand(2400,3100):rand(3400,4300);
   const sal = Math.round((salBase + (age>=48?300:0))/10)*10;
   return {
-    id:EMP_SEQ++, name:pick(FIRST)+" "+pick(LAST).trim(), age, exp, color:pick(COLORS),
+    id:EMP_SEQ++, name:pick(FIRST)+" "+pick(LAST), age, exp, color:pick(COLORS),
     salary:sal, sat:rand(70,92), turnsSinceTrain:rand(0,1), turnsSinceRaise:rand(0,2),
-    turnsInProject:0, projectId:null, onboardingLeft:0, market:!!market, resigned:false
+    turnsInProject:0, projectId:null, onboardingLeft:0, market:!!market,
+    expProgress:0, leadership:false, mentorProg:0, mentorActive:false
   };
 }
-function ageGroup(e){return e.age<=32?"joven":(e.age>=48?"mayor":"medio");}
-function effFactor(e){ // factor de capacidad: onboarding, experiencia
-  if(e.onboardingLeft>0) return 0.5;
-  return e.exp==="Junior"?0.8:(e.exp==="Senior"?1.15:1);
-}
+const ageGroup=e=>e.age<=32?"joven":(e.age>=48?"mayor":"medio");
+const effFactor=e=>{
+  let f=e.onboardingLeft>0?0.5:(e.exp==="Junior"?0.8:(e.exp==="Senior"?1.15:1));
+  if(e.leadership&&(e.color==="rojo"||e.color==="azul")) f*=1.15;
+  return f;
+};
+const expNeed=e=>e.exp==="Junior"?4:(e.exp==="Mid"?6:99);
 
-/* ============ EQUIPOS ============ */
-function makeTeam(n){
-  const t={
-    id:n,name:"Equipo "+n,cash:START_CASH,revenueTotal:0,salaryCostTotal:0,
-    rotCostTotal:0,lostEmployees:0,climateInvestTotal:0,projects:[],
-    history:[], avgSatHistory:[], initialSize:0, satSnapshot:0
-  };
-  const roster=[];
-  for(let i=0;i<6;i++){
-    const e=makeEmployee(false); roster.push(e);
-  }
-  t.roster=roster; t.initialSize=roster.length;
+/* ================= EQUIPOS ================= */
+function makeTeam(id,name){
+  const t={id,name,cash:START_CASH,revenueTotal:0,salaryCostTotal:0,
+    rotCostTotal:0,hireCostTotal:0,lostEmployees:0,retiredCount:0,climateInvestTotal:0,
+    projects:[],history:[],avgSatHistory:[],initialSize:0,hiredCount:0,recentQuit:false,
+    trainSpendThisTurn:0};
+  t.roster=[];
+  for(let i=0;i<6;i++) t.roster.push(makeEmployee(false));
+  t.initialSize=t.roster.length;
   return t;
 }
 
-/* ============ MERCADOS ============ */
-function makeJobMarket(){
-  const list=[];
-  for(let i=0;i<4;i++) list.push(makeEmployee(true));
-  return list;
+/* ================= MERCADOS ================= */
+const nationalPool=[];
+function refreshNationalPool(){
+  while(nationalPool.length<12) nationalPool.push(makeEmployee(true));
 }
-function makeProjMarket(month){
+function makeProjMarket(turn){
+  const year=Math.ceil(turn/4), scale=1+(turn-1)*0.015;
   const list=[];
-  const scale = 1+(month-1)*0.04;
   for(let i=0;i<4;i++){
-    const type=pick(PROJECT_TYPES);
+    const r=Math.random();
     let p;
-    if(type.key==="innovacion"){
-      const innoReq = rand(40,62);
-      p={id:"P"+month+"-"+i,type:"innovacion",name:pick(["App FinTech Disruptiva","Plataforma IA Generativa","Sistema Blockchain","Rediseño Digital Ágil","Chatbot Avanzado","Migración Cloud-Native"]),
-         innoReq, effReq:0, revenue:Math.round((19000+rand(0,8000))*scale), needs:rand(2,3), duration:rand(2,4)};
-    }else if(type.key==="complejo"){
-      const effReq = rand(45,68);
-      p={id:"P"+month+"-"+i,type:"complejo",name:pick(["Auditoría Fiscal Anual","Reestructuración Logística","Consultoría de Riesgos","Auditoría de Procesos","Integración ERP Corporativo","Debida Diligencia M&A"]),
-         innoReq:0, effReq, revenue:Math.round((16500+rand(0,7000))*scale), needs:rand(2,3), duration:rand(2,4)};
-    }else{
-      p={id:"P"+month+"-"+i,type:"tradicional",name:pick(["Outsourcing Contable","Soporte Administrativo","Gestión de Nómina","Back-Office Retail","Mesa de Ayuda","Facturación y Cobranza"]),
-         innoReq:0, effReq:0, revenue:Math.round((11500+rand(0,4500))*scale), needs:rand(1,2), duration:rand(2,3)};
+    if(r<0.35){ // innovación
+      p={id:"P"+turn+"-"+i,type:"innovacion",name:pick(["App FinTech Disruptiva","Plataforma IA Generativa","Sistema Blockchain","Rediseño Digital Ágil","Chatbot Avanzado","Migración Cloud-Native"]),
+         innoReq:rand(20,42),effReq:0,revenue:Math.round((19000+rand(0,8000))*scale),
+         slots:makeSlots(["any","joven"] , "innovacion")};
+    }else if(r<0.65){ // complejo
+      p={id:"P"+turn+"-"+i,type:"complejo",name:pick(["Auditoría Fiscal Anual","Reestructuración Logística","Consultoría de Riesgos","Auditoría de Procesos","Integración ERP Corporativo","Debida Diligencia M&A"]),
+         innoReq:0,effReq:rand(26,48),revenue:Math.round((16500+rand(0,7000))*scale),
+         slots:makeSlots(["Senior","azul"],"complejo")};
+    }else{ // tradicional
+      p={id:"P"+turn+"-"+i,type:"tradicional",name:pick(["Outsourcing Contable","Soporte Administrativo","Gestión de Nómina","Back-Office Retail","Mesa de Ayuda","Facturación y Cobranza"]),
+         innoReq:0,effReq:0,revenue:Math.round((11500+rand(0,4500))*scale),
+         slots:makeSlots(["any"],"tradicional")};
     }
     list.push(p);
   }
   return list;
 }
-/* ============ ESTADO GLOBAL ============ */
-const G={month:1,teamIdx:0,phase:"decisions",teams:[],jobMarkets:[],projMarkets:[],started:false,charts:[]};
-function curTeam(){return G.teams[G.teamIdx];}
-function curJob(){return G.jobMarkets[G.teamIdx];}
-function curProj(){return G.projMarkets[G.teamIdx];}
-
-/* ============ CÁLCULOS DE ÍNDICES ============ */
-function avgSat(t){
-  if(!t.roster.length) return 0;
-  return t.roster.reduce((s,e)=>s+e.sat,0)/t.roster.length;
+function makeSlots(pattern,type){
+  // slot: requisito de exp y/o color. Ej: {exp:"Senior",color:"azul"}
+  const slots=[];
+  const colors=["rojo","azul","verde","amarillo"];
+  pattern.forEach(pat=>{
+    if(pat==="any"){ slots.push({exp:pick(EXP),color:null}); }
+    else if(pat==="joven"){ slots.push({exp:"Junior",color:pick(colors)}); }
+    else if(pat==="Senior"){ slots.push({exp:"Senior",color:null}); }
+    else if(pat==="azul"){ slots.push({exp:pick(["Mid","Senior"]),color:"azul"}); }
+    if(Math.random()<0.4) slots.push({exp:pick(EXP),color:pick(colors)});
+  });
+  return slots.map(s=>({...s,filledBy:null}));
 }
+
+/* ================= ESTADO GLOBAL ================= */
+const G={turn:1,teamIdx:0,phase:"decisions",teams:[],projMarkets:[],charts:[]};
+const curTeam=()=>G.teams[G.teamIdx];
+const curProjM=()=>G.projMarkets[G.teamIdx];
+const yearOf=t=>Math.ceil(t/4);
+const trimOf=t=>((t-1)%4)+1;
+
+/* ================= ÍNDICES ================= */
+const avgSat=t=>t.roster.length?Math.round(t.roster.reduce((s,e)=>s+e.sat,0)/t.roster.length):0;
 function innoIndex(t){
   let pts=0;
   t.roster.forEach(e=>{
@@ -257,472 +315,569 @@ function effIndex(t){
     const f=e.onboardingLeft>0?0.5:1;
     let v=ageGroup(e)==="mayor"?10:(ageGroup(e)==="medio"?5:2);
     if(e.color==="azul") v+=5;
+    if(e.leadership&&(e.color==="rojo"||e.color==="azul")) v+=3;
     pts+=v*f;
   });
   return clamp(Math.round(pts),0,100);
 }
 function rotIndex(t){
-  const lost=t.lostEmployees, base=t.initialSize+(t.hiredCount||0);
+  const lost=t.lostEmployees+t.retiredCount, base=t.initialSize+(t.hiredCount||0);
   return clamp(Math.round((lost/base)*100),0,100);
 }
-function margin(t){return t.cash-START_CASH;}
+const marginOf=t=>t.cash-START_CASH;
 
-/* ============ MOTOR DE RIESGOS Y RENUNCIAS ============ */
+/* ================= ENVEJECIMIENTO Y RIESGOS ================= */
+function processAging(t,log){
+  // envejecimiento: cada empleado suma 1/4 de año por trimestre (acumulado como edad +1 cada 4 trimestres)
+  t.roster.forEach(e=>{ e.ageFrac=(e.ageFrac||0)+0.25; if(e.ageFrac>=1){ e.age++; e.ageFrac=0; } });
+  const retiring=t.roster.filter(e=>e.age>=RETIRE_AGE);
+  retiring.forEach(r=>{
+    t.roster=t.roster.filter(e=>e.id!==r.id);
+    t.retiredCount++;
+    log(`🌅 ${r.name} se JUBILÓ a los ${r.age} años. La sucesión debe estar planificada con anticipación.`,"info");
+    const pr=t.projects.find(p=>p.slots.some(s=>s.filledBy===r.id));
+    if(pr) log(`⚠️ La jubilación deja un slot vacío en "${pr.name}". Reasigna personal o sufrirás penalizaciones.`,"bad");
+  });
+  t.projects.forEach(p=>{
+    p.slots.forEach(s=>{
+      if(s.filledBy!==null && !t.roster.some(e=>e.id===s.filledBy)) s.filledBy=null;
+    });
+  });
+  // reset contadores de decisión por trimestre
+  t.roster.forEach(e=>{ e.coursesThisTurn=e.coursesThisTurn||0; });
+}
 function checkFrictions(t,log){
-  // Rojo: exige aumento cada 3 turnos
   t.roster.forEach(e=>{
-    if(e.color==="rojo"){
-      e.turnsSinceRaise++;
-      if(e.turnsSinceRaise>=3){ e.sat-=25; log(`⚠️ ${e.name} (Rojo) no recibió aumento en 3 turnos: -25% satisfacción.`,"bad"); }
-    }
+    e.turnsSinceRaise++; e.turnsSinceTrain++;
+    if(e.color==="rojo"&&e.turnsSinceRaise>=4){ e.sat-=25; log(`⚠️ ${e.name} (Rojo) sin aumento en 4 trimestres: -25% satisfacción.`,"bad"); }
+    if(ageGroup(e)==="joven"&&e.turnsSinceTrain>=3){ e.sat-=25; log(`⚠️ ${e.name} (Joven) sin formación en 3 trimestres: -25% satisfacción.`,"bad"); }
+    if(e.color==="amarillo"&&e.projectId&&e.turnsInProject>4){ e.sat-=12; log(`⚠️ ${e.name} (Amarillo) se aburrió en el proyecto: -12% satisfacción.`,"bad"); }
+    if(e.color==="azul"&&t.recentQuit){ e.sat-=8; }
   });
-  // Jóvenes: formación cada 2 turnos
-  t.roster.forEach(e=>{
-    e.turnsSinceTrain++;
-    if(ageGroup(e)==="joven" && e.turnsSinceTrain>=2){ e.sat-=25; log(`⚠️ ${e.name} (Joven) sin formación en 2 turnos: -25% satisfacción.`,"bad"); }
-  });
-  // Amarillo: aburrimiento si >3 turnos en el mismo proyecto
-  t.roster.forEach(e=>{
-    if(e.color==="amarillo" && e.projectId && e.turnsInProject>3){ e.sat-=12; log(`⚠️ ${e.name} (Amarillo) se aburrió en el proyecto: -12% satisfacción.`,"bad"); }
-  });
-  // Azul: estrés por rotación
-  t.roster.forEach(e=>{
-    if(e.color==="azul" && t.recentQuit){ e.sat-=8; }
-  });
-  if(t.recentQuit) log(`⚠️ Los perfiles Azules sufren estrés por la rotación reciente.`,"bad");
-  // Verde renunciando: golpe emocional
-  t.roster.forEach(e=>{e.sat=clamp(e.sat,0,100);});
+  if(t.recentQuit) log(`⚠️ Perfiles Azules estresados por la rotación reciente.`,"bad");
+  t.roster.forEach(e=>e.sat=clamp(e.sat,0,100));
 }
 function processResignations(t,log){
   t.recentQuit=false;
-  const quitters=[];
-  t.roster.forEach(e=>{ if(e.sat<=30) quitters.push(e); });
+  const quitters=t.roster.filter(e=>e.sat<=30);
   quitters.forEach(q=>{
-    q.resigned=true;
     t.roster=t.roster.filter(e=>e.id!==q.id);
-    t.lostEmployees++;
-    t.recentQuit=true;
-    t.rotCostTotal+=HIRING_FEE;
-    t.cash-=HIRING_FEE;
-    log(`🚪 ${q.name} (${COLOR_NAMES[q.color]}, ${q.age} años) RENUNCIÓ. Coste de reclutamiento: ${fmt(HIRING_FEE)}.`,"bad");
+    t.lostEmployees++; t.recentQuit=true;
+    t.rotCostTotal+=HIRING_FEE; t.cash-=HIRING_FEE;
+    log(`🚪 ${q.name} (${COLOR_NAMES[q.color]}, ${q.age} años) RENUNCIÓ. Reclutamiento: ${fmt(HIRING_FEE)}.`,"bad");
     if(q.color==="verde"){
-      t.roster.forEach(e=>{e.sat-=15;});
-      log(`💔 Golpe emocional: la renuncia del perfil Verde ${q.name} reduce -15% la satisfacción de toda la plantilla.`,"bad");
+      t.roster.forEach(e=>e.sat=clamp(e.sat-15,0,100));
+      log(`💔 Golpe emocional: la renuncia del Verde ${q.name} baja -15% la satisfacción de toda la plantilla.`,"bad");
     }
-    // Penalización por vacante en proyecto asignado
-    const pr=t.projects.find(p=>p.id===q.projectId);
-    if(pr){ pr.vacantTurns=(pr.vacantTurns||0)+1; t.cash-=VACANT_PROJECT_PENALTY; t.rotCostTotal+=VACANT_PROJECT_PENALTY;
-      log(`📉 Vacante en "${pr.name}": penalización de retraso de ${fmt(VACANT_PROJECT_PENALTY)}.`,"bad"); }
+    t.projects.forEach(p=>p.slots.forEach(s=>{ if(s.filledBy===q.id) s.filledBy=null; }));
   });
-  // Fricción Rojo-Rojo en el mismo proyecto
+  // fricción Rojo-Rojo en el mismo proyecto
   const byProj={};
   t.roster.forEach(e=>{ if(e.color==="rojo"&&e.projectId){(byProj[e.projectId]=byProj[e.projectId]||[]).push(e);} });
   Object.values(byProj).forEach(arr=>{
-    if(arr.length>=2){ arr.forEach(e=>{e.sat-=10;}); log(`⚔️ Fricción: ${arr.length} perfiles Rojo en el mismo proyecto se restan satisfacción mutuamente.`,"bad"); }
+    if(arr.length>=2){ arr.forEach(e=>e.sat=clamp(e.sat-10,0,100)); log(`⚔️ Fricción: ${arr.length} Rojos en el mismo proyecto se restan satisfacción.`,"bad"); }
   });
-  t.roster.forEach(e=>{e.sat=clamp(e.sat,0,100);});
+}
+function checkMentorships(t,log){
+  t.roster.forEach(e=>{
+    if(e.mentorActive&&e.exp==="Junior"&&e.projectId){
+      const hasSenior=t.roster.some(s=>s.exp==="Senior"&&s.projectId===e.projectId);
+      if(hasSenior){
+        e.mentorProg++;
+        if(e.mentorProg>=4){
+          e.exp="Mid"; e.mentorProg=0; e.mentorActive=false;
+          e.salary=Math.round(e.salary*1.25/10)*10;
+          log(`🎓 Mentoría completada: ${e.name} subió a Mid gratis gracias a su mentor Senior.`,"good");
+        }
+      }
+    }
+  });
 }
 
-/* ============ ECONOMÍA MENSUAL ============ */
-const BASE_INCOME=6000;
+/* ================= ECONOMÍA TRIMESTRAL ================= */
 function runEconomy(t,log){
   let rev=BASE_INCOME;
   t.projects.forEach(p=>{
-    const assigned=t.roster.filter(e=>e.projectId===p.id);
-    // Bono Azul: +10% de eficiencia a los Juniors que trabajan con él
-    const hasAzul=assigned.some(e=>e.color==="azul");
-    const effective=assigned.reduce((s,e)=>s+effFactor(e)*(e.exp==="Junior"&&hasAzul?1.10:1),0);
-    const need=p.needs;
-    const coverage=clamp(effective/need,0,1.5);
-    // Bono Rojo: +20% en proyectos de alta prioridad (innovación)
-    const rojoBonus=(p.type==="innovacion"&&assigned.some(e=>e.color==="rojo"))?0.20:0;
-    // Bono Mix Equilibrado: emparejar colores con el tipo de cliente correcto
-    let colorBonus=0;
-    assigned.forEach(e=>{ if(p.type==="innovacion"&&(e.color==="amarillo"||ageGroup(e)==="joven")) colorBonus+=0.06; });
-    if(p.type==="complejo"){ assigned.forEach(e=>{ if(e.color==="azul"||ageGroup(e)==="mayor") colorBonus+=0.06; }); }
-    colorBonus=clamp(colorBonus,0,0.25);
-    let income=p.revenue*coverage*(1+colorBonus+rojoBonus);
-    if(rojoBonus>0) log(`🔥 Bono Rojo en "${p.name}" (alta prioridad): +20% de ingresos.`,"good");
-    if(hasAzul && assigned.some(e=>e.exp==="Junior")) log(`📘 Bono Azul: los Juniors de "${p.name}" rinden +10% por mentoría analítica.`,"good");
-    if(coverage<1){ income-=p.revenue*0.10; log(`📉 Cliente penaliza a "${p.name}": falta personal calificado (-${fmt(p.revenue*0.15)}).`,"bad"); }
-    rev+=Math.max(0,income);
-    if(colorBonus>0) log(`✨ Bono de encaje en "${p.name}": +${Math.round(colorBonus*100)}% de ingresos.`,"good");
-    p.duration--; p.turnsActive=(p.turnsActive||0)+1;
+    const filled=p.slots.filter(s=>s.filledBy!==null).length;
+    const total=p.slots.length;
+    let quality=0;
+    p.slots.forEach(s=>{
+      if(s.filledBy===null){ quality+=0; return; }
+      const e=t.roster.find(x=>x.id===s.filledBy);
+      if(!e){ quality+=0; return; }
+      const expOK=(!s.exp||EXP.indexOf(e.exp)>=EXP.indexOf(s.exp));
+      const colorOK=(!s.color||e.color===s.color);
+      quality+=(expOK?0.6:0.3)+(colorOK?0.4:0.2);
+    });
+    const coverage=total?quality/total:0;
+    let income=p.revenue*clamp(coverage,0,1.2);
+    if(coverage<0.99){ income*=0.5; log(`📉 "${p.name}": slots vacíos o perfiles desajustados → el proyecto rinde a la mitad.`,"bad"); }
+    const anyAssigned=p.slots.some(s=>s.filledBy!==null&&t.roster.some(e=>e.id===s.filledBy));
+    if(!anyAssigned){ income=0; t.cash-=VACANT_PENALTY; t.rotCostTotal+=VACANT_PENALTY;
+      log(`⛔ "${p.name}" sin personal: penalización de retraso ${fmt(VACANT_PENALTY)}.`,"bad"); }
+    rev+=income;
   });
-  const completed=t.projects.filter(p=>p.duration<=0);
-  completed.forEach(p=>{
-    log(`🏁 Proyecto "${p.name}" completado con éxito. Personal liberado para reasignación.`,"good");
-    t.roster.forEach(e=>{ if(e.projectId===p.id){ e.projectId=null; e.turnsInProject=0; } });
-  });
-  t.projects=t.projects.filter(p=>p.duration>0);
   const salaries=t.roster.reduce((s,e)=>s+e.salary,0);
   t.cash+=rev-salaries;
   t.revenueTotal+=rev; t.salaryCostTotal+=salaries;
-  t.roster.forEach(e=>{ if(e.onboardingLeft>0) e.onboardingLeft--; });
-  log(`💰 Ingresos del mes: ${fmt(rev)} (incluye ${fmt(BASE_INCOME)} de cartera base) | Salarios: ${fmt(salaries)} | Neto: ${fmt(rev-salaries)}`,"info");
-  // Satisfacción de mayores baja si hay pérdidas
-  if(rev-salaries<0){
-    t.roster.forEach(e=>{ if(ageGroup(e)==="mayor"){e.sat-=10;} });
-    log(`⚠️ Mes con pérdidas: los perfiles Mayores pierden confianza (-10% satisfacción).`,"bad");
-  }
-  t.roster.forEach(e=>{ e.turnsInProject = e.projectId? e.turnsInProject+1 : 0; e.sat=clamp(e.sat+3,0,100); });
-  t.history.push({month:G.month,cash:t.cash,rev,salaries,rot:t.rotCostTotal});
-  t.avgSatHistory.push(Math.round(avgSat(t)));
+  t.roster.forEach(e=>{ if(e.onboardingLeft>0)e.onboardingLeft--; e.turnsInProject=e.projectId?e.turnsInProject+1:0; e.sat=clamp(e.sat+3,0,100); });
+  log(`💰 Ingresos: ${fmt(rev)} | Salarios: ${fmt(salaries)} | Neto: ${fmt(rev-salaries)}`,"info");
+  if(rev-salaries<0){ t.roster.forEach(e=>{ if(ageGroup(e)==="mayor") e.sat=clamp(e.sat-10,0,100); }); log(`⚠️ Pérdidas: los Mayores pierden confianza (-10%).`,"bad"); }
+  // exp natural: cursos técnicos aceleran
+  t.roster.forEach(e=>{
+    if(e.expProgress>=expNeed(e)&&e.exp!=="Senior"){
+      e.exp=EXP[EXP.indexOf(e.exp)+1]; e.expProgress=0;
+      e.salary=Math.round(e.salary*1.2/10)*10;
+      log(`📈 ${e.name} ascendió a ${e.exp} (nuevo salario ${fmt(e.salary)}).`,"good");
+    }
+  });
+  t.history.push({turn:G.turn,cash:t.cash,rev,salaries,rot:t.rotCostTotal});
+  t.avgSatHistory.push(avgSat(t));
 }
 
-/* ============ FIN DE TURNO ============ */
+/* ================= FIN DE TRIMESTRE ================= */
 function endTurn(){
-  const t=curTeam(); const log=makeLogger();
-  t.raiseCountThisTurn=0; t.raiseAmountThisTurn=0;
+  const t=curTeam(), log=makeLogger();
   runEconomy(t,log);
   checkFrictions(t,log);
   processResignations(t,log);
-  if(t.cash<0){ log(`🩸 ¡Alerta! ${t.name} tiene presupuesto negativo (${fmt(t.cash)}).`,"bad"); }
-  t.satSnapshot=Math.round(avgSat(t));
-  // pasar de fase
+  checkMentorships(t,log);
+  if(t.cash<0) log(`🩸 ¡Alerta! ${t.name} en números rojos (${fmt(t.cash)}).`,"bad");
   G.phase="pass";
   render();
   document.getElementById("btnEndTurn").classList.add("hidden");
+  document.getElementById("btnFastYear").classList.add("hidden");
   document.getElementById("btnPassControl").classList.remove("hidden");
 }
 function passControl(){
   G.teamIdx++;
-  if(G.teamIdx>=NUM_TEAMS){
-    showIntermission();
-    return;
-  }
+  if(G.teamIdx>=G.teams.length){ showIntermission(); return; }
   G.phase="decisions";
-  render();
   document.getElementById("btnEndTurn").classList.remove("hidden");
+  document.getElementById("btnFastYear").classList.remove("hidden");
   document.getElementById("btnPassControl").classList.add("hidden");
-  window.scrollTo(0,0);
+  render(); window.scrollTo(0,0);
 }
-/* ============ ACCIONES DEL JUGADOR ============ */
+
+/* ================= LOGGER Y ACCIONES ================= */
 function makeLogger(){
   const el=document.getElementById("log");
   el.innerHTML="";
   return (msg,cls)=>{
     const d=document.createElement("div");
-    d.className=cls||"info";
-    d.innerHTML=msg;
-    el.appendChild(d);
-    el.scrollTop=el.scrollHeight;
+    d.className=cls||"info"; d.innerHTML=msg;
+    el.appendChild(d); el.scrollTop=el.scrollHeight;
   };
 }
-function actTrain(empId){
+function actCourse(empId,courseKey){
   const t=curTeam(); if(G.phase!=="decisions")return;
   const e=t.roster.find(x=>x.id===empId); if(!e)return;
-  if(t.cash<TRAINING_COST){alert("Presupuesto insuficiente para formar.");return;}
-  t.cash-=TRAINING_COST;
+  const c=CATALOG[courseKey];
+  if(t.cash<c.cost){alert("Presupuesto insuficiente.");return;}
+  t.cash-=c.cost; t.trainSpendThisTurn+=c.cost;
   e.turnsSinceTrain=0;
-  e.sat=clamp(e.sat+12,0,100);
-  if(e.color==="amarillo"){ e.expUp=(e.expUp||0)+1; if(e.expUp>=2 && e.exp!=="Senior"){ e.exp=EXP[Math.min(2,EXP.indexOf(e.exp)+1)]; e.expUp=0; } }
+  if(courseKey==="tecnico"){ e.expProgress+=2; e.sat=clamp(e.sat+5,0,100); }
+  if(courseKey==="sinergia"){ e.sat=clamp(e.sat+30,0,100); }
+  if(courseKey==="liderazgo"){ e.leadership=true; e.sat=clamp(e.sat+10,0,100); }
+  if(courseKey==="mentoria"){ e.mentorActive=true; }
   render();
 }
 function actRaise(empId){
   const t=curTeam(); if(G.phase!=="decisions")return;
   const e=t.roster.find(x=>x.id===empId); if(!e)return;
   const raise=Math.round(e.salary*0.1);
-  if(t.cash<raise){alert("Presupuesto insuficiente para el aumento.");return;}
+  if(t.cash<raise){alert("Presupuesto insuficiente.");return;}
   t.cash-=raise; e.salary+=raise; e.turnsSinceRaise=0;
   e.sat=clamp(e.sat+15,0,100);
-  t.raiseCountThisTurn=(t.raiseCountThisTurn||0)+1;
-  t.raiseAmountThisTurn=(t.raiseAmountThisTurn||0)+raise;
   render();
 }
-function actMoveProject(empId){
+function actAssignSlot(projId,slotIdx,empId){
   const t=curTeam(); if(G.phase!=="decisions")return;
-  const e=t.roster.find(x=>x.id===empId); if(!e)return;
-  const opts=t.projects.map(p=>({label:`${p.name} (${p.type})`,value:p.id}));
-  if(!opts.length){alert("No hay proyectos activos.");return;}
-  opts.unshift({label:"— Sin proyecto —",value:""});
-  showMoveDialog(e,opts);
-}
-function showMoveDialog(e,opts){
-  const dlg=document.createElement("div");
-  dlg.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:flex;align-items:center;justify-content:center";
-  const box=document.createElement("div");
-  box.className="center-box";box.style.maxWidth="420px";
-  box.innerHTML=`<h2 style="margin-bottom:10px">Mover a ${e.name}</h2>`+
-    opts.map(o=>`<label style="display:block;margin:6px 0"><input type="radio" name="mvsel" value="${o.value}" ${e.projectId===o.value?"checked":""}> ${o.label}</label>`).join("")+
-    `<div style="display:flex;gap:10px;margin-top:14px"><button class="btn-main" id="mvOk">Confirmar</button><button class="btn-danger" id="mvCancel">Cancelar</button></div>`;
-  dlg.appendChild(box);document.body.appendChild(dlg);
-  dlg.querySelector("#mvOk").onclick=()=>{
-    const v=dlg.querySelector('input[name="mvsel"]:checked').value;
-    e.projectId=v||null; e.turnsInProject=0;
-    document.body.removeChild(dlg); render();
-  };
-  dlg.querySelector("#mvCancel").onclick=()=>document.body.removeChild(dlg);
+  const p=t.projects.find(x=>x.id===projId); if(!p)return;
+  const slot=p.slots[slotIdx]; if(!slot)return;
+  // liberar asignación previa del slot
+  if(slot.filledBy!==null){ const old=t.roster.find(e=>e.id===slot.filledBy); if(old){old.projectId=null;old.turnsInProject=0;} }
+  // si el empleado ya estaba en otro slot, quitarlo de ahí
+  t.projects.forEach(pp=>pp.slots.forEach(ss=>{ if(ss.filledBy===Number(empId)) ss.filledBy=null; }));
+  if(empId===""||empId===null){ slot.filledBy=null; render(); return; }
+  const e=t.roster.find(x=>x.id===Number(empId)); if(!e)return;
+  slot.filledBy=e.id; e.projectId=p.id; e.turnsInProject=0;
+  render();
 }
 function actClimate(){
   const t=curTeam(); if(G.phase!=="decisions")return;
-  if(t.cash<CLIMATE_COST){alert("Presupuesto insuficiente para invertir en clima laboral.");return;}
+  if(t.cash<CLIMATE_COST){alert("Presupuesto insuficiente.");return;}
   t.cash-=CLIMATE_COST; t.climateInvestTotal+=CLIMATE_COST;
-  t.roster.forEach(e=>{e.sat=clamp(e.sat+10,0,100);});
+  t.roster.forEach(e=>e.sat=clamp(e.sat+10,0,100));
   render();
 }
 function actHire(candId){
   const t=curTeam(); if(G.phase!=="decisions")return;
-  const idx=curJob().findIndex(c=>c.id===candId);
+  const idx=nationalPool.findIndex(c=>c.id===candId);
   if(idx<0)return;
-  const c=curJob()[idx];
-  if(t.cash<HIRING_FEE+c.salary){alert("Presupuesto insuficiente para contratar (tarifa de reclutamiento + primer sueldo).");return;}
-  t.cash-=HIRING_FEE;
-  t.hireCostTotal=(t.hireCostTotal||0)+HIRING_FEE;
-  c.market=false; c.onboardingLeft=ONBOARD_TURNS; c.projectId=null; c.turnsSinceTrain=0; c.turnsSinceRaise=0;
-  t.roster.push(c);
-  t.hiredCount=(t.hiredCount||0)+1;
-  curJob().splice(idx,1);
+  const c=nationalPool[idx];
+  if(t.cash<HIRING_FEE+c.salary){alert("Presupuesto insuficiente (fee + primer sueldo).");return;}
+  t.cash-=HIRING_FEE; t.hireCostTotal+=HIRING_FEE;
+  c.market=false; c.onboardingLeft=ONBOARD_TURNS; c.projectId=null;
+  c.turnsSinceTrain=0; c.turnsSinceRaise=0;
+  t.roster.push(c); t.hiredCount=(t.hiredCount||0)+1;
+  nationalPool.splice(idx,1);
   render();
 }
 function actBid(projId){
   const t=curTeam(); if(G.phase!=="decisions")return;
-  const idx=curProj().findIndex(p=>p.id===projId);
+  const idx=curProjM().findIndex(p=>p.id===projId);
   if(idx<0)return;
-  const p=curProj()[idx];
+  const p=curProjM()[idx];
   const inno=innoIndex(t), eff=effIndex(t);
-  if(p.type==="innovacion" && inno<p.innoReq){alert(`Requisito de Innovación no alcanzado: ${inno}% < ${p.innoReq}%.`);return;}
-  if(p.type==="complejo" && eff<p.effReq){alert(`Requisito de Eficiencia no alcanzado: ${eff}% < ${p.effReq}%.`);return;}
-  // capacidad: staff libre
-  const free=t.roster.filter(e=>!e.projectId).length;
-  const activeCount=t.projects.reduce((s,pp)=>s+pp.needs,0);
+  if(p.innoReq&&inno<p.innoReq){alert(`Innovación insuficiente: ${inno}% < ${p.innoReq}%.`);return;}
+  if(p.effReq&&eff<p.effReq){alert(`Eficiencia insuficiente: ${eff}% < ${p.effReq}%.`);return;}
   if(t.projects.length>=4){alert("Máximo 4 proyectos activos.");return;}
-  t.projects.push(p); curProj().splice(idx,1);
-  // auto-asignar personal libre
-  let need=p.needs;
-  t.roster.forEach(e=>{ if(!e.projectId && need>0){ e.projectId=p.id; e.turnsInProject=0; need--; } });
+  t.projects.push(p); curProjM().splice(idx,1);
   render();
 }
+/* Avance rápido: procesa el trimestre actual con decisiones automáticas si no hay alertas críticas */
+function fastYear(){
+  const t=curTeam();
+  const alerts=[];
+  t.projects.forEach(p=>p.slots.forEach((s,i)=>{
+    if(s.filledBy===null) alerts.push('"'+p.name+'" slot '+(i+1)+' vacío');
+  }));
+  t.roster.forEach(e=>{ if(e.sat<40) alerts.push(e.name+' con satisfacción crítica ('+Math.round(e.sat)+'%)'); });
+  if(t.cash<0) alerts.push('Presupuesto en números rojos');
+  if(alerts.length){
+    alert("⚠️ No puedes usar Avance Rápido con alertas críticas:\n• "+alerts.slice(0,6).join("\n• ")+"\n\nResuélvelas manualmente y luego avanza.");
+    return;
+  }
+  const logDummy=(m,c)=>{};
+  autoFillSlots(t,logDummy);
+  endTurn();
+}
+function autoFillSlots(t,log){
+  t.projects.forEach(p=>{
+    p.slots.forEach(s=>{
+      if(s.filledBy!==null)return;
+      const cand=t.roster.filter(e=>!e.projectId||!t.projects.some(pp=>pp.id===e.projectId&&pp!==p&&pp.slots.some(ss=>ss.filledBy===e.id)))
+        .filter(e=>!p.slots.some(ss=>ss.filledBy===e.id));
+      let best=null;
+      cand.forEach(e=>{
+        const expOK=(!s.exp||EXP.indexOf(e.exp)>=EXP.indexOf(s.exp));
+        const colorOK=(!s.color||e.color===s.color);
+        if(expOK&&colorOK){ best=e; }
+      });
+      if(best){ s.filledBy=best.id; best.projectId=p.id; best.turnsInProject=0; }
+    });
+  });
+}
 
-/* ============ RENDER ============ */
-function satColor(s){return s>=70?"var(--green)":(s>=50?"var(--yellow)":"var(--red)");}
+/* ================= RENDER ================= */
+const satColor=s=>s>=70?"var(--green)":(s>=50?"var(--yellow)":"var(--red)");
 function render(){
   const t=curTeam();
-  document.getElementById("teamBadge").textContent=t.name+" — Turno en curso";
-  document.getElementById("kpiMonth").textContent=G.month+" / "+MONTHS_PER_GAME;
+  document.getElementById("teamBadge").textContent=t.name+" — Año "+yearOf(G.turn)+" · T"+trimOf(G.turn);
+  document.getElementById("kpiTime").textContent=yearOf(G.turn)+"·T"+trimOf(G.turn);
   const cash=document.getElementById("kpiCash");
-  cash.textContent=fmt(t.cash);
-  cash.className="val "+(t.cash>=START_CASH?"pos":"neg");
+  cash.textContent=fmt(t.cash); cash.className="val "+(t.cash>=START_CASH?"pos":"neg");
   const mg=document.getElementById("kpiMargin");
-  mg.textContent=(margin(t)>=0?"+":"")+fmt(margin(t));
-  mg.className="val "+(margin(t)>=0?"pos":"neg");
+  mg.textContent=(marginOf(t)>=0?"+":"")+fmt(marginOf(t)); mg.className="val "+(marginOf(t)>=0?"pos":"neg");
   document.getElementById("kpiRot").textContent=rotIndex(t)+"%";
   document.getElementById("kpiInno").textContent=innoIndex(t)+"%";
   const sat=document.getElementById("kpiSat");
-  sat.textContent=Math.round(avgSat(t))+"%";
-  sat.style.color=satColor(avgSat(t));
+  sat.textContent=avgSat(t)+"%"; sat.style.color=satColor(avgSat(t));
   document.getElementById("rosterCount").textContent=t.roster.length+" empleados activos";
-  document.getElementById("turnPhase").textContent=G.phase==="decisions"?"Fase de decisiones":"Turno confirmado — pasar control";
+  document.getElementById("turnPhase").textContent=G.phase==="decisions"?"Fase de decisiones — Año "+yearOf(G.turn)+", Trimestre "+trimOf(G.turn):"Turno confirmado — pasar control";
   document.getElementById("btnClimate").disabled=(G.phase!=="decisions"||t.cash<CLIMATE_COST);
   document.getElementById("btnClimate").onclick=actClimate;
-  document.getElementById("salaryChangeHint").textContent=t.raiseCountThisTurn?`✔ ${t.raiseCountThisTurn} aumento(s) confirmado(s) este turno (+${fmt(t.raiseAmountThisTurn)} en salarios).`:"Sin aumentos de salario confirmados este turno.";
-  renderRoster(t); renderJob(t); renderProj(t); renderActiveProj(t);
+  renderRoster(t); renderActiveProjects(t); renderPoolFilters(); renderPool(); renderProjMarket(t);
 }
-function empCard(e,market){
+function empCard(e){
   const t=curTeam();
-  const proj=t.projects.find(p=>p.id===e.projectId);
+  const proj=t.projects.find(p=>p.slots.some(s=>s.filledBy===e.id));
+  const slotInfo=proj?(proj.slots.find(s=>s.filledBy===e.id)):null;
   const warns=[];
-  if(e.color==="rojo"&&e.turnsSinceRaise>=2) warns.push("Exige aumento pronto");
-  if(ageGroup(e)==="joven"&&e.turnsSinceTrain>=1) warns.push("Necesita formación");
-  if(e.color==="amarillo"&&e.turnsInProject>2) warns.push("Riesgo de aburrimiento");
+  if(e.color==="rojo"&&e.turnsSinceRaise>=3) warns.push("Exige aumento pronto");
+  if(ageGroup(e)==="joven"&&e.turnsSinceTrain>=2) warns.push("Necesita formación");
+  if(e.color==="amarillo"&&e.turnsInProject>3) warns.push("Riesgo de aburrimiento");
   if(e.onboardingLeft>0) warns.push("Onboarding: rinde al 50%");
-  const canTrain=(G.phase==="decisions"&&t.cash>=TRAINING_COST);
-  const canRaise=(G.phase==="decisions"&&t.cash>=Math.round(e.salary*0.1));
+  if(e.age>=62) warns.push(`Cerca de jubilarse (${e.age}/65)`);
+  if(e.mentorActive&&e.mentorProg>0) warns.push(`Mentoría: ${e.mentorProg}/4 turnos`);
+  const canAct=G.phase==="decisions";
   return `<div class="emp ${e.color}">
-    <div class="head"><span class="name">${e.name}</span><span class="fris ${e.color}">${cap(e.color)}</span></div>
+    <div class="head"><b>${e.name}</b><span class="fris ${e.color}">${cap(e.color)}</span></div>
     <div class="meta">
       <span class="tag">🎂 ${e.age} años (${ageGroup(e)})</span>
-      <span class="tag">🎓 ${e.exp}</span>
-      <span class="tag">💰 ${fmt(e.salary)}/mes</span>
-      <span class="tag">💼 ${proj?proj.name:"Sin proyecto"}</span>
+      <span class="tag">🎓 ${e.exp}${e.exp!=="Senior"?` (${e.expProgress}/${expNeed(e)})`:""}</span>
+      <span class="tag">💰 ${fmt(e.salary)}/trim</span>
+      <span class="tag">💼 ${proj?`${proj.name}${slotInfo&&slotInfo.exp&&slotInfo.exp!==e.exp?" (desajuste!)":""}`:"Sin proyecto"}</span>
+      ${e.leadership?'<span class="tag" style="border-color:var(--accent2);color:var(--accent2)">👑 Liderazgo</span>':""}
     </div>
-    <div style="font-size:.7rem;color:var(--muted)">Satisfacción: ${Math.round(e.sat)}%</div>
+    <div style="font-size:.66rem;color:var(--muted)">Satisfacción: ${Math.round(e.sat)}%</div>
     <div class="sat-bar"><div class="sat-fill" style="width:${e.sat}%;background:${satColor(e.sat)}"></div></div>
-    ${market?"":`<div class="actions">
-      <button class="btn-mini btn-train" onclick="actTrain(${e.id})" ${canTrain?"":"disabled"}>📚 Dar Formación (${fmt(TRAINING_COST)})</button>
-      <button class="btn-mini btn-sal" onclick="actRaise(${e.id})" ${canRaise?"":"disabled"}>💵 Subir Salario +10%</button>
-      <button class="btn-mini" onclick="actMoveProject(${e.id})" ${G.phase==="decisions"?"":"disabled"}>🔄 Cambiar de Proyecto</button>
-    </div>`}
+    <div class="course-row">
+      ${Object.entries(CATALOG).map(([k,c])=>`<button class="btn-mini" onclick="actCourse(${e.id},'${k}')" ${canAct&&t.cash>=c.cost?"":"disabled"} title="${c.desc}">${c.name} (${fmt(c.cost)})</button>`).join("")}
+    </div>
+    <div class="actions">
+      <button class="btn-mini" onclick="actRaise(${e.id})" ${canAct&&t.cash>=Math.round(e.salary*0.1)?"":"disabled"}>💵 +10% Salario</button>
+    </div>
     ${warns.length?`<div class="warn">⚠️ ${warns.join(" · ")}</div>`:""}
   </div>`;
 }
 function renderRoster(t){
-  document.getElementById("roster").innerHTML=t.roster.map(e=>empCard(e,false)).join("")||"<p style='color:var(--muted)'>Sin empleados.</p>";
+  document.getElementById("roster").innerHTML=t.roster.map(empCard).join("")||"<p style='color:var(--muted)'>Sin empleados.</p>";
 }
-function renderJob(t){
-  const jm=curJob();
-  document.getElementById("jobMarket").innerHTML=jm.map(c=>`
-    <div class="cand">
-      <div class="head"><span style="font-weight:700">${c.name}</span><span class="fris ${c.color}">${cap(c.color)}</span></div>
-      <div class="meta" style="font-size:.75rem;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;margin:6px 0">
-        <span class="tag">🎂 ${c.age} años (${ageGroup(c)})</span>
-        <span class="tag">🎓 ${c.exp}</span>
-        <span class="tag">💰 Solicita ${fmt(c.salary)}/mes</span>
-      </div>
-      <button class="btn-accept" onclick="actHire(${c.id})" ${G.phase==="decisions"?"":"disabled"}>➕ Contratar (${fmt(HIRING_FEE)} fee)</button>
-    </div>`).join("")||"<p style='color:var(--muted)'>No hay candidatos disponibles.</p>";
-}
-function renderProj(t){
-  const pm=curProj();
-  const inno=innoIndex(t), eff=effIndex(t);
-  document.getElementById("projMarket").innerHTML=pm.map(p=>{
-    let reqs="";
-    let ok=true;
-    if(p.innoReq){const v=inno>=p.innoReq;ok=ok&&v;reqs+=`<span class="req-pill ${v?"ok":"no"}">Innovación ${p.innoReq}% (tienes ${inno}%)</span>`;}
-    if(p.effReq){const v=eff>=p.effReq;ok=ok&&v;reqs+=`<span class="req-pill ${v?"ok":"no"}">Eficiencia ${p.effReq}% (tienes ${eff}%)</span>`;}
-    if(!p.innoReq&&!p.effReq){reqs=`<span class="req-pill ok">Sin requisitos especiales</span>`;}
-    return `<div class="proj">
-      <div class="head"><span style="font-weight:700">${p.name}</span><span class="tag">${cap(p.type)}</span></div>
-      <div class="req">${reqs}</div>
-      <div style="font-size:.75rem;color:var(--muted)">Ingresos: ${fmt(p.revenue)}/mes · Personal: ${p.needs} · Duración: ${p.duration} meses</div>
-      <button class="btn-main" style="margin-top:8px" onclick="actBid('${p.id}')" ${G.phase==="decisions"&&ok?"":"disabled"}>🏆 Pujar por el proyecto</button>
-    </div>`;
-  }).join("")||"<p style='color:var(--muted)'>No hay proyectos en el mercado.</p>";
-}
-function renderActiveProj(t){
+function renderActiveProjects(t){
   const el=document.getElementById("activeProjects");
-  if(!t.projects.length){el.innerHTML="<p style='color:var(--muted);font-size:.8rem'>Sin proyectos activos.</p>";return;}
+  if(!t.projects.length){el.innerHTML="<p style='color:var(--muted);font-size:.8rem'>Sin proyectos activos. Captura clientes en el Mercado de Clientes.</p>";return;}
   el.innerHTML=t.projects.map(p=>{
-    const assigned=t.roster.filter(e=>e.projectId===p.id);
-    const effective=assigned.reduce((s,e)=>s+effFactor(e),0);
-    const cov=(effective/p.needs*100).toFixed(0);
+    const slotsHtml=p.slots.map((s,i)=>{
+      const assigned=s.filledBy!==null?t.roster.find(e=>e.id===s.filledBy):null;
+      const match=assigned?((!s.exp||EXP.indexOf(assigned.exp)>=EXP.indexOf(s.exp))&&(!s.color||assigned.color===s.color)):false;
+      const cls=assigned?(match?"slot ok":"slot bad"):"slot";
+      const options=`<option value="">— Vacío —</option>`+t.roster.map(e=>{
+        const ok=(!s.exp||EXP.indexOf(e.exp)>=EXP.indexOf(s.exp))&&(!s.color||e.color===s.color);
+        return `<option value="${e.id}" ${s.filledBy===e.id?"selected":""}>${e.name} · ${e.exp} · ${cap(e.color)} · ${e.age}a ${ok?"✓":"⚠️"}</option>`;
+      }).join("");
+      return `<div class="${cls}">
+        <div><b>Slot ${i+1}:</b> ${s.exp?`Requiere ${s.exp}`:"Cualquier nivel"}${s.color?` · Perfil ${cap(s.color)}`:" · Cualquier color"}</div>
+        ${assigned?`<div style="color:${match?"var(--green)":"var(--orange)"};font-size:.7rem">${match?"✓ Encaje perfecto":"⚠️ Perfil desajustado: rinde a la mitad"}</div>`:`<div style="color:var(--orange);font-size:.7rem">Vacío: reduce ingresos del proyecto</div>`}
+        <select onchange="actAssignSlot('${p.id}',${i},this.value)" ${G.phase==="decisions"?"":"disabled"}>${options}</select>
+      </div>`;
+    }).join("");
     return `<div class="proj">
-      <div class="head"><span style="font-weight:700">${p.name}</span><span class="tag">${cap(p.type)} · ${p.duration} meses restantes</span></div>
-      <div style="font-size:.75rem;color:var(--muted)">Personal asignado: ${assigned.length}/${p.needs} · Cobertura efectiva: ${cov}% · Ingresos: ${fmt(p.revenue)}/mes</div>
+      <div class="head"><b>${p.name}</b><span class="tag">${cap(p.type)} · ${fmt(p.revenue)}/trim</span></div>
+      ${slotsHtml}
     </div>`;
   }).join("");
 }
+let poolFilter={color:"",exp:"",ageMax:""};
+function renderPoolFilters(){
+  document.getElementById("poolFilters").innerHTML=
+    '<select onchange="poolFilter.color=this.value;renderPool()"><option value="">Todos los colores</option>'+
+    COLORS.map(c=>'<option value="'+c+'" '+(poolFilter.color===c?"selected":"")+'>'+cap(c)+'</option>').join("")+'</select>'+
+    '<select onchange="poolFilter.exp=this.value;renderPool()"><option value="">Toda experiencia</option>'+
+    EXP.map(x=>'<option value="'+x+'" '+(poolFilter.exp===x?"selected":"")+'>'+x+'</option>').join("")+'</select>'+
+    '<input type="number" placeholder="Edad máx." min="20" max="65" style="width:110px" value="'+(poolFilter.ageMax||"")+'" onchange="poolFilter.ageMax=this.value;renderPool()">';
+}
+function renderPool(){
+  const el=document.getElementById("jobMarket");
+  const list=nationalPool.filter(c=>
+    (!poolFilter.color||c.color===poolFilter.color)&&
+    (!poolFilter.exp||c.exp===poolFilter.exp)&&
+    (!poolFilter.ageMax||c.age<=Number(poolFilter.ageMax)));
+  document.getElementById("poolCount").textContent=list.length+" / "+nationalPool.length+" candidatos";
+  el.innerHTML=list.map(c=>`
+    <div class="cand" style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><b>${c.name}</b><span class="fris ${c.color}">${cap(c.color)}</span></div>
+      <div style="font-size:.7rem;color:var(--muted);display:flex;gap:5px;flex-wrap:wrap">
+        <span class="tag">🎂 ${c.age}a</span><span class="tag">🎓 ${c.exp}</span><span class="tag">💰 ${fmt(c.salary)}</span>
+      </div>
+      <button class="btn-accept" style="margin-top:6px;font-size:.72rem" onclick="actHire(${c.id})" ${G.phase==="decisions"?"":"disabled"}>➕ Contratar (${fmt(HIRING_FEE)} fee)</button>
+    </div>`).join("")||"<p style='color:var(--muted)'>Sin resultados con estos filtros.</p>";
+}
+function renderProjMarket(t){
+  const pm=curProjM();
+  const inno=innoIndex(t), eff=effIndex(t);
+  document.getElementById("projMarket").innerHTML=pm.map(p=>{
+    let reqs="",ok=true;
+    if(p.innoReq){const v=inno>=p.innoReq;ok=ok&&v;reqs+=`<span class="req-pill ${v?"ok":"no"}">Innovación ${p.innoReq}% (tienes ${inno}%)</span>`;}
+    if(p.effReq){const v=eff>=p.effReq;ok=ok&&v;reqs+=`<span class="req-pill ${v?"ok":"no"}">Eficiencia ${p.effReq}% (tienes ${eff}%)</span>`;}
+    if(!p.innoReq&&!p.effReq)reqs=`<span class="req-pill ok">Sin requisitos</span>`;
+    const slots=p.slots.map(s=>`<span class="req-pill">${s.exp||"Cualq. nivel"}${s.color?" · "+cap(s.color):""}</span>`).join("");
+    return `<div class="proj">
+      <div class="head"><b>${p.name}</b><span class="tag">${cap(p.type)}</span></div>
+      <div>${reqs}</div>
+      <div style="margin:4px 0;font-size:.7rem;color:var(--muted)">Slots: ${slots}</div>
+      <div style="font-size:.72rem;color:var(--muted)">Ingresos: ${fmt(p.revenue)}/trimestre</div>
+      <button class="btn-main" style="margin-top:6px" onclick="actBid('${p.id}')" ${G.phase==="decisions"&&ok?"":"disabled"}>🏆 Pujar</button>
+    </div>`;
+  }).join("")||"<p style='color:var(--muted)'>Mercado agotado este trimestre.</p>";
+}
 
-/* ============ PANTALLA INTERMEDIA (RANKING) ============ */
+/* ================= PANTALLA INTERMEDIA ================= */
 function showIntermission(){
   const el=document.getElementById("interScreen");
   el.classList.remove("hidden");
   const sorted=[...G.teams].sort((a,b)=>b.cash-a.cash);
-  const html=[`<div class="center-box">
-    <h1>📊 Ranking General — Mes ${G.month} completado</h1>
-    <p style="color:var(--muted);font-size:.85rem;margin-bottom:6px">Comparativa de rendimiento de los 6 equipos: finanzas y retención.</p>
-    <table class="rank"><tr><th>#</th><th>Equipo</th><th>Presupuesto</th><th>Margen</th><th>Gasto Rotación</th><th>Rotación</th><th>Satisf. Media</th><th>Innovación</th><th>Eficiencia</th></tr>`+
-    sorted.map((t,i)=>`<tr><td>${i+1}</td><td>${t.name}</td>
-      <td class="${t.cash>=START_CASH?"badge-pos":"badge-neg"}">${fmt(t.cash)}</td>
-      <td class="${margin(t)>=0?"badge-pos":"badge-neg"}">${fmt(margin(t))}</td>
+  const isYearEnd=trimOf(G.turn)===4;
+  const isEnd=G.turn>=TOTAL_TURNS;
+  el.innerHTML=`<div class="center-box">
+    <h1>${isEnd?"🏁 Simulación completada":isYearEnd?"📅 Fin del Año "+yearOf(G.turn):"📊 Trimestre "+trimOf(G.turn)+" completado"}</h1>
+    <table class="rank"><tr><th>#</th><th>Equipo</th><th>Presupuesto</th><th>Margen</th><th>Gasto Rotación</th><th>Rotación</th><th>Satisf.</th><th>Innovación</th><th>Empleados</th></tr>
+    ${sorted.map((t,i)=>`<tr class="${t.id===curTeam().id?"me":""}"><td>${i+1}</td><td>${t.name}</td>
+      <td class="${t.cash>=START_CASH?"pos":"neg"}">${fmt(t.cash)}</td>
+      <td class="${marginOf(t)>=0?"pos":"neg"}">${fmt(marginOf(t))}</td>
       <td>${fmt(t.rotCostTotal)}</td><td>${rotIndex(t)}%</td>
-      <td>${t.avgSatHistory.length?Math.round(t.avgSatHistory[t.avgSatHistory.length-1]):"—"}%</td>
-      <td>${innoIndex(t)}%</td><td>${effIndex(t)}%</td></tr>`).join("")+
-    `</table>`];
-  if(G.month>=MONTHS_PER_GAME){
-    html.push(`<button class="big-btn" onclick="showFinalReport()">🏁 Ver Gran Reporte Final</button>`);
-  }else{
-    html.push(`<button class="big-btn" onclick="nextMonth()">▶️ Comenzar Mes ${G.month+1}</button>`);
-  }
-  html.push("</div>");
-  el.innerHTML=html.join("");
-  document.getElementById("mainContent").style.visibility="hidden";
-  document.getElementById("gameHeader").style.visibility="hidden";
-  document.getElementById("turnControlBar").style.visibility="hidden";
+      <td>${t.avgSatHistory.length?t.avgSatHistory[t.avgSatHistory.length-1]:"—"}%</td>
+      <td>${innoIndex(t)}%</td><td>${t.roster.length}</td></tr>`).join("")}
+    </table>
+    ${isEnd?`<button class="big-btn" onclick="showFinalReport()">🏁 Ver Gran Reporte Final</button>`
+      :`<button class="big-btn" onclick="nextQuarter()">▶️ Comenzar ${trimOf(G.turn)===4?"Año "+(yearOf(G.turn)+1):"Trimestre "+(trimOf(G.turn)+1)}</button>`}
+  </div>`;
 }
-function nextMonth(){
+function nextQuarter(){
   document.getElementById("interScreen").classList.add("hidden");
-  document.getElementById("mainContent").style.visibility="visible";
-  document.getElementById("gameHeader").style.visibility="visible";
-  document.getElementById("turnControlBar").style.visibility="visible";
-  G.month++; G.teamIdx=0;
-  G.teams.forEach(tt=>{tt.raiseCountThisTurn=0;tt.raiseAmountThisTurn=0;tt.recentQuit=false;});
-  G.jobMarkets=G.teams.map(()=>makeJobMarket());
-  G.projMarkets=G.teams.map(()=>makeProjMarket(G.month));
+  G.turn++;
+  G.teamIdx=0;
+  G.teams.forEach(t=>{ const log=(m,c)=>{}; processAging(t,log); });
+  G.teams.forEach(t=>{ t.autoYear=false; });
+  refreshNationalPool();
+  G.projMarkets=G.teams.map(()=>makeProjMarket(G.turn));
   G.phase="decisions";
   document.getElementById("btnEndTurn").classList.remove("hidden");
+  document.getElementById("btnFastYear").classList.remove("hidden");
   document.getElementById("btnPassControl").classList.add("hidden");
-  render();
-  window.scrollTo(0,0);
+  render(); window.scrollTo(0,0);
 }
-/* ============ GRAN REPORTE FINAL (MES 12) ============ */
+
+/* ================= TABLERO DE COMPETENCIA ================= */
+function showBoard(){
+  const el=document.getElementById("boardScreen");
+  el.classList.remove("hidden");
+  const sorted=[...G.teams].sort((a,b)=>b.cash-a.cash);
+  el.innerHTML=`<div class="center-box">
+    <h1>📊 Tablero de Competencia / Mercado</h1>
+    <p style="color:var(--muted);font-size:.8rem">KPIs en tiempo real de todos los equipos — Año ${yearOf(G.turn)}, Trimestre ${trimOf(G.turn)}</p>
+    <table class="rank"><tr><th>#</th><th>Equipo</th><th>Presupuesto</th><th>Rotación Hist.</th><th>Innovación</th><th>Empleados</th><th>Clientes Activos</th><th>Satisf.</th></tr>
+    ${sorted.map((t,i)=>`<tr class="${t.id===curTeam().id?"me":""}"><td>${i+1}</td><td>${t.name}</td>
+      <td class="${t.cash>=START_CASH?"pos":"neg"}">${fmt(t.cash)}</td>
+      <td>${rotIndex(t)}%</td><td>${innoIndex(t)}%</td>
+      <td>${t.roster.length}</td><td>${t.projects.length}</td>
+      <td>${avgSat(t)}%</td></tr>`).join("")}
+    </table>
+    <button class="big-btn" onclick="document.getElementById('boardScreen').classList.add('hidden')">Cerrar</button>
+  </div>`;
+}
+
+/* ================= MANUAL DE AYUDA ================= */
+function showHelp(tab){
+  const el=document.getElementById("helpModal");
+  el.classList.remove("hidden");
+  const tabs={fris:"Colores FRIS",rot:"Coste de la Rotación",cli:"Penalizaciones de Clientes"};
+  let body="";
+  if(tab==="fris"||!tab){
+    body=`<h3>Los 4 Perfiles FRIS</h3>
+    ${Object.entries(COLOR_NAMES).map(([k,n])=>`<p style="margin:8px 0"><span class="color-dot" style="background:${k==="rojo"?"var(--red)":k==="azul"?"var(--accent)":k==="verde"?"var(--green)":"var(--yellow)"}"></span><b>${n}</b> — ${COLOR_MOTIVE[k]}</p>`).join("")}
+    <h3>Efectos especiales</h3>
+    <p>• <b>Rojos juntos:</b> dos Rojos en el mismo proyecto generan fricción y pierden satisfacción.</p>
+    <p>• <b>Azul mentor:</b> los Azules dan +10% de eficiencia a los Juniors de su proyecto.</p>
+    <p>• <b>Verde que renuncia:</b> baja -15% la satisfacción de toda la plantilla.</p>
+    <p>• <b>Amarillo con formación:</b> los cursos duplican su velocidad de ascenso de nivel.</p>
+    <p>• <b>Jóvenes (18-32):</b> +Innovación, pero rotan si no reciben formación cada 2 turnos.</p>
+    <p>• <b>Mayores (48+):</b> +Eficiencia y estables, pero penalizan la Innovación. Se jubilan a los 65.</p>`;
+  }else if(tab==="rot"){
+    body=`<h3>El coste real y oculto de la rotación</h3>
+    <p>• <b>Reclutamiento:</b> tarifa plana de ${fmt(HIRING_FEE)} por cada renuncia.</p>
+    <p>• <b>Onboarding:</b> el nuevo contratado rinde al <b>50%</b> durante ${ONBOARD_TURNS} turnos, pero cobra el <b>100%</b> de su sueldo.</p>
+    <p>• <b>Penalización por vacante:</b> ${fmt(VACANT_PENALTY)} por turno en proyectos con slots vacíos o sin personal.</p>
+    <p>• <b>Efecto dominó:</b> cada renuncia estresa a los Azules (-8%) y los Verdes que se van golpean la moral de todos (-15%).</p>
+    <p>• <b>Pérdida de conocimiento:</b> un Senior que se va (o se jubila) deja slots críticos desajustados, reduciendo ingresos a la mitad.</p>
+    <h3>Cómo prevenir</h3>
+    <p>Cursos técnicos para jóvenes, aumentos para Rojos, Taller de Sinergia para Verdes, rotación de proyectos para Amarillos, y sucesión planificada antes de los 65.</p>`;
+  }else if(tab==="cli"){
+    body=`<h3>Reglas de penalización de los clientes</h3>
+    <p>• <b>Slots vacíos o desajustados:</b> si algún slot del proyecto no tiene el perfil requerido (experiencia/color FRIS), el proyecto <b>rinde a la mitad</b>.</p>
+    <p>• <b>Proyecto sin personal:</b> penalización directa de ${fmt(VACANT_PENALTY)} y cero ingresos.</p>
+    <p>• <b>Requisitos de acceso:</b> los proyectos de Innovación exigen un Índice de Innovación mínimo (jóvenes y Amarillos lo suben); los Complejos exigen Eficiencia (mayores y Azules).</p>
+    <p>• <b>Bonos de encaje:</b> asignar perfiles que encajan con el tipo de proyecto genera hasta un <b>+25% de ingresos</b>. El programa de Liderazgo añade +15% de eficiencia a Rojos y Azules certificados.</p>`;
+  }
+  el.innerHTML=`<div class="center-box" style="max-width:760px">
+    <h1>❓ Manual de Gestión</h1>
+    <div>${Object.entries(tabs).map(([k,n])=>`<button class="help-tab ${((tab||"fris")===k)?"on":""}" onclick="showHelp('${k}')">${n}</button>`).join("")}</div>
+    <div class="help-body">${body}</div>
+    <button class="big-btn" style="margin-top:14px" onclick="document.getElementById('helpModal').classList.add('hidden')">Cerrar</button>
+  </div>`;
+}
+
+/* ================= REPORTE FINAL ================= */
 function pedagogicalMessage(t){
-  const rot=rotIndex(t), inno=innoIndex(t), sat=Math.round(avgSat(t));
-  const avgSatArr=t.avgSatHistory;
-  const avgSat=avgSatArr.length?Math.round(avgSatArr.reduce((a,b)=>a+b,0)/avgSatArr.length):0;
-  const young=t.roster.filter(e=>ageGroup(e)==="joven").length;
-  const old=t.roster.filter(e=>ageGroup(e)==="mayor").length;
-  if(inno>=65 && rot>=25){
-    return `<b>Estrategia A detectada (Juventud e Innovación):</b> Apostaste por talento joven e innovación pura. Ganaste los proyectos tecnológicos más caros, pero pagaste un precio alto en rotación (${fmt(t.rotCostTotal)}). Lección: la innovación sin retención quema caja; la formación continua es el seguro de vida del talento joven.`;
-  }
-  if(rot<=10 && inno<45){
-    return `<b>Estrategia B detectada (Experiencia y Estabilidad):</b> Mantuviste una plantilla estable y senior: casi cero costes de contratación e ingresos constantes. Pero te quedaste fuera del mercado de alta innovación. Lección: la estabilidad protege el margen, pero el crecimiento exige renovar talento.`;
-  }
-  if(rot<=25 && inno>=50){
-    return `<b>Estrategia C detectada (Mix Equilibrado):</b> Emparejaste perfiles FRIS con los clientes correctos y equilibriste retención con capacidad de innovación. Lección: el bono de encaje (+25%) premia a quien gestiona personas como activos estratégicos, no como costes.`;
-  }
-  if(t.cash<START_CASH*0.5){
-    return `<b>Resultado crítico:</b> La combinación de rotación elevada y baja captación de proyectos erosionó el capital. Lección: cada renuncia cuesta ${fmt(HIRING_FEE)} + penalizaciones de retraso; prevenir (formación, clima, aumentos oportunos) siempre es más barato que curar.`;
-  }
-  return `<b>Gestión intermedia:</b> Sobreviviste con un equipo de perfil mixto (${young} jóvenes, ${old} mayores). Lección: define una estrategia clara — innovación, estabilidad o mix — y alinea contrataciones, formación y proyectos con ella.`;
+  const rot=rotIndex(t), inno=innoIndex(t);
+  const avgSatH=t.avgSatHistory.length?Math.round(t.avgSatHistory.reduce((a,b)=>a+b,0)/t.avgSatHistory.length):0;
+  if(inno>=60&&rot>=25) return `<b>Estrategia A (Juventud e Innovación):</b> Ganaste los proyectos tecnológicos más caros, pero pagaste caro la rotación (${fmt(t.rotCostTotal)}). La formación continua es el seguro de vida del talento joven.`;
+  if(rot<=15&&inno<45) return `<b>Estrategia B (Experiencia y Estabilidad):</b> Rotación mínima e ingresos constantes, pero fuera del mercado de alta innovación. La estabilidad protege el margen; el crecimiento exige renovar talento.`;
+  if(rot<=25&&inno>=45) return `<b>Estrategia C (Mix Equilibrado):</b> Emparejaste perfiles FRIS con los clientes correctos. El bono de encaje premia a quien gestiona personas como activos estratégicos.`;
+  if(t.cash<START_CASH*0.5) return `<b>Resultado crítico:</b> La rotación (${fmt(t.rotCostTotal)}) y las penalizaciones erosionaron el capital. Prevenir siempre es más barato que curar.`;
+  return `<b>Gestión intermedia:</b> Equipo de perfil mixto. Define una estrategia clara — innovación, estabilidad o mix — y alinea contrataciones, formación y proyectos con ella.`;
 }
 function showFinalReport(){
   document.getElementById("interScreen").classList.add("hidden");
   const fs=document.getElementById("finalScreen");
   fs.classList.remove("hidden");
-  document.getElementById("mainContent").style.visibility="hidden";
-  document.getElementById("gameHeader").style.visibility="hidden";
-  document.getElementById("turnControlBar").style.visibility="hidden";
   const byCash=[...G.teams].sort((a,b)=>b.cash-a.cash);
-  const finWinner=byCash[0];
-  const avgSatOf=t=>t.avgSatHistory.length?Math.round(t.avgSatHistory.reduce((a,b)=>a+b,0)/t.avgSatHistory.length):0;
-  const byHuman=[...G.teams].sort((a,b)=>(avgSatOf(b)-b.lostEmployees)-(avgSatOf(a)-a.lostEmployees));
-  const humWinner=byHuman[0];
+  const finW=byCash[0];
+  const satAvg=t=>t.avgSatHistory.length?Math.round(t.avgSatHistory.reduce((a,b)=>a+b,0)/t.avgSatHistory.length):0;
+  const byHuman=[...G.teams].sort((a,b)=>(satAvg(b)-b.lostEmployees)-(satAvg(a)-a.lostEmployees));
+  const humW=byHuman[0];
   const palette=["#4da3ff","#e74c3c","#2ecc71","#f1c40f","#7c5cff","#e67e22"];
-  const labels=[...Array(MONTHS_PER_GAME)].map((_,i)=>"Mes "+(i+1));
-  fs.innerHTML=`
-  <div class="center-box" style="max-width:1100px">
-    <h1>🏁 Gran Reporte de Consultoría Financiera y de Talento — Año completado</h1>
-    <div class="winner-card">
-      <h2>💰 Ganador Financiero: ${finWinner.name}</h2>
-      <p>Presupuesto final: <b>${fmt(finWinner.cash)}</b> · Margen: <b class="${margin(finWinner)>=0?"badge-pos":"badge-neg"}">${fmt(margin(finWinner))}</b> · Gasto total en rotación: <b>${fmt(finWinner.rotCostTotal)}</b></p>
-    </div>
-    <div class="winner-card">
-      <h2>❤️ Ganador en Gestión Humana: ${humWinner.name}</h2>
-      <p>Satisfacción media más alta (${avgSatOf(humWinner)}%) y menor rotación (${humWinner.lostEmployees} renuncias · ${fmt(humWinner.rotCostTotal)} en costes de rotación).</p>
-    </div>
+  const labels=[...Array(TOTAL_TURNS)].map((_,i)=>"A"+Math.ceil((i+1)/4)+"T"+(((i)%4)+1));
+  fs.innerHTML=`<div class="center-box" style="max-width:1100px">
+    <h1>🏁 Gran Reporte de Consultoría — 15 Años completados</h1>
+    <div class="winner-card"><h2>💰 Ganador Financiero: ${finW.name}</h2>
+      <p>Presupuesto final: <b>${fmt(finW.cash)}</b> · Gasto en rotación: <b>${fmt(finW.rotCostTotal)}</b> · Jubilaciones: ${finW.retiredCount}</p></div>
+    <div class="winner-card"><h2>❤️ Ganador en Gestión Humana: ${humW.name}</h2>
+      <p>Satisfacción media ${satAvg(humW)}% · ${humW.lostEmployees} renuncias · ${humW.retiredCount} jubilaciones</p></div>
     <div class="chart-wrap"><canvas id="chartCash"></canvas></div>
     <div class="chart-wrap"><canvas id="chartRot"></canvas></div>
     <div class="chart-wrap"><canvas id="chartSat"></canvas></div>
-    <div class="section-title">Desglose por equipo</div>
-    <table class="rank"><tr><th>#</th><th>Equipo</th><th>Presupuesto Final</th><th>Gasto Rotación</th><th>Renuncias</th><th>Satisf. Media</th><th>Innovación</th></tr>
+    <div class="section-title">Desglose final</div>
+    <table class="rank"><tr><th>#</th><th>Equipo</th><th>Presupuesto</th><th>Gasto Rotación</th><th>Renuncias</th><th>Jubilaciones</th><th>Satisf. Media</th><th>Innovación</th></tr>
     ${byCash.map((t,i)=>`<tr><td>${i+1}</td><td>${t.name}</td>
-      <td class="${t.cash>=START_CASH?"badge-pos":"badge-neg"}">${fmt(t.cash)}</td>
-      <td>${fmt(t.rotCostTotal)}</td><td>${t.lostEmployees}</td>
-      <td>${avgSatOf(t)}%</td><td>${innoIndex(t)}%</td></tr>`).join("")}
+      <td class="${t.cash>=START_CASH?"pos":"neg"}">${fmt(t.cash)}</td>
+      <td>${fmt(t.rotCostTotal)}</td><td>${t.lostEmployees}</td><td>${t.retiredCount}</td>
+      <td>${satAvg(t)}%</td><td>${innoIndex(t)}%</td></tr>`).join("")}
     </table>
     <div class="section-title">Mensajes pedagógicos</div>
     ${G.teams.map(t=>`<div class="pedag"><b>${t.name}:</b> ${pedagogicalMessage(t)}</div>`).join("")}
     <button class="big-btn" onclick="location.reload()">🔄 Jugar de nuevo</button>
   </div>`;
-  const mk=(id,label,datasets)=>new Chart(document.getElementById(id),{
-    type:"line",
+  const mk=(id,datasets,chartType)=>new Chart(document.getElementById(id),{
+    type:chartType||"line",
     data:{labels,datasets},
-    options:{responsive:true,
-      plugins:{legend:{labels:{color:"#e8edf7"}}},
-      scales:{x:{ticks:{color:"#93a1c0"},grid:{color:"rgba(44,58,92,.4)"}},y:{ticks:{color:"#93a1c0"},grid:{color:"rgba(44,58,92,.4)"}}}}
+    options:{responsive:true,animation:false,
+      plugins:{legend:{labels:{color:"#e8edf7",boxWidth:12}}},
+      scales:{x:{ticks:{color:"#93a1c0",maxTicksLimit:20},grid:{color:"rgba(44,58,92,.4)"}},
+              y:{ticks:{color:"#93a1c0"},grid:{color:"rgba(44,58,92,.4)"}}}}
   });
   G.charts.push(
-    mk("chartCash","Presupuesto",G.teams.map((t,i)=>({label:t.name,data:t.history.map(h=>h.cash),borderColor:palette[i],backgroundColor:palette[i]+"33",tension:.3,fill:false}))),
-    mk("chartRot","Gasto en Rotación",G.teams.map((t,i)=>({label:t.name,data:t.history.map(h=>h.rot),borderColor:palette[i],backgroundColor:palette[i],type:"bar"}))),
-    mk("chartSat","Satisfacción media",G.teams.map((t,i)=>({label:t.name,data:t.avgSatHistory,borderColor:palette[i],backgroundColor:palette[i]+"33",tension:.3,fill:false})))
+    mk("chartCash",G.teams.map((t,i)=>({label:t.name,data:t.history.map(h=>h.cash),borderColor:palette[i],backgroundColor:palette[i]+"33",tension:.25,pointRadius:0,fill:false}))),
+    mk("chartRot",G.teams.map((t,i)=>({label:t.name,data:t.history.map(h=>h.rot),backgroundColor:palette[i]})),"bar"),
+    mk("chartSat",G.teams.map((t,i)=>({label:t.name,data:t.avgSatHistory,borderColor:palette[i],backgroundColor:palette[i]+"33",tension:.25,pointRadius:0,fill:false})))
   );
 }
 
-/* ============ ARRANQUE ============ */
+/* ================= CONFIGURACIÓN INICIAL ================= */
+let selNumTeams=2;
+function renderWelcome(){
+  const nb=document.getElementById("numTeamBtns");
+  nb.innerHTML=[1,2,3,4,5,6].map(n=>`<button class="${n===selNumTeams?"sel":""}" onclick="selTeams(${n})">${n}</button>`).join("");
+  const nr=document.getElementById("nameRows");
+  nr.innerHTML=[...Array(selNumTeams)].map((_,i)=>`<div class="team-name-row"><span style="color:var(--muted);font-size:.85rem;min-width:70px">Equipo ${i+1}</span><input id="tn${i}" placeholder="Nombre del equipo ${i+1}" value="${i===0?"Equipo Alpha":i===1?"Equipo Beta":"Equipo "+(i+1)}"></div>`).join("");
+}
+function selTeams(n){selNumTeams=n;renderWelcome();}
 function startGame(){
   G.teams=[];
-  for(let i=1;i<=NUM_TEAMS;i++) G.teams.push(makeTeam(i));
-  G.jobMarkets=G.teams.map(()=>makeJobMarket());
-  G.projMarkets=G.teams.map(()=>makeProjMarket(G.month));
+  for(let i=0;i<selNumTeams;i++){
+    const nm=(document.getElementById("tn"+i).value||"Equipo "+(i+1)).trim();
+    G.teams.push(makeTeam(i+1,nm));
+  }
+  refreshNationalPool();
+  G.projMarkets=G.teams.map(()=>makeProjMarket(1));
+  document.getElementById("welcome").classList.add("hidden");
+  document.getElementById("gameHeader").classList.remove("hidden");
+  document.getElementById("mainContent").classList.remove("hidden");
+  document.getElementById("turnControlBar").classList.remove("hidden");
+  document.getElementById("helpBtn").classList.remove("hidden");
   render();
 }
-document.getElementById("btnEndTurn").onclick=()=>{
-  if(G.phase!=="decisions")return;
-  endTurn();
-};
+
+/* ================= WIRING ================= */
+document.getElementById("btnEndTurn").onclick=()=>{ if(G.phase==="decisions") endTurn(); };
 document.getElementById("btnPassControl").onclick=passControl;
-startGame();
+document.getElementById("btnFastYear").onclick=fastYear;
+document.getElementById("btnBoard").onclick=showBoard;
+document.getElementById("btnHelp2").onclick=()=>showHelp("fris");
+document.getElementById("helpBtn").onclick=()=>showHelp("fris");
+document.getElementById("btnStart").onclick=startGame;
+renderWelcome();
 </script>
 </body>
 </html>
