@@ -114,11 +114,12 @@ table.rank tr.me td{background:rgba(77,163,255,.08)}
 
 <div id="welcome">
   <div class="welcome-box">
-    <h1>💃 Tango Talento</h1>
-    <p style="color:var(--muted);font-size:.9rem;margin-bottom:18px">Simulación estratégica de capital humano a <b>15 años</b>. Gestiona talento, retención y clientes compitiendo con hasta 6 equipos.</p>
-    <h3 style="margin-bottom:8px">¿Cuántos equipos van a competir?</h3>
+    <h1>💃 Tango Talento <span style="font-size:.9rem">· vs IA</span></h1>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:18px">Simulación estratégica de capital humano a <b>15 años (60 trimestres)</b>. Compite contra empresas rivales controladas por IA con personalidades distintas: Agresiva/Tech, Conservadora/Tradicional y Equilibrada.</p>
+    <div class="team-name-row"><span style="color:var(--muted);font-size:.85rem;min-width:130px">Tu empresa</span><input id="myName" placeholder="Nombre de tu empresa" value="Mi Empresa"></div>
+    <h3 style="margin:14px 0 6px">¿Cuántos rivales de IA quieres enfrentar?</h3>
     <div class="num-btns" id="numTeamBtns"></div>
-    <div id="nameRows"></div>
+    <div id="botPreview" style="font-size:.78rem;color:var(--muted);margin-top:6px;line-height:1.5"></div>
     <button class="big-btn" id="btnStart" style="width:100%;margin-top:16px">🚀 Iniciar Simulación — Año 1, Trimestre 1</button>
   </div>
 </div>
@@ -178,7 +179,6 @@ table.rank tr.me td{background:rgba(77,163,255,.08)}
 <div id="turnControlBar" class="hidden">
   <button class="big-btn" id="btnEndTurn">✅ Finalizar Trimestre</button>
   <button class="big-btn" id="btnFastYear" style="background:linear-gradient(90deg,#7c5cff,#4da3ff)">⚡ Avanzar Año (auto)</button>
-  <button class="big-btn hidden" id="btnPassControl">🔒 Pasar el control al siguiente equipo →</button>
 </div>
 
 <button id="helpBtn" class="hidden">❓ Ayuda / Manual de Gestión</button>
@@ -236,12 +236,32 @@ const effFactor=e=>{
 };
 const expNeed=e=>e.exp==="Junior"?4:(e.exp==="Mid"?6:99);
 
+/* ================= BOTS IA ================= */
+const BOT_STYLES=[
+  {key:"tech",label:"Agresivo/Tech",tag:"🤖 Agresiva",colorTag:"var(--red)",
+   desc:"Prioriza jóvenes y Amarillos, invierte en innovación, puja por los proyectos más caros asumiendo alta rotación."},
+  {key:"cons",label:"Conservador",tag:"🏛️ Conservadora",colorTag:"var(--accent)",
+   desc:"Solo contrata mayores y azules, busca proyectos estables de auditoría, gasta muy poco en reclutamiento."},
+  {key:"mix",label:"Equilibrado",tag:"⚖️ Equilibrada",colorTag:"var(--green)",
+   desc:"Mantiene un mix de colores FRIS y edades óptimas, asigna perfiles con encaje quirúrgico."}
+];
+const BOT_NAMES={tech:["NovaTech","QuantumLabs","Disruptiva SA","Hyperion","ByteStorm"],
+                  cons:["AuditorPrime","Solidez SA","Tradición Group","Fortaleza","Vetania"],
+                  mix:["Estratego","Zenit Consulting","Armonía Group","PrimeBalance","Kairos"]};
+function botPickStyle(i){ return BOT_STYLES[i%3]; }
+function botPickName(styleKey,usedIdx){
+  const pool=BOT_NAMES[styleKey];
+  for(let k=0;k<pool.length;k++){ const idx=(usedIdx+k)%pool.length; if(!BOT_NAMES._used.has(styleKey+idx)){BOT_NAMES._used.add(styleKey+idx);return pool[idx];} }
+  return pool[usedIdx%pool.length]+" II";
+}
+BOT_NAMES._used=new Set();
+
 /* ================= EQUIPOS ================= */
 function makeTeam(id,name){
   const t={id,name,cash:START_CASH,revenueTotal:0,salaryCostTotal:0,
     rotCostTotal:0,hireCostTotal:0,lostEmployees:0,retiredCount:0,climateInvestTotal:0,
     projects:[],history:[],avgSatHistory:[],initialSize:0,hiredCount:0,recentQuit:false,
-    trainSpendThisTurn:0};
+    trainSpendThisTurn:0,isBot:false,botStyle:null};
   t.roster=[];
   for(let i=0;i<6;i++) t.roster.push(makeEmployee(false));
   t.initialSize=t.roster.length;
@@ -291,7 +311,11 @@ function makeSlots(pattern,type){
 }
 
 /* ================= ESTADO GLOBAL ================= */
-const G={turn:1,teamIdx:0,phase:"decisions",teams:[],projMarkets:[],charts:[]};
+const G={turn:1,teamIdx:0,phase:"decisions",teams:[],projMarkets:[],charts:[],news:[]};
+function pushNews(msg){
+  G.news.unshift({turn:G.turn,msg});
+  if(G.news.length>40) G.news.pop();
+}
 const curTeam=()=>G.teams[G.teamIdx];
 const curProjM=()=>G.projMarkets[G.teamIdx];
 const yearOf=t=>Math.ceil(t/4);
@@ -435,6 +459,62 @@ function runEconomy(t,log){
   t.avgSatHistory.push(avgSat(t));
 }
 
+/* ================= MOTOR DE DECISIONES BOT ================= */
+function botDecide(t,market){
+  const st=t.botStyle.key;
+  const log=(m,c)=>{};
+  const myInno=innoIndex(t), myEff=effIndex(t);
+  const targetSize = st==="tech"?8:(st==="cons"?6:7);
+  if(t.roster.length<targetSize && nationalPool.length){
+    const wantCount=t.roster.length<4?3:Math.min(2,targetSize-t.roster.length);
+    for(let k=0;k<wantCount;k++){
+      let cand=null;
+      if(st==="tech"){ cand=nationalPool.find(c=>c.age<=32&&(c.color==="amarillo"||Math.random()<.6)); }
+      else if(st==="cons"){ cand=nationalPool.find(c=>c.age>=45&&c.color==="azul"); }
+      else { cand=nationalPool.find(c=>t.roster.filter(e=>e.color===c.color).length<2); }
+      if(!cand) cand=nationalPool[0];
+      if(t.cash>=HIRING_FEE+cand.salary){
+        actHire(cand.id);
+        pushNews("📰 "+t.name+" (IA) contrata a "+cand.name+" ("+cand.age+"a, "+cap(cand.color)+").");
+      }
+    }
+  }
+  t.roster.forEach(e=>{
+    if(st==="tech"){
+      if(e.sat<50&&t.cash>5000) actCourse(e.id,"sinergia");
+      if(e.age<=32&&t.cash>20000) actCourse(e.id,"tecnico");
+      if(e.color==="amarillo"&&t.cash>30000) actCourse(e.id,"tecnico");
+      if(e.color==="rojo"&&e.turnsSinceRaise>=3&&t.cash>8000) actRaise(e.id);
+    }else if(st==="cons"){
+      if(e.sat<55&&t.cash>5000) actCourse(e.id,"sinergia");
+      if(ageGroup(e)==="joven"&&e.turnsSinceTrain>=2&&t.cash>5000) actCourse(e.id,"tecnico");
+      if(e.exp==="Junior"&&t.roster.some(x=>x.exp==="Senior")&&t.cash>3000) actCourse(e.id,"mentoria");
+    }else{
+      if(e.sat<50&&t.cash>5000) actCourse(e.id,"sinergia");
+      if(e.exp==="Junior"&&t.cash>10000) actCourse(e.id,"tecnico");
+      if((e.color==="rojo"||e.color==="azul")&&!e.leadership&&t.cash>25000&&Math.random()<.4) actCourse(e.id,"liderazgo");
+      if(e.color==="rojo"&&e.turnsSinceRaise>=3) actRaise(e.id);
+    }
+  });
+  const avgS=avgSat(t);
+  if(st==="mix"&&avgS<70&&t.cash>20000) actClimate();
+  if(st==="cons"&&avgS<60&&t.cash>15000) actClimate();
+  const sorted=[...market].sort((a,b)=>b.revenue-a.revenue);
+  sorted.forEach(p=>{
+    if(t.projects.length>=3)return;
+    const canReq=(!p.innoReq||myInno>=p.innoReq)&&(!p.effReq||myEff>=p.effReq);
+    let wants=false;
+    if(st==="tech") wants=p.type==="innovacion"||p.type==="tradicional";
+    else if(st==="cons") wants=p.type==="complejo"||p.type==="tradicional";
+    else wants=true;
+    if(canReq&&wants){
+      actBid(p.id);
+      pushNews("🏆 "+t.name+" (IA) ha ganado la puja por '"+p.name+"' ("+fmt(p.revenue)+"/trim).");
+    }
+  });
+  autoFillSlots(t,log);
+}
+
 /* ================= FIN DE TRIMESTRE ================= */
 function endTurn(){
   const t=curTeam(), log=makeLogger();
@@ -443,20 +523,30 @@ function endTurn(){
   processResignations(t,log);
   checkMentorships(t,log);
   if(t.cash<0) log(`🩸 ¡Alerta! ${t.name} en números rojos (${fmt(t.cash)}).`,"bad");
+  const savedIdx=G.teamIdx;
+  const bots=G.teams.filter(x=>x.isBot);
+  bots.forEach(b=>{
+    G.teamIdx=G.teams.indexOf(b);
+    const bMarket=G.projMarkets[G.teamIdx]||makeProjMarket(G.turn);
+    const bLog=(m,c)=>{};
+    const beforeRetired=b.retiredCount;
+    botDecide(b,bMarket);
+    runEconomy(b,bLog);
+    checkFrictions(b,bLog);
+    processResignations(b,bLog);
+    checkMentorships(b,bLog);
+    processAging(b,bLog);
+    if(b.retiredCount>beforeRetired){
+      pushNews("🌅 "+b.name+" (IA) sufre una crisis de jubilaciones ("+(b.retiredCount-beforeRetired)+" este trimestre).");
+    }
+    if(b.roster.length<=2){
+      pushNews("⚠️ "+b.name+" (IA) está en crisis: solo le quedan "+b.roster.length+" empleados.");
+    }
+  });
+  G.teamIdx=savedIdx;
   G.phase="pass";
   render();
-  document.getElementById("btnEndTurn").classList.add("hidden");
-  document.getElementById("btnFastYear").classList.add("hidden");
-  document.getElementById("btnPassControl").classList.remove("hidden");
-}
-function passControl(){
-  G.teamIdx++;
-  if(G.teamIdx>=G.teams.length){ showIntermission(); return; }
-  G.phase="decisions";
-  document.getElementById("btnEndTurn").classList.remove("hidden");
-  document.getElementById("btnFastYear").classList.remove("hidden");
-  document.getElementById("btnPassControl").classList.add("hidden");
-  render(); window.scrollTo(0,0);
+  setTimeout(showIntermission,300);
 }
 
 /* ================= LOGGER Y ACCIONES ================= */
@@ -539,6 +629,7 @@ function actBid(projId){
 /* Avance rápido: procesa el trimestre actual con decisiones automáticas si no hay alertas críticas */
 function fastYear(){
   const t=curTeam();
+  if(G.phase!=="decisions")return;
   const alerts=[];
   t.projects.forEach(p=>p.slots.forEach((s,i)=>{
     if(s.filledBy===null) alerts.push('"'+p.name+'" slot '+(i+1)+' vacío');
@@ -703,7 +794,7 @@ function showIntermission(){
   el.innerHTML=`<div class="center-box">
     <h1>${isEnd?"🏁 Simulación completada":isYearEnd?"📅 Fin del Año "+yearOf(G.turn):"📊 Trimestre "+trimOf(G.turn)+" completado"}</h1>
     <table class="rank"><tr><th>#</th><th>Equipo</th><th>Presupuesto</th><th>Margen</th><th>Gasto Rotación</th><th>Rotación</th><th>Satisf.</th><th>Innovación</th><th>Empleados</th></tr>
-    ${sorted.map((t,i)=>`<tr class="${t.id===curTeam().id?"me":""}"><td>${i+1}</td><td>${t.name}</td>
+    ${sorted.map((t,i)=>`<tr class="${t.id===curTeam().id?"me":""}"><td>${i+1}</td><td>${t.isBot?t.name+` <span style="font-size:.62rem;color:var(--muted)">(${t.botStyle?t.botStyle.label:"IA"})</span>`:t.name}</td>
       <td class="${t.cash>=START_CASH?"pos":"neg"}">${fmt(t.cash)}</td>
       <td class="${marginOf(t)>=0?"pos":"neg"}">${fmt(marginOf(t))}</td>
       <td>${fmt(t.rotCostTotal)}</td><td>${rotIndex(t)}%</td>
@@ -712,6 +803,10 @@ function showIntermission(){
     </table>
     ${isEnd?`<button class="big-btn" onclick="showFinalReport()">🏁 Ver Gran Reporte Final</button>`
       :`<button class="big-btn" onclick="nextQuarter()">▶️ Comenzar ${trimOf(G.turn)===4?"Año "+(yearOf(G.turn)+1):"Trimestre "+(trimOf(G.turn)+1)}</button>`}
+    <div class="section-title">Feed de Noticias del Mercado</div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;max-height:220px;overflow:auto;font-size:.76rem">
+      ${`G.news.slice(0,15).map(n=>"<div style='padding:3px 0;border-bottom:1px dashed rgba(44,58,92,.5)'><span style='color:var(--muted)'>[A"+yearOf(n.turn)+"T"+trimOf(n.turn)+"]</span> "+n.msg+"</div>").join("")||"<span style='color:var(--muted)'>Sin noticias aún.</span>"`}
+    </div>
   </div>`;
 }
 function nextQuarter(){
@@ -725,7 +820,6 @@ function nextQuarter(){
   G.phase="decisions";
   document.getElementById("btnEndTurn").classList.remove("hidden");
   document.getElementById("btnFastYear").classList.remove("hidden");
-  document.getElementById("btnPassControl").classList.add("hidden");
   render(); window.scrollTo(0,0);
 }
 
@@ -738,12 +832,16 @@ function showBoard(){
     <h1>📊 Tablero de Competencia / Mercado</h1>
     <p style="color:var(--muted);font-size:.8rem">KPIs en tiempo real de todos los equipos — Año ${yearOf(G.turn)}, Trimestre ${trimOf(G.turn)}</p>
     <table class="rank"><tr><th>#</th><th>Equipo</th><th>Presupuesto</th><th>Rotación Hist.</th><th>Innovación</th><th>Empleados</th><th>Clientes Activos</th><th>Satisf.</th></tr>
-    ${sorted.map((t,i)=>`<tr class="${t.id===curTeam().id?"me":""}"><td>${i+1}</td><td>${t.name}</td>
+    ${sorted.map((t,i)=>`<tr class="${t.id===curTeam().id?"me":""}"><td>${i+1}</td><td>${t.isBot?t.name+` <span style="font-size:.62rem;color:var(--muted)">(${t.botStyle?t.botStyle.label:"IA"})</span>`:t.name}</td>
       <td class="${t.cash>=START_CASH?"pos":"neg"}">${fmt(t.cash)}</td>
       <td>${rotIndex(t)}%</td><td>${innoIndex(t)}%</td>
       <td>${t.roster.length}</td><td>${t.projects.length}</td>
       <td>${avgSat(t)}%</td></tr>`).join("")}
     </table>
+        <div class="section-title">Feed de Noticias del Mercado</div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;max-height:260px;overflow:auto;font-size:.76rem">
+      ${`G.news.slice(0,20).map(n=>"<div style='padding:3px 0;border-bottom:1px dashed rgba(44,58,92,.5)'><span style='color:var(--muted)'>[A"+yearOf(n.turn)+"T"+trimOf(n.turn)+"]</span> "+n.msg+"</div>").join("")||"<span style='color:var(--muted)'>Sin noticias aún.</span>"`}
+    </div>
     <button class="big-btn" onclick="document.getElementById('boardScreen').classList.add('hidden')">Cerrar</button>
   </div>`;
 }
@@ -820,7 +918,7 @@ function showFinalReport(){
     <div class="chart-wrap"><canvas id="chartSat"></canvas></div>
     <div class="section-title">Desglose final</div>
     <table class="rank"><tr><th>#</th><th>Equipo</th><th>Presupuesto</th><th>Gasto Rotación</th><th>Renuncias</th><th>Jubilaciones</th><th>Satisf. Media</th><th>Innovación</th></tr>
-    ${byCash.map((t,i)=>`<tr><td>${i+1}</td><td>${t.name}</td>
+    ${byCash.map((t,i)=>`<tr><td>${i+1}</td><td>${t.isBot?t.name+` <span style="font-size:.62rem;color:var(--muted)">(${t.botStyle?t.botStyle.label:"IA"})</span>`:t.name}</td>
       <td class="${t.cash>=START_CASH?"pos":"neg"}">${fmt(t.cash)}</td>
       <td>${fmt(t.rotCostTotal)}</td><td>${t.lostEmployees}</td><td>${t.retiredCount}</td>
       <td>${satAvg(t)}%</td><td>${innoIndex(t)}%</td></tr>`).join("")}
@@ -848,16 +946,27 @@ function showFinalReport(){
 let selNumTeams=2;
 function renderWelcome(){
   const nb=document.getElementById("numTeamBtns");
-  nb.innerHTML=[1,2,3,4,5,6].map(n=>`<button class="${n===selNumTeams?"sel":""}" onclick="selTeams(${n})">${n}</button>`).join("");
-  const nr=document.getElementById("nameRows");
-  nr.innerHTML=[...Array(selNumTeams)].map((_,i)=>`<div class="team-name-row"><span style="color:var(--muted);font-size:.85rem;min-width:70px">Equipo ${i+1}</span><input id="tn${i}" placeholder="Nombre del equipo ${i+1}" value="${i===0?"Equipo Alpha":i===1?"Equipo Beta":"Equipo "+(i+1)}"></div>`).join("");
+  nb.innerHTML=[1,2,3,4,5].map(n=>`<button class="${n===selNumTeams?"sel":""}" onclick="selTeams(${n})">${n}</button>`).join("");
+  const pv=document.getElementById("botPreview");
+  pv.innerHTML=[...Array(selNumTeams)].map((_,i)=>{
+    const st=botPickStyle(i);
+    const nm=BOT_NAMES[st.key][i%5];
+    return `<div style="margin:3px 0">${st.tag} <b>${nm}</b> — ${st.desc}</div>`;
+  }).join("");
 }
 function selTeams(n){selNumTeams=n;renderWelcome();}
 function startGame(){
   G.teams=[];
+  const myName=(document.getElementById("myName").value||"Mi Empresa").trim();
+  const me=makeTeam(1,myName);
+  me.isBot=false;
+  G.teams.push(me);
   for(let i=0;i<selNumTeams;i++){
-    const nm=(document.getElementById("tn"+i).value||"Equipo "+(i+1)).trim();
-    G.teams.push(makeTeam(i+1,nm));
+    const st=botPickStyle(i);
+    const nm=botPickName(st.key,i);
+    const b=makeTeam(G.teams.length+1,nm);
+    b.isBot=true; b.botStyle=st;
+    G.teams.push(b);
   }
   refreshNationalPool();
   G.projMarkets=G.teams.map(()=>makeProjMarket(1));
@@ -866,12 +975,12 @@ function startGame(){
   document.getElementById("mainContent").classList.remove("hidden");
   document.getElementById("turnControlBar").classList.remove("hidden");
   document.getElementById("helpBtn").classList.remove("hidden");
+  pushNews("\ud83c\udfae \u00a1Comienza la competici\u00f3n! "+myName+" se enfrenta a "+selNumTeams+" rivales de IA.");
   render();
 }
 
 /* ================= WIRING ================= */
 document.getElementById("btnEndTurn").onclick=()=>{ if(G.phase==="decisions") endTurn(); };
-document.getElementById("btnPassControl").onclick=passControl;
 document.getElementById("btnFastYear").onclick=fastYear;
 document.getElementById("btnBoard").onclick=showBoard;
 document.getElementById("btnHelp2").onclick=()=>showHelp("fris");
