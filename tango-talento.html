@@ -1491,16 +1491,26 @@ function verificarRetencionPersonal() {
       ing.nivelPendiente = 0;
     }
     ing.enFormacion = false;
-    if (ing.mesesCongelados > 0) {
-      ing.mesesCongelados--;
+    if ((ing.protegidoRenuncia || 0) > 0 || (ing.mesesCongelados || 0) > 0) {
+      if (ing.protegidoRenuncia > 0) ing.protegidoRenuncia--;
+      if (ing.mesesCongelados > 0) ing.mesesCongelados--;
       ing.mesesSinFormacion = 0;
+      ing.advertenciaRenuncia = false;
       return;
+    }
+    if ((ing.mesesSinFormacion || 0) === 0 && ing.satisfaccion === 100) {
+      ing.advertenciaRenuncia = false;
     }
     ing.mesesSinFormacion = (ing.mesesSinFormacion || 0) + 1;
     var limite = limiteSinFormacion(ing.rango);
     if (ing.mesesSinFormacion >= limite && (ing.satisfaccion || 0) < 100) {
+      ing.advertenciaRenuncia = true;
       renuncias.push(ing);
     }
+  });
+  renuncias = renuncias.filter(function (ing) {
+    return !((ing.protegidoRenuncia || 0) > 0 || (ing.mesesCongelados || 0) > 0 ||
+      ((ing.mesesSinFormacion || 0) === 0 && ing.satisfaccion === 100));
   });
   renuncias.forEach(function (ing) {
     desasignarIngeniero(ing.id);
@@ -1835,18 +1845,20 @@ function darReward(empleadoId) {
     "Restores satisfaction to 100% immediately and freezes their resignation risk for <b>6 months</b>.</div></div>" +
     "<div class='proyecto-oferta'><div class='datos'><b style='color:#93c5fd;'>2. Career Plan / Promotion (4,000 PLN + 20% salary)</b><br>" +
     "Officially promotes the employee's rank, raises their salary by 20%, and <b>doubles their patience and loyalty</b> long-term.</div></div><br>" +
-    "<i style='color:#94a3b8;'>Presupuesto de Rewards disponible: " + formatear(estado.presupuestos.rewards) + " PLN</i>", "info", {
+    "<i style='color:#94a3b8;'>Available Rewards budget: " + formatear(estado.presupuestos.rewards) + " PLN</i>", "info", {
       textoAceptar: "Success Bonus (2,000 PLN)",
       textoRechazar: "Promotion (4,000 PLN)",
-      aceptar: function () { aplicarBonoExito(ing); },
-      rechazar: function () { aplicarPromocion(ing); }
+      aceptar: function () { aplicarBonoExito(empleadoId); },
+      rechazar: function () { aplicarPromocion(empleadoId); }
     });
 }
 
-function aplicarBonoExito(ing) {
+function aplicarBonoExito(empleadoId) {
+  var ing = estado.plantilla.find(function (e) { return e.id === empleadoId; });
+  if (!ing) return;
   var COSTE = 2000;
   if (estado.presupuestos.rewards < COSTE) {
-    notificar("alerta", "BONUS BLOCKED", "Presupuesto de Rewards insuficiente (" +
+    notificar("alerta", "BONUS BLOCKED", "Insufficient Rewards budget (" +
       formatear(estado.presupuestos.rewards) + " PLN available, need " + formatear(COSTE) + " PLN).");
     return;
   }
@@ -1854,26 +1866,32 @@ function aplicarBonoExito(ing) {
   presupuestosAnuales.rewards = estado.presupuestos.rewards;
   ing.satisfaccion = 100;
   ing.mesesSinFormacion = 0;
+  ing.nivelPendiente = ing.nivelPendiente || 0;
+ ing.protegidoRenuncia = 6;
   ing.mesesCongelados = 6;
+  ing.advertenciaRenuncia = false;
   estado.visionEmpleador = Math.min(100, estado.visionEmpleador + 2);
   notificar("exito", "SUCCESS BONUS GRANTED",
-    ing.nombre + ": satisfaction restored to 100% and resignation risk frozen for 6 months.");
+    ing.nombre + ": satisfaction restored to 100%, months without training reset to 0 and " +
+    "protected from resignation for 6 months.");
   notificar("exito", "EMPLOYER BRAND +2",
-    "Reward entregado. Visión como Empleador: " + estado.visionEmpleador + "/100.");
+    "Reward granted. Employer Brand: " + estado.visionEmpleador + "/100.");
   renderTodo();
 }
 
-function aplicarPromocion(ing) {
+function aplicarPromocion(empleadoId) {
+  var ing = estado.plantilla.find(function (e) { return e.id === empleadoId; });
+  if (!ing) return;
   var COSTE = 4000;
   if (estado.presupuestos.rewards < COSTE) {
-    notificar("alerta", "PROMOTION BLOCKED", "Presupuesto de Rewards insuficiente (" +
+    notificar("alerta", "PROMOTION BLOCKED", "Insufficient Rewards budget (" +
       formatear(estado.presupuestos.rewards) + " PLN available, need " + formatear(COSTE) + " PLN).");
     return;
   }
-  var ORDEN = ["Internship", "Ingeniero", "Senior", "Staff"];
+  var ORDEN = ["Internship", "Junior", "Ingeniero", "Mid", "Senior", "Staff"];
   var idx = ORDEN.indexOf(ing.rango);
   if (idx < 0 || idx >= ORDEN.length - 1) {
-    notificar("alerta", "PROMOCIÓN IMPOSIBLE", ing.nombre + " already holds the maximum rank (Staff).");
+    notificar("alerta", "PROMOTION IMPOSSIBLE", ing.nombre + " already holds the maximum rank (Staff).");
     return;
   }
   estado.presupuestos.rewards -= COSTE;
@@ -1883,12 +1901,14 @@ function aplicarPromocion(ing) {
   ing.lealtadDuplicada = true;
   ing.satisfaccion = 100;
   ing.mesesSinFormacion = 0;
+  ing.protegidoRenuncia = 6;
+  ing.advertenciaRenuncia = false;
   estado.visionEmpleador = Math.min(100, estado.visionEmpleador + 2);
   notificar("exito", "OFFICIAL PROMOTION",
     ing.nombre + " is promoted to " + ing.rango + ". New salary: " + formatear(ing.sueldo) +
-    " PLN. Paciencia y lealtad duplicadas a largo plazo.");
+    " PLN. Patience and loyalty doubled long-term.");
   notificar("exito", "EMPLOYER BRAND +2",
-    "Reward entregado. Visión como Empleador: " + estado.visionEmpleador + "/100.");
+    "Reward granted. Employer Brand: " + estado.visionEmpleador + "/100.");
   renderTodo();
 }
 function renderOperaciones() {
