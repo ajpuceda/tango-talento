@@ -482,7 +482,8 @@ var estado = {
   plantilla: [],
   mercado: [],
   ronda: 1,
-  maxRondas: 3
+  maxRondas: 3,
+  deudaAcumulada: 0
 };
 
 /* =========================================================
@@ -522,18 +523,28 @@ function colorAvatar(disc) {
   return p ? p.color : "#888";
 }
 
+var TRAMOS_EDAD = [
+  { rango: "Internship", edadMin: 18, edadMax: 24, nivelMin: 5, nivelMax: 20, sueldoBase: 600, sueldoPorNivel: 20 },
+  { rango: "Ingeniero", edadMin: 25, edadMax: 34, nivelMin: 21, nivelMax: 50, sueldoBase: 1200, sueldoPorNivel: 35 },
+  { rango: "Senior", edadMin: 35, edadMax: 47, nivelMin: 51, nivelMax: 79, sueldoBase: 2500, sueldoPorNivel: 55 },
+  { rango: "Staff", edadMin: 48, edadMax: 65, nivelMin: 80, nivelMax: 100, sueldoBase: 4200, sueldoPorNivel: 80 }
+];
+
 function generarCandidato() {
   var nombre = NOMBRES[entero(0, NOMBRES.length - 1)];
   var apellido = APELLIDOS[entero(0, APELLIDOS.length - 1)];
   var disc = DISC_PERFILES[entero(0, 3)];
-  var nivel = entero(10, 100);
+  var tramo = TRAMOS_EDAD[entero(0, TRAMOS_EDAD.length - 1)];
+  var edad = entero(tramo.edadMin, tramo.edadMax);
+  var nivel = entero(tramo.nivelMin, tramo.nivelMax);
+  var sueldo = Math.max(500, Math.round((tramo.sueldoBase + nivel * tramo.sueldoPorNivel + entero(-150, 150)) / 50) * 50);
   return {
     id: "cand-" + Math.random().toString(36).slice(2, 10),
     nombre: nombre + " " + apellido,
-    edad: entero(18, 65),
+    edad: edad,
     nivel: nivel,
-    rango: rangoPorNivel(nivel),
-    sueldoDeseado: sueldoDeseado(nivel),
+    rango: tramo.rango,
+    sueldoDeseado: sueldo,
     disc: disc.letra,
     discDesc: disc.desc,
     color: colorAvatar(disc.letra),
@@ -625,7 +636,7 @@ function renderPlantilla() {
       "<td>" + (ing.mesesSinFormacion || 0) + "/" + limiteSinFormacion(ing.rango) + (ing.enFormacion ? " <span class='disc disc-I'>EN CAPACITACIÓN</span>" : "") + "</td>" +
       "<td>" + (ing.asignado || "—") + (ing.enFormacion ? " <b style='color:#fbbf24;'>(no aporta este mes)</b>" : "") + "</td>" +
       "<td><button class='boton-2000' style='padding:2px 8px;font-size:10px;' onclick=\"aplicarFormacion('" + ing.id + "')\">Formar (1.500 €)</button> " +
-      "<button class='boton-2000' style='padding:2px 8px;font-size:10px;' onclick=\"darReward('" + ing.id + "')\">Reward (2.000 €)</button></td>" +
+      "<button class='boton-2000' style='padding:2px 8px;font-size:10px;' onclick=\"darReward('" + ing.id + "')\">🎁 Rewards</button></td>" +
       "</tr>";
   });
   html += "</table>";
@@ -704,20 +715,46 @@ function avanzarMes() {
       ": distribuye tus presupuestos en el Despacho y revisa tus compromisos.");
   }
   if (capital < 0) {
-    mostrarGameOver();
+    gestionarNumerosRojos();
     return;
+  }
+  if (estado.deudaAcumulada > 0) {
+    var interes = (estado.deudaAcumulada / 10000) * 1000;
+    capital -= interes;
+    notificar("pen", "COSTE DE LA DEUDA",
+      "Interés fijo del préstamo de rescate: -" + formatear(interes) +
+      " € este mes (deuda acumulada: " + formatear(estado.deudaAcumulada) + " €).");
+    if (capital < 0) {
+      gestionarNumerosRojos();
+      return;
+    }
   }
   renderMarcadorCabecera();
 }
+function lideresRequeridos(slotsRequeridos) {
+  return slotsRequeridos === 2 ? 1 : 2;
+}
+
+function liderazgoCumplido(proy) {
+  var lideres = 0;
+  proy.slots.forEach(function (id) {
+    if (!id) return;
+    var ing = estado.plantilla.find(function (e) { return e.id === id; });
+    if (ing && !ing.enFormacion && ing.nivel >= proy.minNivelExigido) lideres++;
+  });
+  return lideres >= lideresRequeridos(proy.slotsRequeridos);
+}
+
 function simularProyectosCliente() {
   proyectosDisponibles.forEach(function (proy) {
     if (proy.estadoProy !== "ACTIVO") return;
     var activo = proy.slots.some(function (s) { return s; });
     if (!activo) {
       if (proy.tipo !== "URGENTE") {
-        capital -= 2000;
+        capital -= proy.penalizacionMes;
         notificar("pen", "RETRASO DETECTADO",
-          proy.nombre + ": sin personal asignado. Penalización mensual de $2,000 aplicada.");
+          proy.nombre + ": sin personal asignado. Penalización mensual de " +
+          formatear(proy.penalizacionMes) + " € aplicada.");
       }
       return;
     }
@@ -728,15 +765,25 @@ function simularProyectosCliente() {
       var ing = estado.plantilla.find(function (e) { return e.id === id; });
       if (ing && !ing.enFormacion) aportan++;
     });
+    var faltaLiderazgo = !liderazgoCumplido(proy);
     var vacios = proy.slotsRequeridos - aportan;
+    var penTotal = 0;
     if (vacios > 0) {
-      var pen = vacios * 2000;
-      capital -= pen;
+      penTotal += vacios * proy.penalizacionMes;
       notificar("pen", "VACANTES SIN CUBRIR",
         proy.nombre + ": " + vacios +
-        " slot(s) sin aporte este mes (incluye a quienes están En Capacitación Técnica). Penalización mensual: -" + formatear(pen) + " €");
+        " slot(s) sin aporte este mes (incluye a quienes están En Capacitación Técnica). Penalización mensual: -" +
+        formatear(vacios * proy.penalizacionMes) + " €");
     }
-    var factorOcupacion = aportan / proy.slotsRequeridos;
+    if (faltaLiderazgo) {
+      penTotal += proy.penalizacionMes;
+      notificar("pen", "FALTA LIDERAZGO TÉCNICO",
+        proy.nombre + ": se requiere" + (lideresRequeridos(proy.slotsRequeridos) === 1 ? " 1 ingeniero" : "n 2 ingenieros") +
+        " con nivel ≥ " + proy.minNivelExigido + " (Líder Técnico). El proyecto rinde al 0% y acumula penalización de " +
+        formatear(proy.penalizacionMes) + " € este mes.");
+    }
+    capital -= penTotal;
+    var factorOcupacion = faltaLiderazgo ? 0 : aportan / proy.slotsRequeridos;
     var sinViaje = proy.requiereViaje && presupuestoViajesAgotado();
     if (sinViaje) {
       notificar("pen", "SIN PRESUPUESTO DE VIAJES",
@@ -808,8 +855,10 @@ var emergenteAbierto = false;
 
 function mostrarNotificacionEmergente(titulo, mensaje, tipo, accion) {
   var item = { titulo: titulo, mensaje: mensaje, tipo: tipo || "info", accion: accion || null };
-  if (tipo === "urgente" || (accion && accion.aceptar)) {
-    var idxInfo = colaEmergentes.findIndex(function (it) { return !it.accion || !it.accion.aceptar; });
+  if (tipo === "urgente" || tipo === "alerta" || (accion && accion.aceptar)) {
+    var idxInfo = colaEmergentes.findIndex(function (it) {
+      return (!it.accion || !it.accion.aceptar) && it.tipo !== "urgente" && it.tipo !== "alerta";
+    });
     if (idxInfo >= 0) colaEmergentes.splice(idxInfo, 0, item);
     else colaEmergentes.push(item);
   } else {
@@ -990,6 +1039,20 @@ var NOMBRES_PROYECTOS = [
   "Blindaje Órbita"
 ];
 
+function nivelExigidoPorAnio() {
+  if (añoActual <= 2025) return entero(20, 40);
+  var extraAños = añoActual - 2025;
+  if (extraAños === 1) return entero(40, 60);
+  if (extraAños === 2) return entero(55, 75);
+  return entero(70, 90);
+}
+
+function penalizacionPorIngreso(ingresoMes) {
+  if (ingresoMes >= 9000) return 3500;
+  if (ingresoMes >= 6000) return 2000;
+  return 1000;
+}
+
 function inicializarProyectosAeroespaciales() {
   proyectosDisponibles = [];
   for (var i = 0; i < 4; i++) {
@@ -1004,7 +1067,8 @@ function inicializarProyectosAeroespaciales() {
       slots: [],
       ingresoMes: entero(4, 10) * 1000,
       valorTotal: 0,
-      minNivelExigido: entero(35, 70),
+      minNivelExigido: nivelExigidoPorAnio(),
+      penalizacionMes: 0,
       estadoProy: "ACTIVO",
       deadline: "",
       discRequerido: disc.letra,
@@ -1015,6 +1079,7 @@ function inicializarProyectosAeroespaciales() {
       proyectosDisponibles[i].slots.push(null);
     }
     proyectosDisponibles[i].valorTotal = proyectosDisponibles[i].ingresoMes * proyectosDisponibles[i].duracionMeses;
+    proyectosDisponibles[i].penalizacionMes = penalizacionPorIngreso(proyectosDisponibles[i].ingresoMes);
     proyectosDisponibles[i].deadline = calcularDeadline(mesActual, añoActual, proyectosDisponibles[i].duracionMeses);
   }
   proyectosAsignados = [];
@@ -1107,18 +1172,79 @@ function abrirModalPresupuestos() {
   renderDespacho();
 }
 
-function mostrarGameOver() {
+function mostrarGameOver(motivo) {
   notificar("alerta", "GAME OVER", "Capital en negativo. El Director te ha despedido. Año " + añoActual + ", Mes " + mesActual + ".");
   var fondo = document.getElementById("modal-fondo");
-  document.getElementById("modal-titulo").textContent = "GAME OVER";
+  document.getElementById("modal-titulo").textContent = "GAME OVER — BANCARROTA E INSOLVENCIA";
   document.getElementById("modal-contenido").innerHTML =
-    "<p style='font-size:13px;line-height:1.6;'>Capital en negativo. El Director de Generic Aerospace te ha despedido.<br>" +
-    "Año " + añoActual + ", Mes " + mesActual + ".</p>";
+    "<p style='font-size:13px;line-height:1.6;'><b style='color:#f87171;'>El Director General te ha despedido oficialmente.</b><br><br>" +
+    (motivo || "Capital en negativo y línea de crédito agotada.") + "<br>" +
+    "Año " + añoActual + ", Mes " + mesActual + ".<br><br>" +
+    "Deuda acumulada con el Director: <b style='color:#f87171;'>" + formatear(estado.deudaAcumulada || 0) + " €</b></p>";
   document.getElementById("modal-confirmar").textContent = "Aceptar";
   document.getElementById("modal-confirmar").onclick = function () { cerrarModal(); };
   document.getElementById("modal-cancelar").classList.add("oculto");
   fondo.classList.remove("oculto");
   document.getElementById("btn-avanzar-mes").disabled = true;
+}
+
+function gestionarNumerosRojos() {
+  var deuda = estado.deudaAcumulada || 0;
+  if (deuda >= 40000) {
+    mostrarGameOver("Máximo de deuda alcanzado ($40,000) y capital negativo tras el rescate: " +
+      "el Director General no confía más en tu gestión.");
+    return;
+  }
+  var maxBloques = Math.floor((40000 - deuda) / 10000);
+  if (maxBloques < 1) {
+    mostrarGameOver("Límite de crédito agotado y no hay bloques de rescate disponibles.");
+    return;
+  }
+  capital = 0;
+  var opciones = "";
+  for (var b = 1; b <= maxBloques; b++) {
+    opciones += "<option value='" + (b * 10000) + "'>" + b + " bloque(s) — " + formatear(b * 10000) + " €</option>";
+  }
+  var html = "<p style='font-size:12px;line-height:1.7;'>" +
+    "<b style='color:#f87171;'>El Director General ha detectado una desviación presupuestaria grave.</b><br>" +
+    "El capital de la empresa ha caído en números rojos. Sin embargo, estás de suerte: " +
+    "te ofrece una <b>línea de crédito de emergencia</b> no planificada para cubrir salarios o viajes.<br><br>" +
+    "<b>Condiciones del préstamo:</b><br>" +
+    "• Máximo disponible: <b>" + formatear(maxBloques * 10000) + " €</b> (en bloques de $10,000)<br>" +
+    "• Coste: <b>$1,000 al mes por cada bloque</b> pedido, de forma fija mientras no se devuelva<br>" +
+    "• Deuda acumulada actual: <b>" + formatear(deuda) + " €</b><br>" +
+    "• Si alcanzas los $40,000 de deuda y vuelves a cerrar un mes en negativo, serás despedido.<br><br>" +
+    "<b style='color:#93c5fd;'>Elige cuánto dinero necesitas:</b> " +
+    "<select id='sel-credito' style='padding:4px;border-radius:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;'>" +
+    opciones + "</select><br><br>" +
+    "<b style='color:#93c5fd;'>¿A qué hucha inyectas el dinero rescatado?</b> " +
+    "<select id='sel-hucha' style='padding:4px;border-radius:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;'>" +
+    "<option value='caja'>Caja general (salarios)</option>" +
+    "<option value='viajes'>Presupuesto de Viajes</option>" +
+    "<option value='formacion'>Presupuesto de Formación</option>" +
+    "</select></p>";
+  mostrarNotificacionEmergente("⚠️ AVISO DE DESVIACIÓN PRESUPUESTARIA", html, "alerta", {
+    textoAceptar: "Aceptar Crédito del Jefe",
+    textoRechazar: "Rechazar (Game Over)",
+    aceptar: function () {
+      var selC = document.getElementById("sel-credito");
+      var selH = document.getElementById("sel-hucha");
+      var cantidad = selC ? parseInt(selC.value, 10) : maxBloques * 10000;
+      var hucha = selH ? selH.value : "caja";
+      estado.deudaAcumulada = (estado.deudaAcumulada || 0) + cantidad;
+      if (hucha === "viajes") estado.presupuestos.viajes += cantidad;
+      else if (hucha === "formacion") estado.presupuestos.formacion += cantidad;
+      else capital += cantidad;
+      notificar("info", "CRÉDITO DE EMERGENCIA CONCEDIDO",
+        "Rescate de " + formatear(cantidad) + " € inyectado en '" + hucha +
+        "'. Deuda acumulada: " + formatear(estado.deudaAcumulada) +
+        " €. Coste fijo: " + formatear((estado.deudaAcumulada / 10000) * 1000) + " €/mes.");
+      renderTodo();
+    },
+    rechazar: function () {
+      mostrarGameOver("Rechazaste el crédito de emergencia con el capital en negativo.");
+    }
+  });
 }
 
 /* =========================================================
@@ -1143,8 +1269,14 @@ function verificarRetencionPersonal() {
       ing.nivelPendiente = 0;
     }
     ing.enFormacion = false;
+    if (ing.mesesCongelados > 0) {
+      ing.mesesCongelados--;
+      ing.mesesSinFormacion = 0;
+      return;
+    }
     ing.mesesSinFormacion = (ing.mesesSinFormacion || 0) + 1;
     var limite = limiteSinFormacion(ing.rango);
+    if (ing.lealtadDuplicada) limite = limite * 2;
     if (ing.mesesSinFormacion > limite && (ing.satisfaccion || 0) < 100) {
       renuncias.push(ing);
     }
@@ -1182,6 +1314,12 @@ function aplicarFormacion(empleadoId) {
   presupuestosAnuales.formacion = estado.presupuestos.formacion;
   ing.enFormacion = true;
   var eraAsignado = ing.asignado;
+  if (eraAsignado && eraAsignado !== "I+D Interno") {
+    desasignarIngeniero(empleadoId);
+    notificar("alerta", "SLOT LIBERADO POR FORMACIÓN",
+      ing.nombre + " ha sido desasignado de su proyecto para ir a En Capacitación Técnica. " +
+      "Coloca un sustituto desde la banca (I+D Interno) para mantener el Liderazgo Técnico del proyecto.");
+  }
   notificar("info", "EN CAPACITACIÓN TÉCNICA",
     ing.nombre + " se va En Capacitación Técnica este mes" +
     (eraAsignado ? " y DEJA DE APORTAR a su proyecto actual. Usa la banca (I+D Interno) para cubrir su slot." : ".") +
@@ -1251,7 +1389,8 @@ function generarProyectoUrgente() {
     slots: [],
     ingresoMes: ingresoMes,
     valorTotal: ingresoMes * duracion,
-    minNivelExigido: entero(40, 75),
+    minNivelExigido: nivelExigidoPorAnio(),
+    penalizacionMes: penalizacionPorIngreso(ingresoMes),
     estadoProy: "ACTIVO",
     tipo: "URGENTE",
     deadline: "",
@@ -1336,7 +1475,8 @@ function panelPlanificacionAnual() {
       slots: [],
       ingresoMes: ing,
       valorTotal: ing * dur,
-      minNivelExigido: entero(35, 70),
+      minNivelExigido: nivelExigidoPorAnio(),
+      penalizacionMes: penalizacionPorIngreso(ing),
       estadoProy: "ACTIVO",
       tipo: "ANUAL",
       requiereViaje: entero(1, 100) <= 30,
@@ -1412,19 +1552,60 @@ function panelPlanificacionAnual() {
 function darReward(empleadoId) {
   var ing = estado.plantilla.find(function (e) { return e.id === empleadoId; });
   if (!ing) return;
-  var COSTE_REWARD = 2000;
-  if (estado.presupuestos.rewards < COSTE_REWARD) {
-    notificar("alerta", "REWARD BLOQUEADO", "Presupuesto de Rewards insuficiente (" +
-      formatear(estado.presupuestos.rewards) + " € disponibles, se necesitan " +
-      formatear(COSTE_REWARD) + " €).");
+  mostrarNotificacionEmergente("🎁 Rewards — " + ing.nombre,
+    "<b>Elige la recompensa para " + ing.nombre + " (" + ing.rango + ", Nv " + ing.nivel + "):</b><br><br>" +
+    "<div class='proyecto-oferta'><div class='datos'><b style='color:#4ade80;'>1. Bono de Éxito ($2,000)</b><br>" +
+    "Restaura la satisfacción al 100% de inmediato y congela su riesgo de dimisión durante <b>6 meses</b>.</div></div>" +
+    "<div class='proyecto-oferta'><div class='datos'><b style='color:#93c5fd;'>2. Plan de Carrera / Promoción ($4,000 + 20% de sueldo)</b><br>" +
+    "Sube oficialmente el rango del empleado, aumenta su salario un 20%, pero <b>duplica su paciencia y lealtad</b> a largo plazo.</div></div><br>" +
+    "<i style='color:#94a3b8;'>Presupuesto de Rewards disponible: " + formatear(estado.presupuestos.rewards) + " €</i>", "info", {
+      textoAceptar: "Bono de Éxito ($2,000)",
+      textoRechazar: "Promoción ($4,000)",
+      aceptar: function () { aplicarBonoExito(ing); },
+      rechazar: function () { aplicarPromocion(ing); }
+    });
+}
+
+function aplicarBonoExito(ing) {
+  var COSTE = 2000;
+  if (estado.presupuestos.rewards < COSTE) {
+    notificar("alerta", "BONO BLOQUEADO", "Presupuesto de Rewards insuficiente (" +
+      formatear(estado.presupuestos.rewards) + " € disponibles, se necesitan " + formatear(COSTE) + " €).");
     return;
   }
-  estado.presupuestos.rewards -= COSTE_REWARD;
+  estado.presupuestos.rewards -= COSTE;
   presupuestosAnuales.rewards = estado.presupuestos.rewards;
   ing.satisfaccion = 100;
   ing.mesesSinFormacion = 0;
-  notificar("exito", "REWARD ENTREGADO",
-    ing.nombre + " recibe un Reward/Bono: satisfacción al 100% y riesgo de dimisión retrasado.");
+  ing.mesesCongelados = 6;
+  notificar("exito", "BONO DE ÉXITO ENTREGADO",
+    ing.nombre + ": satisfacción al 100% y riesgo de dimisión congelado durante 6 meses.");
+  renderTodo();
+}
+
+function aplicarPromocion(ing) {
+  var COSTE = 4000;
+  if (estado.presupuestos.rewards < COSTE) {
+    notificar("alerta", "PROMOCIÓN BLOQUEADA", "Presupuesto de Rewards insuficiente (" +
+      formatear(estado.presupuestos.rewards) + " € disponibles, se necesitan " + formatear(COSTE) + " €).");
+    return;
+  }
+  var ORDEN = ["Internship", "Ingeniero", "Senior", "Staff"];
+  var idx = ORDEN.indexOf(ing.rango);
+  if (idx < 0 || idx >= ORDEN.length - 1) {
+    notificar("alerta", "PROMOCIÓN IMPOSIBLE", ing.nombre + " ya tiene el rango máximo (Staff).");
+    return;
+  }
+  estado.presupuestos.rewards -= COSTE;
+  presupuestosAnuales.rewards = estado.presupuestos.rewards;
+  ing.rango = ORDEN[idx + 1];
+  ing.sueldo = Math.round(ing.sueldo * 1.2 / 50) * 50;
+  ing.lealtadDuplicada = true;
+  ing.satisfaccion = 100;
+  ing.mesesSinFormacion = 0;
+  notificar("exito", "PROMOCIÓN OFICIAL",
+    ing.nombre + " asciende a " + ing.rango + ". Nuevo sueldo: " + formatear(ing.sueldo) +
+    " €. Paciencia y lealtad duplicadas a largo plazo.");
   renderTodo();
 }
 function renderOperaciones() {
@@ -1443,8 +1624,11 @@ function renderOperaciones() {
       " · DISC <span class='disc disc-" + proy.discRequerido + "'>" + proy.discRequerido + "</span>" +
       " · Nivel mín. " + proy.minNivelExigido + "<br>";
     html += "Duración: " + proy.duracionMeses + " meses (restan " +
-      Math.max(0, proy.duracionMeses - proy.mesesTranscurridos) + ") · " +
-      formatear(proy.ingresoMes) + " €/mes · Total " + formatear(proy.valorTotal) + " €";
+      Math.max(0, proy.duracionMeses - proy.mesesTranscurridos) + ") · Total " + formatear(proy.valorTotal) + " €";
+    html += "<br><b style='color:#16a34a;'>Ingresos: " + formatear(proy.ingresoMes) + " €/mes</b>";
+    html += " · <b style='color:#b91c1c;'>Penalización por Retraso: " + formatear(proy.penalizacionMes) + " €/mes</b>";
+    html += "<br><b style='color:#0f172a;'>Liderazgo: " + lideresRequeridos(proy.slotsRequeridos) +
+      " ingeniero(s) con nivel ≥ " + proy.minNivelExigido + "</b>";
     html += "</div>";
     for (var s = 0; s < proy.slotsRequeridos; s++) {
       var idIng = proy.slots[s];
@@ -1532,7 +1716,8 @@ function renderMarcadorCabecera() {
   while (elFecha.firstChild) elFecha.removeChild(elFecha.firstChild);
   elFecha.appendChild(document.createTextNode(textoFecha));
   elFecha.textContent = textoFecha;
-  document.getElementById("estado-caja").textContent = formatear(Math.max(0, capital));
+  document.getElementById("estado-caja").textContent = formatear(Math.max(0, capital)) +
+    (estado.deudaAcumulada > 0 ? " (deuda: " + formatear(estado.deudaAcumulada) + " €)" : "");
   document.getElementById("estado-plantilla").textContent = estado.plantilla.length;
   estado.fecha.mes = idxMes;
   estado.fecha.anio = añoActual;
