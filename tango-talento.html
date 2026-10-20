@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Engineering Manager Tycoon 2000</title>
+<title>ENGINEERING MANAGER — Pilot & Generic Aerospace Corp.</title>
 <style>
   :root {
     --gris-fondo: #0f172a;
@@ -350,7 +350,7 @@
 <body>
 <div class="marco">
   <div class="barra-titulo">
-    <span>ENGINEERING MANAGER TYCOON 2000 — Generic Aerospace Corp.</span>
+    <span>ENGINEERING MANAGER — Pilot & Generic Aerospace Corp.</span>
     <span class="botones"><button>_</button><button>□</button><button>×</button></span>
   </div>
   <div class="zona-juego">
@@ -360,6 +360,8 @@
     <span><b>Fecha:</b> <span id="estado-fecha">Enero 2025</span></span>
     <span><b>Caja:</b> <span id="estado-caja">—</span> €</span>
     <span><b>Plantilla:</b> <span id="estado-plantilla">0</span> ingenieros</span>
+    <span><b>🤝 Confianza del Cliente:</b> <span id="estado-confianza">50</span>/100</span>
+    <span><b>👔 Visión como Empleador:</b> <span id="estado-empleador">50</span>/100</span>
   </div>
 
   <div class="nav-pestanas">
@@ -483,7 +485,9 @@ var estado = {
   mercado: [],
   ronda: 1,
   maxRondas: 3,
-  deudaAcumulada: 0
+  deudaAcumulada: 0,
+  confianzaCliente: 50,
+  visionEmpleador: 50
 };
 
 /* =========================================================
@@ -749,11 +753,12 @@ function simularProyectosCliente() {
   proyectosDisponibles.forEach(function (proy) {
     if (proy.estadoProy !== "ACTIVO") return;
     var activo = proy.slots.some(function (s) { return s; });
+    var pasadoDeadline = mesIndexAbsoluto() > deadlineEnMeses(proy);
     if (!activo) {
-      if (proy.tipo !== "URGENTE") {
+      if (proy.tipo !== "URGENTE" && pasadoDeadline) {
         capital -= proy.penalizacionMes;
         notificar("pen", "RETRASO DETECTADO",
-          proy.nombre + ": sin personal asignado. Penalización mensual de " +
+          proy.nombre + ": sin personal asignado y Deadline superado. Penalización mensual de " +
           formatear(proy.penalizacionMes) + " € aplicada.");
       }
       return;
@@ -768,19 +773,28 @@ function simularProyectosCliente() {
     var faltaLiderazgo = !liderazgoCumplido(proy);
     var vacios = proy.slotsRequeridos - aportan;
     var penTotal = 0;
-    if (vacios > 0) {
+    if (vacios > 0 && pasadoDeadline) {
       penTotal += vacios * proy.penalizacionMes;
-      notificar("pen", "VACANTES SIN CUBRIR",
+      notificar("pen", "VACANTES SIN CUBRIR (Deadline superado)",
         proy.nombre + ": " + vacios +
-        " slot(s) sin aporte este mes (incluye a quienes están En Capacitación Técnica). Penalización mensual: -" +
+        " slot(s) sin aporte y Deadline vencido. Penalización mensual: -" +
         formatear(vacios * proy.penalizacionMes) + " €");
     }
-    if (faltaLiderazgo) {
+    if (faltaLiderazgo && pasadoDeadline) {
       penTotal += proy.penalizacionMes;
-      notificar("pen", "FALTA LIDERAZGO TÉCNICO",
+      notificar("pen", "FALTA LIDERAZGO TÉCNICO (Deadline superado)",
         proy.nombre + ": se requiere" + (lideresRequeridos(proy.slotsRequeridos) === 1 ? " 1 ingeniero" : "n 2 ingenieros") +
         " con nivel ≥ " + proy.minNivelExigido + " (Líder Técnico). El proyecto rinde al 0% y acumula penalización de " +
         formatear(proy.penalizacionMes) + " € este mes.");
+    }
+    if (pasadoDeadline && proy.mesesTranscurridos - proy.duracionMeses > 0) {
+      var mesesRetraso = proy.mesesTranscurridos - proy.duracionMeses;
+      if (mesesRetraso % 2 === 0) {
+        estado.confianzaCliente = Math.max(0, estado.confianzaCliente - 1);
+        notificar("pen", "CONFIANZA DEL CLIENTE -1",
+          proy.nombre + ": entregado tarde (" + mesesRetraso + " meses de retraso). Confianza: " +
+          estado.confianzaCliente + "/100.");
+      }
     }
     capital -= penTotal;
     var factorOcupacion = faltaLiderazgo ? 0 : aportan / proy.slotsRequeridos;
@@ -790,7 +804,7 @@ function simularProyectosCliente() {
         proy.nombre + " exige Gasto de Viaje. Sin presupuesto, rinde al 0% este mes.");
       factorOcupacion = 0;
     }
-    var ingreso = Math.round(proy.ingresoMes * factorOcupacion);
+    var ingreso = Math.round(proy.ingresoMes * factorOcupacion * multiplicadorConfianza());
     capital += ingreso;
     if (proy.mesesTranscurridos >= proy.duracionMeses) {
       cerrarProyecto(proy);
@@ -802,7 +816,30 @@ function simularProyectosCliente() {
 }
 
 function presupuestoViajesAgotado() {
-  return estado.presupuestos.viajes < COSTE_VIAJE_MES;
+  return estado.presupuestos.viajes <= 0;
+}
+
+function costeViajeDe(proy) {
+  return proy.costeViajeMes || COSTE_VIAJE_MES;
+}
+
+function multiplicadorConfianza() {
+  if (estado.confianzaCliente > 80) return 1.15;
+  if (estado.confianzaCliente < 30) return 0.85;
+  return 1;
+}
+
+function mesIndexAbsoluto() {
+  return ((añoActual - 1) * 12) + mesActual;
+}
+
+function deadlineEnMeses(proy) {
+  if (!proy.deadline) return 99999;
+  var partes = proy.deadline.split(" ");
+  var mesIdx = MESES_ABREV.indexOf(partes[0]);
+  var anio = parseInt(partes[1], 10);
+  if (mesIdx < 0 || isNaN(anio)) return 99999;
+  return ((anio - 1) * 12) + mesIdx + 1;
 }
 
 var COSTE_VIAJE_MES = 1000;
@@ -820,8 +857,9 @@ function notificar(tipo, titulo, mensaje) {
   var stamp = meses[Math.max(0, mesActual - 1)] + " Año " + añoActual;
   div.innerHTML = "<span class='titulo'>" + titulo + "</span>" +
     "<span style='color:#64748b;font-size:9.5px;'>" + stamp + "</span><br>" + mensaje;
-  cont.appendChild(div);
-  cont.scrollTop = cont.scrollHeight;
+  if (cont.firstChild) cont.insertBefore(div, cont.firstChild);
+  else cont.appendChild(div);
+  cont.scrollTop = 0;
 }
 
 function abrirModal(titulo, contenidoHTML, textoConfirmar, onConfirm, obligatorio) {
@@ -892,6 +930,7 @@ function procesarSiguienteEmergente() {
   };
   var html = "<div style='font-size:12px;line-height:1.7;color:#e2e8f0;'>" + item.mensaje + "</div>";
   var esDecision = !!(item.accion && item.accion.aceptar);
+  var esIndividual = !!(item.accion && item.accion.decisionIndividual);
   var fondo = document.getElementById("modal-fondo");
   document.getElementById("modal-titulo").textContent = item.titulo;
   document.getElementById("modal-titulo").style.color = colores[item.tipo] || "#93c5fd";
@@ -901,44 +940,29 @@ function procesarSiguienteEmergente() {
   var btnVer = document.getElementById("modal-ver-plantilla");
   fondo.style.alignItems = "center";
   fondo.style.justifyContent = "center";
+  fondo.style.pointerEvents = "auto";
   btnVer.classList.remove("oculto");
   btnVer.onclick = function () {
-    fondo.style.alignItems = "flex-end";
-    fondo.style.justifyContent = "flex-end";
+    window._emergenteMinimizado = true;
+    fondo.style.display = "none";
     fondo.style.pointerEvents = "none";
-    fondo.querySelector(".modal-caja").style.pointerEvents = "auto";
-    fondo.querySelector(".modal-caja").style.position = "fixed";
-    fondo.querySelector(".modal-caja").style.bottom = "12px";
-    fondo.querySelector(".modal-caja").style.right = "12px";
-    fondo.querySelector(".modal-caja").style.left = "auto";
-    fondo.querySelector(".modal-caja").style.top = "auto";
-    fondo.querySelector(".modal-caja").style.width = "320px";
-    fondo.querySelector(".modal-caja").style.maxHeight = "40vh";
-    fondo.querySelector(".modal-caja").style.overflow = "auto";
-    btnVer.classList.add("oculto");
-    var restaurar = document.createElement("button");
-    restaurar.id = "modal-restaurar";
-    restaurar.className = "boton-2000";
-    restaurar.textContent = "⤢ Volver a la decisión";
-    restaurar.style.marginTop = "8px";
-    document.getElementById("modal-contenido").appendChild(restaurar);
-    restaurar.onclick = function () {
-      fondo.style.alignItems = "center";
-      fondo.style.justifyContent = "center";
-      fondo.style.pointerEvents = "auto";
-      var caja = fondo.querySelector(".modal-caja");
-      caja.style.position = "";
-      caja.style.bottom = "";
-      caja.style.right = "";
-      caja.style.left = "";
-      caja.style.top = "";
-      caja.style.width = "";
-      caja.style.maxHeight = "";
-      if (restaurar.parentNode) restaurar.parentNode.removeChild(restaurar);
-      btnVer.classList.remove("oculto");
-    };
+    notificar("info", "CONSULTA LIBRE ACTIVADA",
+      "Pop-up minimizado. Navega libremente por las pestañas para auditar recursos. " +
+      "Al pulsar 'Avanzar Mes' se reabrirá la decisión pendiente.");
   };
-  if (esDecision) {
+  window._emergenteMinimizado = false;
+  if (esIndividual) {
+    btnConf.textContent = "Cerrar panel";
+    btnConf.onclick = function () {
+      fondo.classList.add("oculto");
+      fondo.style.display = "none";
+      emergenteAbierto = false;
+      if (item.accion.alCerrar) item.accion.alCerrar();
+      procesarSiguienteEmergente();
+    };
+    btnCanc.classList.add("oculto");
+    btnCanc.onclick = null;
+  } else if (esDecision) {
     btnConf.textContent = item.accion.textoAceptar || "Aceptar Proyecto";
     btnCanc.textContent = item.accion.textoRechazar || "Rechazar";
     btnCanc.classList.remove("oculto");
@@ -1023,6 +1047,9 @@ function cerrarProyecto(proy) {
   proy.slots = proy.slots.map(function () { return null; });
   proy.estadoProy = "FINALIZADO";
   proy.fechaCierre = MESES_ABREV[Math.max(0, mesActual - 1)] + " " + añoActual;
+  estado.confianzaCliente = Math.min(100, estado.confianzaCliente + 1);
+  notificar("info", "CONFIANZA DEL CLIENTE +1",
+    "Proyecto " + proy.nombre + " completado con éxito. Confianza de Generic Aerospace: " + estado.confianzaCliente + "/100.");
   proy.ingresosObtenidos = proy.valorTotal - (proy.slots.filter(function (s) { return !s; }).length * 2000);
   var idx = proyectosAsignados.indexOf(proy.id);
   if (idx >= 0) proyectosAsignados.splice(idx, 1);
@@ -1088,7 +1115,11 @@ function inicializarProyectosAeroespaciales() {
 function asignarIngenieroAProyecto(empleadoId, proyectoId, slotIndex) {
   var ing = estado.plantilla.find(function (e) { return e.id === empleadoId; });
   if (!ing) return;
-  if (ing.asignado) {
+  if (ing.asignado && ing.asignado !== "I+D Interno") {
+    estado.visionEmpleador = Math.max(0, estado.visionEmpleador - 2);
+    notificar("pen", "VISIÓN COMO EMPLEADOR -2",
+      "Cambio brusco de proyecto de " + ing.nombre +
+      " (inestabilidad). Visión como Empleador: " + estado.visionEmpleador + "/100.");
     desasignarIngeniero(empleadoId);
   }
   if (proyectoId === "id-interno") {
@@ -1110,13 +1141,14 @@ function asignarIngenieroAProyecto(empleadoId, proyectoId, slotIndex) {
     return;
   }
   if (proy.requiereViaje) {
-    if (estado.presupuestos.viajes < COSTE_VIAJE_MES) {
+    var costeViaje = costeViajeDe(proy);
+    if (estado.presupuestos.viajes < costeViaje) {
       notificar("pen", "PRESUPUESTO DE VIAJES AGOTADO", proy.nombre +
-        " exige Gasto de Viaje (" + formatear(COSTE_VIAJE_MES) +
-        " € por ingeniero/mes). No se puede asignar personal hasta reponer el presupuesto de Viajes.");
+        " exige Gasto de Viaje (" + formatear(costeViaje) +
+        " €/mes por asignación). No se puede asignar personal hasta reponer el presupuesto de Viajes.");
       return;
     }
-    estado.presupuestos.viajes -= COSTE_VIAJE_MES;
+    estado.presupuestos.viajes -= costeViaje;
     presupuestosAnuales.viajes = estado.presupuestos.viajes;
     renderDespacho();
   }
@@ -1263,6 +1295,10 @@ function limiteSinFormacion(rango) {
 function verificarRetencionPersonal() {
   var renuncias = [];
   estado.plantilla.forEach(function (ing) {
+    var ritmoQuemado = 1;
+    if (estado.visionEmpleador > 75) ritmoQuemado = 0.5;
+    else if (estado.visionEmpleador < 30) ritmoQuemado = 2;
+    ing.mesesSinFormacion = (ing.mesesSinFormacion || 0);
     if (ing.enFormacion && ing.nivelPendiente) {
       ing.nivel = Math.min(100, ing.nivel + ing.nivelPendiente);
       ing.rango = rangoPorNivel(ing.nivel);
@@ -1274,7 +1310,7 @@ function verificarRetencionPersonal() {
       ing.mesesSinFormacion = 0;
       return;
     }
-    ing.mesesSinFormacion = (ing.mesesSinFormacion || 0) + 1;
+    ing.mesesSinFormacion = (ing.mesesSinFormacion || 0) + ritmoQuemado;
     var limite = limiteSinFormacion(ing.rango);
     if (ing.lealtadDuplicada) limite = limite * 2;
     if (ing.mesesSinFormacion > limite && (ing.satisfaccion || 0) < 100) {
@@ -1288,6 +1324,9 @@ function verificarRetencionPersonal() {
   });
   if (renuncias.length > 0) {
     var nombres = renuncias.map(function (r) { return r.nombre + " (" + r.rango + ")"; }).join(", ");
+    estado.visionEmpleador = Math.max(0, estado.visionEmpleador - 5 * renuncias.length);
+    notificar("pen", "VISIÓN COMO EMPLEADOR -" + (5 * renuncias.length),
+      "Clima laboral dañado por dimisiones. Visión como Empleador: " + estado.visionEmpleador + "/100.");
     renuncias.forEach(function (ing) {
       notificar("alerta", "ABANDONO DE PLANTILLA",
         ing.nombre + " (" + ing.rango + ") ha renunciado por falta de formación.");
@@ -1327,6 +1366,9 @@ function aplicarFormacion(empleadoId) {
   var subida = entero(5, 12);
   ing.nivelPendiente = subida;
   ing.mesesSinFormacion = 0;
+  estado.visionEmpleador = Math.min(100, estado.visionEmpleador + 1);
+  notificar("exito", "VISIÓN COMO EMPLEADOR +1",
+    "Inversión en formación de " + ing.nombre + ". Visión como Empleador: " + estado.visionEmpleador + "/100.");
   renderTodo();
   renderOperaciones();
 }
@@ -1408,9 +1450,12 @@ function ofrecerProyectosEmergencia() {
   var html = "<p style='font-size:11px;margin-bottom:10px;color:#94a3b8;'>" +
     "El Director de Generic Aerospace necesita apoyo URGENTE. Duración corta, alta remuneración. " +
     "Acepta ahora o ignora la oferta.</p>";
+  var html = "<p style='font-size:11px;margin-bottom:10px;color:#94a3b8;'>" +
+    "El Director de Generic Aerospace necesita apoyo URGENTE. Duración corta, alta remuneración. " +
+    "Decide proyecto a proyecto. Puedes consultar tus recursos con 'Ver Plantilla/Saldos'.</p>";
   ofertas.forEach(function (p) {
     var dl = calcularDeadline(mesActual, añoActual, p.duracionMeses);
-    html += "<div class='proyecto-oferta'><div class='datos'><b>" + p.nombre + "</b> " +
+    html += "<div class='proyecto-oferta' id='oferta-" + p.id + "'><div class='datos'><b>" + p.nombre + "</b> " +
       "<span class='disc disc-I'>URGENTE</span>" +
       "<table style='font-size:11px;margin-top:4px;border-collapse:collapse;'>" +
       "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Duración:</td><td><b>" + p.duracionMeses + " meses</b></td></tr>" +
@@ -1418,38 +1463,56 @@ function ofrecerProyectosEmergencia() {
       "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Perfil DISC preferido:</td><td><span class='disc disc-" + p.discRequerido + "'>" + p.discRequerido + " · " + p.discDesc + "</span></td></tr>" +
       "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Ingresos mensuales:</td><td><b style='color:#4ade80;'>" + formatear(p.ingresoMes) + " €/mes</b> (total " + formatear(p.valorTotal) + " €)</td></tr>" +
       "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Gasto de Viaje:</td><td>" +
-      (p.requiereViaje ? "<b style='color:#fbbf24;'>SÍ — consume presupuesto de Viajes</b>" : "No") + "</td></tr>" +
+      (p.requiereViaje ? "<b style='color:#fbbf24;'>SÍ — Consume " + formatear(p.costeViajeMes || 1000) + "/mes de tu Presupuesto de Viajes</b>" : "No") + "</td></tr>" +
       "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Slots requeridos:</td><td><b>" + p.slotsRequeridos + "</b> (nivel mín. " + p.minNivelExigido + ")</td></tr>" +
-      "</table></div>" +
-      "<input type='checkbox' value='" + p.id + "'></div>";
+      "</table>" +
+      "<div style='margin-top:8px;display:flex;gap:8px;'>" +
+      "<button class='boton-2000' style='background:linear-gradient(180deg,#16a34a,#15803d);border-color:#22c55e;' onclick=\"decidirEmergencia('" + p.id + "', true)\">✔ Aceptar</button>" +
+      "<button class='boton-2000' style='background:linear-gradient(180deg,#dc2626,#b91c1c);border-color:#ef4444;' onclick=\"decidirEmergencia('" + p.id + "', false)\">✘ Rechazar</button>" +
+      "</div></div></div>";
   });
   window._urgentesOfertas = ofertas;
   notificar("urgente", "OFERTA DE EMERGENCIA",
-    n + " proyecto(s) urgente(s) disponibles. Revisa el panel para aceptarlos o ignorarlos.");
+    n + " proyecto(s) urgente(s) disponibles. Revisa el panel para decidirlos.");
   mostrarNotificacionEmergente("🚨 Proyectos de Emergencia — Generic Aerospace", html, "urgente", {
-    textoAceptar: "Aceptar Proyecto",
-    textoRechazar: "Rechazar",
-    aceptar: function () {
-      var elegidos = proyectosSeleccionadosModal();
-      var aceptados = 0;
-      ofertas.forEach(function (p) {
-        if (elegidos.indexOf(p.id) >= 0) {
-          for (var s = 0; s < p.slotsRequeridos; s++) p.slots.push(null);
-          p.id = "urg-" + proyectosDisponibles.length + "-" + Math.random().toString(36).slice(2, 6);
-          p.deadline = calcularDeadline(mesActual, añoActual, p.duracionMeses);
-          proyectosDisponibles.push(p);
-          aceptados++;
-          notificar("urgente", "EMERGENCIA ACEPTADA",
-            p.nombre + ": asigna personal YA en Operaciones (" + p.duracionMeses + " meses)." +
-            (p.requiereViaje ? " ¡Exige Gasto de Viaje!" : ""));
-        }
-      });
-      if (aceptados > 0) renderOperaciones();
-    },
-    rechazar: function () {
-      notificar("info", "EMERGENCIAS IGNORADAS", "Ofertas de emergencia rechazadas.");
+    decisionIndividual: true,
+    alCerrar: function () {
+      if (window._urgentesOfertas && window._urgentesOfertas.length > 0) {
+        notificar("info", "EMERGENCIAS PENDIENTES",
+          "Quedan " + window._urgentesOfertas.length +
+          " oferta(s) urgente(s) por decidir. Al pulsar 'Avanzar Mes' se reabrirá el panel.");
+      }
     }
   });
+}
+
+function decidirEmergencia(proyectoId, aceptar) {
+  var ofertas = window._urgentesOfertas || [];
+  var idx = ofertas.findIndex(function (p) { return p.id === proyectoId; });
+  if (idx < 0) return;
+  var p = ofertas.splice(idx, 1)[0];
+  var divOferta = document.getElementById("oferta-" + proyectoId);
+  if (divOferta && divOferta.parentNode) divOferta.parentNode.removeChild(divOferta);
+  if (aceptar) {
+    for (var s = 0; s < p.slotsRequeridos; s++) p.slots.push(null);
+    p.id = "urg-" + proyectosDisponibles.length + "-" + Math.random().toString(36).slice(2, 6);
+    p.deadline = calcularDeadline(mesActual, añoActual, p.duracionMeses);
+    proyectosDisponibles.push(p);
+    notificar("urgente", "EMERGENCIA ACEPTADA",
+      p.nombre + ": asigna personal YA en Operaciones (" + p.duracionMeses + " meses)." +
+      (p.requiereViaje ? " ¡Exige Gasto de Viaje!" : ""));
+    renderOperaciones();
+  } else {
+    notificar("info", "EMERGENCIA RECHAZADA", p.nombre + ": oferta rechazada.");
+  }
+  if (ofertas.length === 0) {
+    window._urgentesOfertas = null;
+    var fondo = document.getElementById("modal-fondo");
+    fondo.classList.add("oculto");
+    fondo.style.display = "none";
+    emergenteAbierto = false;
+    procesarSiguienteEmergente();
+  }
 }
 
 function panelPlanificacionAnual() {
@@ -1480,6 +1543,7 @@ function panelPlanificacionAnual() {
       estadoProy: "ACTIVO",
       tipo: "ANUAL",
       requiereViaje: entero(1, 100) <= 30,
+      costeViajeMes: entero(500, 1500),
       discRequerido: disc.letra,
       discDesc: disc.desc,
       color: colorAvatar(disc.letra)
@@ -1540,6 +1604,9 @@ function panelPlanificacionAnual() {
           var idx = proyectosAsignados.indexOf(p.id);
           if (idx >= 0) proyectosAsignados.splice(idx, 1);
           notificar("alerta", "PROYECTO DADO DE BAJA", p.nombre + " cancelado. Personal devuelto a I+D Interno.");
+          estado.confianzaCliente = Math.max(0, estado.confianzaCliente - 2);
+          notificar("pen", "CONFIANZA DEL CLIENTE -2",
+            "Cancelación de " + p.nombre + ": la confianza de Generic Aerospace cae a " + estado.confianzaCliente + "/100.");
         }
       });
       notificar("exito", "COMPROMISOS REGISTRADOS",
@@ -1578,8 +1645,11 @@ function aplicarBonoExito(ing) {
   ing.satisfaccion = 100;
   ing.mesesSinFormacion = 0;
   ing.mesesCongelados = 6;
+  estado.visionEmpleador = Math.min(100, estado.visionEmpleador + 2);
   notificar("exito", "BONO DE ÉXITO ENTREGADO",
     ing.nombre + ": satisfacción al 100% y riesgo de dimisión congelado durante 6 meses.");
+  notificar("exito", "VISIÓN COMO EMPLEADOR +2",
+    "Reward entregado. Visión como Empleador: " + estado.visionEmpleador + "/100.");
   renderTodo();
 }
 
@@ -1603,9 +1673,12 @@ function aplicarPromocion(ing) {
   ing.lealtadDuplicada = true;
   ing.satisfaccion = 100;
   ing.mesesSinFormacion = 0;
+  estado.visionEmpleador = Math.min(100, estado.visionEmpleador + 2);
   notificar("exito", "PROMOCIÓN OFICIAL",
     ing.nombre + " asciende a " + ing.rango + ". Nuevo sueldo: " + formatear(ing.sueldo) +
     " €. Paciencia y lealtad duplicadas a largo plazo.");
+  notificar("exito", "VISIÓN COMO EMPLEADOR +2",
+    "Reward entregado. Visión como Empleador: " + estado.visionEmpleador + "/100.");
   renderTodo();
 }
 function renderOperaciones() {
@@ -1629,6 +1702,10 @@ function renderOperaciones() {
     html += " · <b style='color:#b91c1c;'>Penalización por Retraso: " + formatear(proy.penalizacionMes) + " €/mes</b>";
     html += "<br><b style='color:#0f172a;'>Liderazgo: " + lideresRequeridos(proy.slotsRequeridos) +
       " ingeniero(s) con nivel ≥ " + proy.minNivelExigido + "</b>";
+    if (proy.requiereViaje) {
+      html += "<br><b style='color:#b45309;'>Gasto de Viaje: SÍ — Consume " + formatear(costeViajeDe(proy)) +
+        "/mes de tu Presupuesto de Viajes</b>";
+    }
     html += "</div>";
     for (var s = 0; s < proy.slotsRequeridos; s++) {
       var idIng = proy.slots[s];
@@ -1719,6 +1796,10 @@ function renderMarcadorCabecera() {
   document.getElementById("estado-caja").textContent = formatear(Math.max(0, capital)) +
     (estado.deudaAcumulada > 0 ? " (deuda: " + formatear(estado.deudaAcumulada) + " €)" : "");
   document.getElementById("estado-plantilla").textContent = estado.plantilla.length;
+  var elConf = document.getElementById("estado-confianza");
+  if (elConf) elConf.textContent = estado.confianzaCliente;
+  var elEmp = document.getElementById("estado-empleador");
+  if (elEmp) elEmp.textContent = estado.visionEmpleador;
   estado.fecha.mes = idxMes;
   estado.fecha.anio = añoActual;
   estado.caja = capital;
@@ -1749,17 +1830,32 @@ window._planAnualHecho = false;
 cerrarModal();
 renderMarcadorCabecera();
 renderTodo();
-mostrarNotificacionEmergente("📋 Órdenes del Director — Generic Aerospace",
-  "<b>Bienvenido, mánager.</b><br><br>" +
-  "Tienes <b style='color:#4ade80;'>3 rondas de fichajes</b> para montar tu equipo inicial. " +
-  "Después organizarás tus presupuestos en el Despacho y asignarás personal a los proyectos en Operaciones.<br><br>" +
-  "El mercado trimestral abrirá en Marzo y la Planificación de Capacidad Anual llegará en Octubre. ¡Mucha suerte!", "info");
+mostrarNotificacionEmergente("✉️ MENSAJE DEL DIRECTOR GENERAL",
+  "Bienvenido a la división, Mánager. No te voy a engañar: asumes el cargo en un momento crítico para Pilot. " +
+  "El mánager anterior nos dejó con una <b style='color:#f87171;'>herencia envenenada</b>: " +
+  "4 macroproyectos aeroespaciales congelados con Generic Aerospace, plazos de entrega asfixiantes que vencen en pocos meses " +
+  "y, para colmo, la plantilla completamente vacía.<br><br>" +
+  "Sé que el volumen de trabajo pendiente es abrumador y que las primeras penalizaciones por retraso son inminentes, " +
+  "pero el comité de dirección confía plenamente en tu capacidad estratégica y de liderazgo para revertir la situación.<br><br>" +
+  "Tienes un fondo inicial de <b style='color:#4ade80;'>$150,000 en caja</b>. Tu prioridad absoluta hoy es visitar el <b>Mercado Laboral</b>, " +
+  "reclutar un equipo de ingenieros de élite y asignarlos tácticamente para apagar estos fuegos.<br><br>" +
+  "<b style='color:#93c5fd;'>Mucha suerte, el futuro de Pilot está en tus manos.</b>", "info");
 
 function pausarSiEmergenteAbierto() {
-  return emergenteAbierto || !document.getElementById("modal-fondo").classList.contains("oculto");
+  return (emergenteAbierto && !window._emergenteMinimizado) ||
+    (!document.getElementById("modal-fondo").classList.contains("oculto") && !window._emergenteMinimizado);
 }
 
 document.getElementById("btn-avanzar-mes").addEventListener("click", function () {
+  if (window._emergenteMinimizado) {
+    var fondo = document.getElementById("modal-fondo");
+    window._emergenteMinimizado = false;
+    fondo.style.display = "flex";
+    fondo.style.pointerEvents = "auto";
+    notificar("info", "DECISIÓN PENDIENTE",
+      "Hay una decisión pendiente en el pop-up. Resuélvela antes de avanzar el mes.");
+    return;
+  }
   if (pausarSiEmergenteAbierto()) return;
   avanzarMes();
   renderTodo();
