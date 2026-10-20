@@ -297,7 +297,7 @@
     <div id="tab-mercado" class="panel oculto">
       <h3>:: MERCADO DE RECLUTAMIENTO ::</h3>
       <div class="cuerpo">
-        <div class="ronda-info">Ronda de fichajes: <span id="ronda-actual">1</span> / 3</div>
+        <div class="ronda-info">Tanda inicial de fichajes: <span id="ronda-actual">1</span> / 3 — luego mercado trimestral (Meses 3, 6, 9 y 12)</div>
         <div id="lista-candidatos"></div>
         <div style="margin-top:8px; display:flex; gap:8px;">
           <button class="boton-2000" id="btn-siguiente-ronda">Siguiente Ronda</button>
@@ -320,6 +320,9 @@ let capital = 150000;
 let presupuestosAnuales = { formacion: 0, viajes: 0, integracion: 0, rewards: 0 };
 let proyectosDisponibles = [];
 let proyectosAsignados = [];
+let proyectosUrgentesOfrecidos = [];
+let mercadoAnualActivo = false;
+let mesesEmergenciaUsados = [];
 
 /* =========================================================
    ESTADO GLOBAL
@@ -480,9 +483,10 @@ function renderPlantilla() {
       "<td style='min-width:110px;'><div class='barra-nivel-caja'><div class='barra-nivel' style='width:" + ing.nivel + "%;'></div></div> " + ing.nivel + "</td>" +
       "<td>" + formatear(ing.sueldo) + " €</td>" +
       "<td><span class='disc disc-" + ing.disc + "'>" + ing.disc + " · " + ing.discDesc + "</span></td>" +
-      "<td>" + (ing.mesesSinFormacion || 0) + "/" + limiteSinFormacion(ing.rango) + "</td>" +
-      "<td>" + (ing.asignado || "—") + "</td>" +
-      "<td><button class='boton-2000' style='padding:2px 8px;font-size:10px;' onclick=\"aplicarFormacion('" + ing.id + "')\">Formar (1.500 €)</button></td>" +
+      "<td>" + (ing.mesesSinFormacion || 0) + "/" + limiteSinFormacion(ing.rango) + (ing.enFormacion ? " <span class='disc disc-I'>EN FORMACIÓN</span>" : "") + "</td>" +
+      "<td>" + (ing.asignado || "—") + (ing.enFormacion ? " (no aporta este mes)" : "") + "</td>" +
+      "<td><button class='boton-2000' style='padding:2px 8px;font-size:10px;' onclick=\"aplicarFormacion('" + ing.id + "')\">Formar (1.500 €)</button> " +
+      "<button class='boton-2000' style='padding:2px 8px;font-size:10px;' onclick=\"darReward('" + ing.id + "')\">Reward (2.000 €)</button></td>" +
       "</tr>";
   });
   html += "</table>";
@@ -544,6 +548,7 @@ function avanzarMes() {
     costeSalarial += ing.sueldo;
   });
   capital -= costeSalarial;
+  eventosMensuales();
   if (mesActual > 12) {
     mesActual = 1;
     añoActual++;
@@ -559,17 +564,51 @@ function simularProyectosCliente() {
   proyectosDisponibles.forEach(function (proy) {
     if (proy.estadoProy !== "ACTIVO") return;
     var activo = proy.slots.some(function (s) { return s; });
-    if (!activo) return;
+    if (!activo) {
+      if (proy.tipo !== "URGENTE") {
+        capital -= 2000;
+        alert(":: RETRASO :: " + proy.nombre + " sin personal asignado: penalización mensual de $2,000.");
+      }
+      return;
+    }
     proy.mesesTranscurridos++;
-    var ocupados = proy.slots.filter(function (s) { return s; }).length;
-    var factorOcupacion = ocupados / proy.slotsRequeridos;
+    var aportan = 0;
+    proy.slots.forEach(function (id) {
+      if (!id) return;
+      var ing = estado.plantilla.find(function (e) { return e.id === id; });
+      if (ing && !ing.enFormacion) aportan++;
+    });
+    var vacios = proy.slotsRequeridos - aportan;
+    if (vacios > 0) {
+      var pen = vacios * 2000;
+      capital -= pen;
+      alert(":: VACANTES :: " + proy.nombre + ": " + vacios +
+        " slot(s) sin aporte este mes (incluye a " +
+        "quienes están En Curso de Formación). Penalización mensual: -" + formatear(pen) + " €");
+    }
+    var factorOcupacion = aportan / proy.slotsRequeridos;
+    var sinViaje = proy.requiereViaje && presupuestoViajesAgotado();
+    if (sinViaje) {
+      alert(":: SIN PRESUPUESTO DE VIAJES :: " + proy.nombre +
+        " exige Gasto de Viaje. Sin presupuesto, rinde al 0% este mes.");
+      factorOcupacion = 0;
+    }
     var ingreso = Math.round(proy.ingresoMes * factorOcupacion);
     capital += ingreso;
     if (proy.mesesTranscurridos >= proy.duracionMeses) {
       cerrarProyecto(proy);
     }
+    if (proy.tipo === "URGENTE" && proy.mesesTranscurridos > proy.duracionMeses && proy.estadoProy === "ACTIVO") {
+      cerrarProyecto(proy);
+    }
   });
 }
+
+function presupuestoViajesAgotado() {
+  return estado.presupuestos.viajes < COSTE_VIAJE_MES;
+}
+
+var COSTE_VIAJE_MES = 1000;
 
 function cerrarProyecto(proy) {
   var asignados = [];
@@ -675,6 +714,17 @@ function asignarIngenieroAProyecto(empleadoId, proyectoId, slotIndex) {
     alert("Ese slot ya está ocupado.");
     return;
   }
+  if (proy.requiereViaje) {
+    if (estado.presupuestos.viajes < COSTE_VIAJE_MES) {
+      alert(":: PRESUPUESTO DE VIAJES AGOTADO ::\n\n" + proy.nombre +
+        " exige Gasto de Viaje (" + formatear(COSTE_VIAJE_MES) +
+        " € por ingeniero/mes). No se puede asignar personal hasta reponer presupuesto de Viajes.");
+      return;
+    }
+    estado.presupuestos.viajes -= COSTE_VIAJE_MES;
+    presupuestosAnuales.viajes = estado.presupuestos.viajes;
+    renderDespacho();
+  }
   proy.slots[slotIndex] = empleadoId;
   ing.asignado = proy.nombre + " (slot " + (slotIndex + 1) + ")";
   if (proyectosAsignados.indexOf(proy.id) < 0) {
@@ -747,9 +797,15 @@ function limiteSinFormacion(rango) {
 function verificarRetencionPersonal() {
   var renuncias = [];
   estado.plantilla.forEach(function (ing) {
+    if (ing.enFormacion && ing.nivelPendiente) {
+      ing.nivel = Math.min(100, ing.nivel + ing.nivelPendiente);
+      ing.rango = rangoPorNivel(ing.nivel);
+      ing.nivelPendiente = 0;
+    }
+    ing.enFormacion = false;
     ing.mesesSinFormacion = (ing.mesesSinFormacion || 0) + 1;
     var limite = limiteSinFormacion(ing.rango);
-    if (ing.mesesSinFormacion > limite) {
+    if (ing.mesesSinFormacion > limite && (ing.satisfaccion || 0) < 100) {
       renuncias.push(ing);
     }
   });
@@ -777,26 +833,209 @@ function aplicarFormacion(empleadoId) {
   }
   estado.presupuestos.formacion -= COSTE_FORMACION;
   presupuestosAnuales.formacion = estado.presupuestos.formacion;
+  ing.enFormacion = true;
+  var eraAsignado = ing.asignado;
+  alert(ing.nombre + " se va En Curso de Formación este mes" +
+    (eraAsignado ? " y DEJA DE APORTAR a su proyecto actual." +
+      "\nUsa la banca (I+D Interno) para cubrir su slot." : ".") +
+    "\nLa subida de nivel se aplicará al final del mes.");
   var subida = entero(5, 12);
-  ing.nivel = Math.min(100, ing.nivel + subida);
-  ing.rango = rangoPorNivel(ing.nivel);
+  ing.nivelPendiente = subida;
   ing.mesesSinFormacion = 0;
-  alert(ing.nombre + " completa un curso de formación: +" + subida +
-    " puntos de Nivel Técnico (ahora " + ing.nivel + ", rango " + ing.rango + ").");
   renderTodo();
   renderOperaciones();
 }
 
 /* =========================================================
-   FASE 3 — RENDER OPERACIONES
+   MECÁNICAS ANUALES — MERCADO TRIMESTRAL, OCTUBRE, EMERGENCIAS
    ========================================================= */
+function eventosMensuales() {
+  var faseInicial = (añoActual === 1 && mesActual <= 2);
+  if (!faseInicial && (mesActual === 3 || mesActual === 6 || mesActual === 9 || mesActual === 12)) {
+    nuevaRondaMercado();
+    mercadoAnualActivo = true;
+    estado.ronda = 1;
+    alert(":: MERCADO LABORAL TRIMESTRAL ::\n\nTanda de 5 candidatos disponible en la pestaña Mercado.\nSi avanzas el mes sin firmarlos, desaparecerán para siempre.");
+  } else {
+    if (mercadoAnualActivo) {
+      estado.mercado = [];
+      mercadoAnualActivo = false;
+      renderMercado();
+    }
+  }
+  if (mesActual === 10) {
+    panelPlanificacionAnual();
+  }
+  mesesEmergenciaUsados = mesesEmergenciaUsados.filter(function (m) { return m >= mesActual - 1 && m !== mesActual; });
+  if (entero(1, 100) <= 35 && mesesEmergenciaUsados.indexOf(mesActual) < 0) {
+    mesesEmergenciaUsados.push(mesActual);
+    ofrecerProyectosEmergencia();
+  }
+}
+
+var NOMBRES_PROYECTOS_URGENTES = [
+  "Revisión Certificación SAT-9",
+  "Rescate Telemetría Delta",
+  "Parche Blindaje Cápsula"
+];
+
+function generarProyectoUrgente() {
+  var disc = DISC_PERFILES[entero(0, 3)];
+  var duracion = entero(1, 3);
+  var ingresoMes = entero(18, 30) * 1000;
+  return {
+    id: "urg-" + Math.random().toString(36).slice(2, 10),
+    nombre: NOMBRES_PROYECTOS_URGENTES[entero(0, NOMBRES_PROYECTOS_URGENTES.length - 1)],
+    cliente: "Generic Aerospace",
+    duracionMeses: duracion,
+    mesesTranscurridos: 0,
+    slotsRequeridos: entero(2, 3),
+    slots: [],
+    ingresoMes: ingresoMes,
+    valorTotal: ingresoMes * duracion,
+    minNivelExigido: entero(40, 75),
+    estadoProy: "ACTIVO",
+    tipo: "URGENTE",
+    requiereViaje: entero(1, 100) <= 50,
+    discRequerido: disc.letra,
+    discDesc: disc.desc,
+    color: colorAvatar(disc.letra)
+  };
+}
+
+function ofrecerProyectosEmergencia() {
+  var n = entero(1, 2);
+  var ofertas = [];
+  for (var i = 0; i < n; i++) ofertas.push(generarProyectoUrgente());
+  var msg = ":: PROYECTOS DE EMERGENCIA — Generic Aerospace ::\n\n";
+  ofertas.forEach(function (p, idx) {
+    msg += (idx + 1) + ". " + p.nombre + " — " + p.duracionMeses + " meses, " +
+      formatear(p.ingresoMes) + " €/mes (total " + formatear(p.valorTotal) + " €), " +
+      p.slotsRequeridos + " slots" + (p.requiereViaje ? ", REQUIERE VIAJE" : "") + "\n";
+  });
+  msg += "\nAcepta (números separados por comas) o 0 para rechazar todos.";
+  var resp = prompt(msg, "0");
+  if (resp === null) return;
+  var elegidos = resp.split(",").map(function (x) { return parseInt(x.trim(), 10) || 0; })
+    .filter(function (x) { return x >= 1 && x <= ofertas.length; });
+  elegidos.forEach(function (idx) {
+    var p = ofertas[idx - 1];
+    for (var s = 0; s < p.slotsRequeridos; s++) p.slots.push(null);
+    p.id = "urg-" + proyectosDisponibles.length + "-" + Math.random().toString(36).slice(2, 6);
+    proyectosDisponibles.push(p);
+    alert("EMERGENCIA ACEPTADA: " + p.nombre + "\nAsigna personal YA en Operaciones (duración " + p.duracionMeses + " meses)." +
+      (p.requiereViaje ? "\n¡ATENCIÓN: este proyecto exige Gasto de Viaje!" : ""));
+  });
+  if (elegidos.length === 0) alert("Proyectos de emergencia rechazados.");
+  renderOperaciones();
+}
+
+function panelPlanificacionAnual() {
+  var candidata = [];
+  var usados = proyectosDisponibles.filter(function (p) { return p.estadoProy === "ACTIVO"; });
+  var idsUsados = usados.map(function (p) { return p.nombre; });
+  var pool = NOMBRES_PROYECTOS.concat(NOMBRES_PROYECTOS_URGENTES);
+  for (var i = 0; i < 4; i++) {
+    var nombre = pool[entero(0, pool.length - 1)];
+    while (idsUsados.indexOf(nombre) >= 0) nombre = pool[entero(0, pool.length - 1)] + " " + (i + 1);
+    var disc = DISC_PERFILES[entero(0, 3)];
+    var dur = entero(3, 12);
+    var ing = entero(4, 12) * 1000;
+    candidata.push({
+      id: "plan-" + añoActual + "-" + i + "-" + Math.random().toString(36).slice(2, 6),
+      nombre: nombre,
+      cliente: "Generic Aerospace",
+      duracionMeses: dur,
+      mesesTranscurridos: 0,
+      slotsRequeridos: entero(2, 4),
+      slots: [],
+      ingresoMes: ing,
+      valorTotal: ing * dur,
+      minNivelExigido: entero(35, 70),
+      estadoProy: "ACTIVO",
+      tipo: "ANUAL",
+      requiereViaje: entero(1, 100) <= 30,
+      discRequerido: disc.letra,
+      discDesc: disc.desc,
+      color: colorAvatar(disc.letra)
+    });
+  }
+  var msg = ":: PLANIFICACIÓN ANUAL — Octubre Año " + añoActual + " ::\n\n" +
+    "Generic Aerospace presenta sus proyectos para el AÑO ENTRANTE.\n¡Es OBLIGATORIO comprometerse al menos a uno!\n\n";
+  candidata.forEach(function (p, idx) {
+    msg += (idx + 1) + ". " + p.nombre + " — " + p.duracionMeses + " meses, " +
+      formatear(p.ingresoMes) + " €/mes, " + p.slotsRequeridos + " slots, DISC " + p.discRequerido +
+      (p.requiereViaje ? ", REQUIERE VIAJE" : "") + "\n";
+  });
+  var resp = prompt(msg + "\nElige números separados por comas:", "1");
+  if (resp === null) resp = "1";
+  var elegidos = resp.split(",").map(function (x) { return parseInt(x.trim(), 10) || 0; })
+    .filter(function (x) { return x >= 1 && x <= candidata.length; });
+  if (elegidos.length === 0) elegidos = [1];
+  elegidos.forEach(function (idx) {
+    var p = candidata[idx - 1];
+    for (var s = 0; s < p.slotsRequeridos; s++) p.slots.push(null);
+    proyectosDisponibles.push(p);
+  });
+  if (usados.length > 0) {
+    var msgRen = ":: RENOVACIÓN DE PROYECTOS ACTIVOS ::\n\n" +
+      "Tienes estos proyectos de larga duración aún activos:\n";
+    usados.forEach(function (p, idx) {
+      msgRen += (idx + 1) + ". " + p.nombre + " (restan " +
+        Math.max(0, p.duracionMeses - p.mesesTranscurridos) + " meses)\n";
+    });
+    msgRen += "\n¿Renovarlos para el año entrante? (s = renovar todos, n = cancelar todos)";
+    var ren = prompt(msgRen, "s");
+    if (ren !== null && ren.trim().toLowerCase() === "s") {
+      alert("Proyectos activos renovados para el año " + (añoActual + 1) + ".");
+    } else {
+      usados.forEach(function (p) {
+        p.estadoProy = "CANCELADO";
+        p.slots.forEach(function (id) {
+          if (id) {
+            var ing = estado.plantilla.find(function (e) { return e.id === id; });
+            if (ing) ing.asignado = "I+D Interno";
+          }
+        });
+        p.slots = p.slots.map(function () { return null; });
+        var idx = proyectosAsignados.indexOf(p.id);
+        if (idx >= 0) proyectosAsignados.splice(idx, 1);
+      });
+      alert("Proyectos de larga duración CANCELADOS. Personal devuelto a I+D Interno.");
+    }
+  }
+  alert("Compromisos registrados para el año " + (añoActual + 1) +
+    ". Los nuevos proyectos ya son asignables en Operaciones.");
+  renderOperaciones();
+}
+
+function darReward(empleadoId) {
+  var ing = estado.plantilla.find(function (e) { return e.id === empleadoId; });
+  if (!ing) return;
+  var COSTE_REWARD = 2000;
+  if (estado.presupuestos.rewards < COSTE_REWARD) {
+    alert("Presupuesto de Rewards insuficiente (" +
+      formatear(estado.presupuestos.rewards) + " € disponibles, se necesitan " +
+      formatear(COSTE_REWARD) + " €).");
+    return;
+  }
+  estado.presupuestos.rewards -= COSTE_REWARD;
+  presupuestosAnuales.rewards = estado.presupuestos.rewards;
+  ing.satisfaccion = 100;
+  ing.mesesSinFormacion = 0;
+  alert(ing.nombre + " recibe un Reward/Bono: satisfacción al 100% y contador de meses sin formación reiniciado.");
+  renderTodo();
+}
 function renderOperaciones() {
   var cont = document.getElementById("cuadricula-operaciones");
   if (!cont) return;
   var html = "";
   proyectosDisponibles.forEach(function (proy) {
     html += "<div class='celda-tactica'><h5>" + proy.nombre +
-      (proy.estadoProy === "FINALIZADO" ? " [FINALIZADO]" : "") + "</h5>";
+      (proy.tipo === "URGENTE" ? " [URGENTE]" : "") +
+      (proy.requiereViaje ? " [VIAJE]" : "") +
+      (proy.estadoProy === "FINALIZADO" ? " [FINALIZADO]" : "") +
+      (proy.estadoProy === "CANCELADO" ? " [CANCELADO]" : "") + "</h5>";
     html += "<div style='font-size:10px;margin-bottom:4px;'>'" +
       "Cliente: " + proy.cliente +
       " · DISC <span class='disc disc-" + proy.discRequerido + "'>" + proy.discRequerido + "</span>" +
@@ -810,7 +1049,8 @@ function renderOperaciones() {
       var ing = idIng ? estado.plantilla.find(function (e) { return e.id === idIng; }) : null;
       if (ing) {
         html += "<div style='border:1px solid #888;margin:2px 0;padding:2px 4px;background:#eef2f8;'>" +
-          "<b>" + ing.nombre + "</b> (Nv " + ing.nivel + ", <span class='disc disc-" + ing.disc + "'>" + ing.disc + "</span>) " +
+          "<b>" + ing.nombre + "</b> (Nv " + ing.nivel + ", <span class='disc disc-" + ing.disc + "'>" + ing.disc + "</span>)" +
+          (ing.enFormacion ? " <b style='color:#a06000;'>[EN FORMACIÓN — no aporta]</b>" : "") + " " +
           (proy.estadoProy === "ACTIVO" ?
             "<button class='boton-2000' style='padding:1px 6px;font-size:10px;' onclick=\"asignarIngenieroAProyecto('" + ing.id + "','id-interno')\">Liberar</button>" :
             "") +
