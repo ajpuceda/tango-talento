@@ -633,7 +633,11 @@ function contratarCandidato(id) {
 
 function siguienteRonda() {
   if (estado.ronda >= estado.maxRondas) {
-    notificar("info", "INITIAL MARKET CLOSED", "You have used up the 3 initial signing rounds. Next batch: quarterly market.");
+    estado.mercado = [];
+    renderMercado();
+    notificar("info", "INITIAL MARKET CLOSED",
+      "The 3 initial signing rounds are used up and the market is now empty by default. " +
+      "New candidates can only arrive via On-Demand Search (2,000 PLN) or Continuous Search (500 PLN/month).");
     return;
   }
   estado.ronda++;
@@ -644,6 +648,7 @@ function siguienteRonda() {
 var COSTE_ON_DEMAND = 2000;
 var COSTE_CONTINUO = 500;
 var busquedaContinuaActiva = false;
+var colaOnDemandPendiente = 0;
 
 function contratacionOnDemand() {
   if (estado.caja < COSTE_ON_DEMAND) {
@@ -653,10 +658,10 @@ function contratacionOnDemand() {
   }
   capital -= COSTE_ON_DEMAND;
   estado.caja = capital;
-  nuevaRondaMercado();
+  colaOnDemandPendiente = 1;
   notificar("info", "ON-DEMAND SEARCH LAUNCHED",
-    "Surgical search completed for " + formatear(COSTE_ON_DEMAND) +
-    " PLN: a fresh batch of 5 candidates is now in the Hiring Market (1-month delay applied to hires).");
+    "Surgical search paid (" + formatear(COSTE_ON_DEMAND) +
+    " PLN). The batch of 5 candidates will arrive in the Hiring Market exactly 1 month from now.");
   renderTodo();
 }
 
@@ -665,7 +670,7 @@ function toggleBusquedaContinua() {
   notificar("info", busquedaContinuaActiva ? "CONTINUOUS SEARCH ACTIVATED" : "CONTINUOUS SEARCH STOPPED",
     busquedaContinuaActiva
       ? "Continuous talent pipeline active for " + formatear(COSTE_CONTINUO) +
-        " PLN/month: a fresh batch of candidates arrives every quarter automatically."
+        " PLN/month: exactly 2 new candidates will arrive in the Hiring Market every month."
       : "The continuous talent pipeline has been stopped.");
   renderMercado();
 }
@@ -1409,11 +1414,13 @@ function activarPausaDeficit(titulo, mensaje) {
    ========================================================= */
 function limiteSinFormacion(rango) {
   switch (rango) {
-    case "Internship": return 6;
-    case "Ingeniero": return 12;
-    case "Senior": return 18;
-    case "Staff": return 24;
-    default: return 12;
+    case "Internship":
+    case "Junior": return 6;
+    case "Ingeniero":
+    case "Mid": return 12;
+    case "Senior":
+    case "Staff": return 18;
+    default: return 6;
   }
 }
 
@@ -1428,10 +1435,6 @@ function verificarRetencionPersonal() {
       }
       return;
     }
-    var ritmoQuemado = 1;
-    if (estado.visionEmpleador > 75) ritmoQuemado = 0.5;
-    else if (estado.visionEmpleador < 30) ritmoQuemado = 2;
-    ing.mesesSinFormacion = (ing.mesesSinFormacion || 0);
     if (ing.enFormacion && ing.nivelPendiente) {
       ing.nivel = Math.min(100, ing.nivel + ing.nivelPendiente);
       ing.rango = rangoPorNivel(ing.nivel);
@@ -1443,10 +1446,9 @@ function verificarRetencionPersonal() {
       ing.mesesSinFormacion = 0;
       return;
     }
-    ing.mesesSinFormacion = (ing.mesesSinFormacion || 0) + ritmoQuemado;
+    ing.mesesSinFormacion = (ing.mesesSinFormacion || 0) + 1;
     var limite = limiteSinFormacion(ing.rango);
-    if (ing.lealtadDuplicada) limite = limite * 2;
-    if (ing.mesesSinFormacion > limite && (ing.satisfaccion || 0) < 100) {
+    if (ing.mesesSinFormacion >= limite && (ing.satisfaccion || 0) < 100) {
       renuncias.push(ing);
     }
   });
@@ -1522,20 +1524,22 @@ function eventosMensuales() {
       ordenes6m[entero(0, ordenes6m.length - 1)] + "<br><br>" +
       "<i style='color:#94a3b8;'>The game is paused until you read the order.</i>", "info");
   }
-  var faseInicial = (añoActual === 2025 && mesActual <= 2);
-  if (!faseInicial && (mesActual === 3 || mesActual === 6 || mesActual === 9 || mesActual === 12)) {
-    nuevaRondaMercado();
-    mercadoAnualActivo = true;
-    estado.ronda = 1;
-    notificar("info", "QUARTERLY HIRING MARKET",
-      "A fresh batch of 5 candidates is available in the Hiring Market tab. " +
-      "If you advance the month without signing them, they will be gone forever.");
-  } else {
-    if (mercadoAnualActivo) {
-      estado.mercado = [];
-      mercadoAnualActivo = false;
+  if (colaOnDemandPendiente > 0) {
+    colaOnDemandPendiente--;
+    if (colaOnDemandPendiente === 0) {
+      nuevaRondaMercado();
+      notificar("exito", "ON-DEMAND SEARCH DELIVERED",
+        "The surgical search (paid last month) has completed: a batch of 5 candidates " +
+        "is now available in the Hiring Market. Sign them before they accept other offers.");
       renderMercado();
     }
+  }
+  if (busquedaContinuaActiva) {
+    estado.mercado.push(generarCandidato());
+    estado.mercado.push(generarCandidato());
+    notificar("info", "CONTINUOUS SEARCH BATCH",
+      "The continuous talent pipeline delivered 2 new candidates to the Hiring Market.");
+    renderMercado();
   }
   mesesEmergenciaUsados = mesesEmergenciaUsados.filter(function (m) { return m >= mesActual - 1 && m !== mesActual; });
   if (entero(1, 100) <= 35 && mesesEmergenciaUsados.indexOf(mesActual) < 0) {
