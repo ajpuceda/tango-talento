@@ -303,6 +303,7 @@
     display: flex; align-items: center; justify-content: center;
     z-index: 100;
   }
+  .modal-fondo.oculto { display: none !important; }
   .modal-caja {
     background: rgba(30, 41, 59, 0.85);
     backdrop-filter: blur(10px);
@@ -682,7 +683,8 @@ function avanzarMes() {
   });
   capital -= costeSalarial;
   eventosMensuales();
-  if (mesActual === 10 && !window._planAnualHecho) {
+  var faseArranque = (añoActual < 1);
+  if (!faseArranque && añoActual >= 1 && mesActual === 10 && !window._planAnualHecho) {
     window._planAnualHecho = true;
     panelPlanificacionAnual();
   }
@@ -782,10 +784,13 @@ function abrirModal(titulo, contenidoHTML, textoConfirmar, onConfirm, obligatori
   };
   btnCanc.onclick = function () { cerrarModal(); };
   fondo.classList.remove("oculto");
+  fondo.style.display = "flex";
 }
 
 function cerrarModal() {
-  document.getElementById("modal-fondo").classList.add("oculto");
+  var fondo = document.getElementById("modal-fondo");
+  fondo.classList.add("oculto");
+  fondo.style.display = "none";
 }
 
 function proyectosSeleccionadosModal() {
@@ -1067,9 +1072,6 @@ function eventosMensuales() {
       renderMercado();
     }
   }
-  if (mesActual === 10) {
-    panelPlanificacionAnual();
-  }
   mesesEmergenciaUsados = mesesEmergenciaUsados.filter(function (m) { return m >= mesActual - 1 && m !== mesActual; });
   if (entero(1, 100) <= 35 && mesesEmergenciaUsados.indexOf(mesActual) < 0) {
     mesesEmergenciaUsados.push(mesActual);
@@ -1337,6 +1339,8 @@ function renderMarcadorCabecera() {
    ========================================================= */
 nuevaRondaMercado();
 inicializarProyectosAeroespaciales();
+window._planAnualHecho = false;
+cerrarModal();
 renderMarcadorCabecera();
 renderTodo();
 notificar("info", "ÓRDENES DEL DIRECTOR — GENERIC AEROSPACE",
