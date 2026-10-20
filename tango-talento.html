@@ -269,13 +269,21 @@
     min-height: 90px;
     padding: 6px;
     font-size: 11px;
+    color: #1e293b;
   }
   .celda-tactica h5 {
     font-size: 11px;
-    color: var(--azul-oscuro);
+    color: #0f172a;
     border-bottom: 1px dashed var(--gris-borde);
     margin-bottom: 6px;
   }
+  .celda-tactica .cuerpo-celda { color: #334155; }
+  .celda-tactica div { color: #1e293b; }
+  .celda-tactica div h5 { color: #0f172a; }
+  .celda-tactica b { color: #0f172a; }
+  .celda-tactica i { color: #334155; }
+  .celda-tactica select { color: #0f172a; }
+  .celda-tactica button { color: #fff; }
 
   .candidato {
     border: 1px solid var(--gris-borde);
@@ -367,12 +375,6 @@
     <div id="tab-despacho" class="panel">
       <h3>:: DESPACHO DEL DIRECTOR ::</h3>
       <div class="cuerpo">
-        <div class="panel" style="margin-bottom:8px;">
-          <h3>Órdenes del Director</h3>
-          <div class="cuerpo">
-            <p id="ordenes-director">Bienvenido, mánager. Construye tu equipo y prepárate para los proyectos de Generic Aerospace.</p>
-          </div>
-        </div>
         <div class="panel">
           <h3>Saldos y Presupuestos</h3>
           <div class="cuerpo presupuestos">
@@ -793,6 +795,82 @@ function cerrarModal() {
   fondo.style.display = "none";
 }
 
+/* =========================================================
+   POP-UPS DE ACCIÓN (pausan el juego hasta decisión)
+   ========================================================= */
+var colaEmergentes = [];
+var emergenteAbierto = false;
+
+function mostrarNotificacionEmergente(titulo, mensaje, tipo, accion) {
+  colaEmergentes.push({ titulo: titulo, mensaje: mensaje, tipo: tipo || "info", accion: accion || null });
+  var modalVisible = !document.getElementById("modal-fondo").classList.contains("oculto");
+  if (!emergenteAbierto || !modalVisible) {
+    emergenteAbierto = false;
+    procesarSiguienteEmergente();
+  }
+}
+
+function procesarSiguienteEmergente() {
+  if (colaEmergentes.length === 0) {
+    emergenteAbierto = false;
+    return;
+  }
+  emergenteAbierto = true;
+  var item = colaEmergentes.shift();
+  var iconos = {
+    info: "director",
+    alerta: "dimitió",
+    urgente: "emergencia",
+    exito: "acierto"
+  };
+  var colores = {
+    info: "#93c5fd",
+    alerta: "#f87171",
+    urgente: "#fbbf24",
+    exito: "#4ade80"
+  };
+  var html = "<div style='font-size:12px;line-height:1.7;color:#e2e8f0;'>" + item.mensaje + "</div>";
+  var esDecision = !!(item.accion && item.accion.aceptar);
+  var fondo = document.getElementById("modal-fondo");
+  document.getElementById("modal-titulo").textContent = item.titulo;
+  document.getElementById("modal-titulo").style.color = colores[item.tipo] || "#93c5fd";
+  document.getElementById("modal-contenido").innerHTML = html;
+  var btnConf = document.getElementById("modal-confirmar");
+  var btnCanc = document.getElementById("modal-cancelar");
+  if (esDecision) {
+    btnConf.textContent = item.accion.textoAceptar || "Aceptar Proyecto";
+    btnCanc.textContent = item.accion.textoRechazar || "Rechazar";
+    btnCanc.classList.remove("oculto");
+    btnConf.onclick = function () {
+      fondo.classList.add("oculto");
+      fondo.style.display = "none";
+      emergenteAbierto = false;
+      if (item.accion.aceptar) item.accion.aceptar();
+      procesarSiguienteEmergente();
+    };
+    btnCanc.onclick = function () {
+      fondo.classList.add("oculto");
+      fondo.style.display = "none";
+      emergenteAbierto = false;
+      if (item.accion.rechazar) item.accion.rechazar();
+      procesarSiguienteEmergente();
+    };
+  } else {
+    btnConf.textContent = "Entendido / Cerrar";
+    btnCanc.classList.add("oculto");
+    btnConf.onclick = function () {
+      fondo.classList.add("oculto");
+      fondo.style.display = "none";
+      emergenteAbierto = false;
+      if (item.accion && item.accion.alCerrar) item.accion.alCerrar();
+      procesarSiguienteEmergente();
+    };
+    btnCanc.onclick = null;
+  }
+  fondo.classList.remove("oculto");
+  fondo.style.display = "flex";
+}
+
 function proyectosSeleccionadosModal() {
   var ids = [];
   document.querySelectorAll("#modal-contenido input[type=checkbox]:checked").forEach(function (cb) {
@@ -1020,11 +1098,16 @@ function verificarRetencionPersonal() {
     if (i >= 0) estado.plantilla.splice(i, 1);
   });
   if (renuncias.length > 0) {
+    var nombres = renuncias.map(function (r) { return r.nombre + " (" + r.rango + ")"; }).join(", ");
     renuncias.forEach(function (ing) {
       notificar("alerta", "ABANDONO DE PLANTILLA",
-        ing.nombre + " (" + ing.rango + ") ha renunciado por falta de formación " +
-        "(sin curso dentro de su límite). ¡Refuerza el plan de formación o da Rewards!");
+        ing.nombre + " (" + ing.rango + ") ha renunciado por falta de formación.");
     });
+    mostrarNotificacionEmergente("⚠ Dimisión por Falta de Formación",
+      "<b>" + nombres + "</b> ha(n) renunciado: superaron su límite de meses sin curso de formación.<br><br>" +
+      "Su plaza en el proyecto queda vacante y genera penalización mensual hasta que la cubras.<br>" +
+      "<b style='color:#fbbf24;'>Consejo:</b> usa la banca (I+D Interno) como sustituto inmediato y " +
+      "planifica Formación o Rewards para el resto de la plantilla.", "alerta");
   }
 }
 
@@ -1057,6 +1140,18 @@ function aplicarFormacion(empleadoId) {
    MECÁNICAS ANUALES — MERCADO TRIMESTRAL, OCTUBRE, EMERGENCIAS
    ========================================================= */
 function eventosMensuales() {
+  if (mesActual === 6 || mesActual === 12) {
+    var ordenes6m = [
+      "Revisa la moral del equipo: los que acumulan meses sin formación están en riesgo de dimitir.",
+      "Optimiza tus slots: cada vacante sin cubrir cuesta $2,000 al mes en proyectos comprometidos.",
+      "Prepara la banca: un buen colchón en I+D Interno salva proyectos cuando alguien se va a formar.",
+      "Vigila el presupuesto de Viajes: sin él, los proyectos con desplazamientos rinden al 0%."
+    ];
+    mostrarNotificacionEmergente("📋 Órdenes del Director — Generic Aerospace",
+      "<b>Memorándum del Director — Mes " + mesActual + ", Año " + añoActual + "</b><br><br>" +
+      ordenes6m[entero(0, ordenes6m.length - 1)] + "<br><br>" +
+      "<i style='color:#94a3b8;'>El juego queda en pausa hasta que leas la orden.</i>", "info");
+  }
   var faseInicial = (añoActual === 1 && mesActual <= 2);
   if (!faseInicial && (mesActual === 3 || mesActual === 6 || mesActual === 9 || mesActual === 12)) {
     nuevaRondaMercado();
@@ -1127,8 +1222,10 @@ function ofrecerProyectosEmergencia() {
   window._urgentesOfertas = ofertas;
   notificar("urgente", "OFERTA DE EMERGENCIA",
     n + " proyecto(s) urgente(s) disponibles. Revisa el panel para aceptarlos o ignorarlos.");
-  abrirModal("Proyectos de Emergencia — Generic Aerospace", html,
-    "Aceptar Seleccionados", function () {
+  mostrarNotificacionEmergente("🚨 Proyectos de Emergencia — Generic Aerospace", html, "urgente", {
+    textoAceptar: "Aceptar Proyecto",
+    textoRechazar: "Rechazar",
+    aceptar: function () {
       var elegidos = proyectosSeleccionadosModal();
       var aceptados = 0;
       ofertas.forEach(function (p) {
@@ -1142,9 +1239,12 @@ function ofrecerProyectosEmergencia() {
             (p.requiereViaje ? " ¡Exige Gasto de Viaje!" : ""));
         }
       });
-      if (aceptados === 0) notificar("info", "EMERGENCIAS IGNORADAS", "Ofertas de emergencia rechazadas.");
-      renderOperaciones();
-    }, false);
+      if (aceptados > 0) renderOperaciones();
+    },
+    rechazar: function () {
+      notificar("info", "EMERGENCIAS IGNORADAS", "Ofertas de emergencia rechazadas.");
+    }
+  });
 }
 
 function panelPlanificacionAnual() {
@@ -1290,7 +1390,7 @@ function renderOperaciones() {
             "") +
           "</div>";
       } else {
-        html += "<div style='border:1px dashed #999;margin:2px 0;padding:2px 4px;color:#777;'>SLOT " + (s + 1) + " — Vacío";
+        html += "<div style='border:1px dashed #999;margin:2px 0;padding:2px 4px;color:#334155;'>SLOT " + (s + 1) + " — Vacío";
         if (proy.estadoProy === "ACTIVO") {
           html += " <select style='font-size:10px;' onchange=\"if(this.value){asignarIngenieroAProyecto(this.value,'" + proy.id + "'," + s + ");}\">";
           html += "<option value=''>Asignar...</option>";
@@ -1343,10 +1443,18 @@ window._planAnualHecho = false;
 cerrarModal();
 renderMarcadorCabecera();
 renderTodo();
-notificar("info", "ÓRDENES DEL DIRECTOR — GENERIC AEROSPACE",
-  "Bienvenido, mánager. Monta tu equipo con las 3 rondas de fichajes iniciales, asigna personal a los proyectos en Operaciones y vigila los presupuestos. ¡El mercado trimestral abrirá en Marzo!");
+mostrarNotificacionEmergente("📋 Órdenes del Director — Generic Aerospace",
+  "<b>Bienvenido, mánager.</b><br><br>" +
+  "Tienes <b style='color:#4ade80;'>3 rondas de fichajes</b> para montar tu equipo inicial. " +
+  "Después organizarás tus presupuestos en el Despacho y asignarás personal a los proyectos en Operaciones.<br><br>" +
+  "El mercado trimestral abrirá en Marzo y la Planificación de Capacidad Anual llegará en Octubre. ¡Mucha suerte!", "info");
+
+function pausarSiEmergenteAbierto() {
+  return emergenteAbierto || !document.getElementById("modal-fondo").classList.contains("oculto");
+}
 
 document.getElementById("btn-avanzar-mes").addEventListener("click", function () {
+  if (pausarSiEmergenteAbierto()) return;
   avanzarMes();
   renderTodo();
 });
