@@ -260,8 +260,8 @@
 
   .cuadricula-tactica {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 12px;
   }
   .celda-tactica {
     border: 1px solid var(--gris-borde);
@@ -357,7 +357,7 @@
 
   <div class="barra-estado" style="gap:12px;">
     <button class="boton-2000" id="btn-avanzar-mes">▶ Avanzar Mes</button>
-    <span><b>Fecha:</b> <span id="estado-fecha">Enero 2000</span></span>
+    <span><b>Fecha:</b> <span id="estado-fecha">Enero 2025</span></span>
     <span><b>Caja:</b> <span id="estado-caja">—</span> €</span>
     <span><b>Plantilla:</b> <span id="estado-plantilla">0</span> ingenieros</span>
   </div>
@@ -367,6 +367,7 @@
     <div class="pestana" data-tab="plantilla">Plantilla</div>
     <div class="pestana" data-tab="operaciones">Operaciones</div>
     <div class="pestana" data-tab="mercado">Mercado</div>
+    <div class="pestana" data-tab="historial">Historial</div>
   </div>
 
   <div class="contenido">
@@ -391,6 +392,15 @@
       <h3>:: PLANTILLA DE INGENIEROS ::</h3>
       <div class="cuerpo" id="lista-plantilla">
         <p><i>No hay ingenieros contratados. Visita la pestaña Mercado para reclutar.</i></p>
+      </div>
+    </div>
+
+    <!-- HISTORIAL -->
+    <div id="tab-historial" class="panel oculto">
+      <h3>:: HISTORIAL DE CONTRATOS CONCLUIDOS ::</h3>
+      <div class="cuerpo">
+        <p style="margin-bottom:8px; font-size:11px;"><i>Registro completo de los proyectos finalizados y cancelados con Generic Aerospace.</i></p>
+        <div id="lista-historial"></div>
       </div>
     </div>
 
@@ -587,12 +597,7 @@ function formatear(num) {
 }
 
 function renderBarraEstado() {
-  var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-  document.getElementById("estado-fecha").textContent =
-    meses[estado.fecha.mes] + " " + estado.fecha.anio;
-  document.getElementById("estado-caja").textContent = formatear(estado.caja);
-  document.getElementById("estado-plantilla").textContent = estado.plantilla.length;
+  renderMarcadorCabecera();
 }
 
 function renderDespacho() {
@@ -661,6 +666,8 @@ function activarPestana(nombre) {
   document.getElementById("tab-plantilla").classList.toggle("oculto", nombre !== "plantilla");
   document.getElementById("tab-operaciones").classList.toggle("oculto", nombre !== "operaciones");
   document.getElementById("tab-mercado").classList.toggle("oculto", nombre !== "mercado");
+  document.getElementById("tab-historial").classList.toggle("oculto", nombre !== "historial");
+  if (nombre === "historial") renderHistorial();
 }
 
 document.querySelectorAll(".pestana").forEach(function (p) {
@@ -944,6 +951,7 @@ function cerrarProyecto(proy) {
     if (nivelMedio >= proy.minNivelExigido && mayoria) {
       var bonusCant = Math.round(valorBase * 0.25);
       bonus = true;
+      proy.bonusObtenido = bonusCant;
       capital += bonusCant;
       msgCierre += "¡Bonus de Rendimiento Extra del +25%! +" + formatear(bonusCant) + " € — " +
         "Nivel medio " + Math.round(nivelMedio) + " (mín. " + proy.minNivelExigido + "), " +
@@ -965,6 +973,8 @@ function cerrarProyecto(proy) {
   });
   proy.slots = proy.slots.map(function () { return null; });
   proy.estadoProy = "FINALIZADO";
+  proy.fechaCierre = MESES_ABREV[Math.max(0, mesActual - 1)] + " " + añoActual;
+  proy.ingresosObtenidos = proy.valorTotal - (proy.slots.filter(function (s) { return !s; }).length * 2000);
   var idx = proyectosAsignados.indexOf(proy.id);
   if (idx >= 0) proyectosAsignados.splice(idx, 1);
   notificar(bonus ? "exito" : "info", "CIERRE DE PROYECTO: " + proy.nombre, msgCierre);
@@ -1420,14 +1430,9 @@ function darReward(empleadoId) {
 function renderOperaciones() {
   var cont = document.getElementById("cuadricula-operaciones");
   if (!cont) return;
-  var html = "<div style='display:flex;gap:10px;align-items:flex-start;'>";
-  html += "<div class='cuadricula-tactica' style='flex:1;'>";
-  var concluidos = [];
+  var html = "";
   proyectosDisponibles.forEach(function (proy) {
-    if (proy.estadoProy === "FINALIZADO" || proy.estadoProy === "CANCELADO") {
-      concluidos.push(proy);
-      return;
-    }
+    if (proy.estadoProy === "FINALIZADO" || proy.estadoProy === "CANCELADO") return;
     html += "<div class='celda-tactica'><h5>" + proy.nombre +
       (proy.tipo === "URGENTE" ? " [URGENTE]" : "") +
       (proy.requiereViaje ? " [VIAJE]" : "") +
@@ -1477,22 +1482,35 @@ function renderOperaciones() {
     }
   });
   html += "</div>";
-  html += "</div>";
-  html += "<div style='flex:0 0 190px;border:1px solid var(--gris-borde);border-radius:10px;background:#16213a;padding:8px;max-height:560px;overflow-y:auto;'>" +
-    "<h5 style='font-size:11px;color:#93c5fd;border-bottom:1px dashed var(--gris-borde);margin-bottom:6px;'>:: HISTORIAL DE CONTRATOS CONCLUIDOS ::</h5>";
+  cont.innerHTML = html;
+}
+
+function renderHistorial() {
+  var cont = document.getElementById("lista-historial");
+  if (!cont) return;
+  var concluidos = proyectosDisponibles.filter(function (p) {
+    return p.estadoProy === "FINALIZADO" || p.estadoProy === "CANCELADO";
+  });
   if (concluidos.length === 0) {
-    html += "<div style='font-size:10px;color:#64748b;font-style:italic;'>Sin contratos concluidos todavía.</div>";
-  } else {
-    concluidos.forEach(function (proy) {
-      html += "<div style='border:1px solid #334155;margin:4px 0;padding:4px 6px;border-radius:6px;font-size:10px;background:#0f172a;'>" +
-        "<b style='color:#94a3b8;'>" + proy.nombre + "</b><br>" +
-        (proy.estadoProy === "FINALIZADO" ? "<span style='color:#4ade80;'>✓ Finalizado</span>" : "<span style='color:#f87171;'>✗ Cancelado</span>") +
-        " · Deadline " + (proy.deadline || "—") + "<br>" +
-        "Total " + formatear(proy.valorTotal) + " €</div>";
-    });
+    cont.innerHTML = "<p><i style='color:#94a3b8;'>Todavía no hay contratos concluidos. Cierra tu primer proyecto para verlo aquí.</i></p>";
+    return;
   }
-  html += "</div>";
-  html += "</div>";
+  var html = '<table class="tabla"><tr><th>Proyecto</th><th>Estado</th><th>Fecha de Finalización</th><th>Ingresos Totales</th><th>Bonus DISC</th></tr>';
+  concluidos.forEach(function (proy) {
+    html += "<tr>" +
+      "<td><b>" + proy.nombre + "</b>" + (proy.tipo === "URGENTE" ? " <span class='disc disc-I'>URGENTE</span>" : "") + "</td>" +
+      "<td>" + (proy.estadoProy === "FINALIZADO" ?
+        "<span style='color:#4ade80;'>✓ Finalizado</span>" :
+        "<span style='color:#f87171;'>✗ Cancelado</span>") + "</td>" +
+      "<td>" + (proy.fechaCierre || proy.deadline || "—") + "</td>" +
+      "<td style='color:#4ade80;'><b>" + formatear(proy.valorTotal) + " €</b>" +
+      (proy.ingresosObtenidos !== undefined ? " (cobrado: " + formatear(proy.ingresosObtenidos) + " €)" : "") + "</td>" +
+      "<td>" + (proy.bonusObtenido > 0 ?
+        "<span style='color:#fbbf24;'><b>✦ +" + formatear(proy.bonusObtenido) + " €</b></span>" :
+        "<span style='color:#64748b;'>—</span>") + "</td>" +
+      "</tr>";
+  });
+  html += "</table>";
   cont.innerHTML = html;
 }
 
@@ -1502,15 +1520,21 @@ function renderTodo() {
   renderPlantilla();
   renderMercado();
   renderOperaciones();
+  renderHistorial();
 }
 
 function renderMarcadorCabecera() {
   var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-  document.getElementById("estado-fecha").textContent =
-    meses[Math.max(0, mesActual - 1)] + " " + añoActual;
+  var idxMes = ((mesActual - 1) % 12 + 12) % 12;
+  var elFecha = document.getElementById("estado-fecha");
+  var textoFecha = meses[idxMes] + " " + añoActual;
+  while (elFecha.firstChild) elFecha.removeChild(elFecha.firstChild);
+  elFecha.appendChild(document.createTextNode(textoFecha));
+  elFecha.textContent = textoFecha;
   document.getElementById("estado-caja").textContent = formatear(Math.max(0, capital));
-  estado.fecha.mes = mesActual - 1;
+  document.getElementById("estado-plantilla").textContent = estado.plantilla.length;
+  estado.fecha.mes = idxMes;
   estado.fecha.anio = añoActual;
   estado.caja = capital;
 }
