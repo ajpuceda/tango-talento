@@ -359,6 +359,7 @@
     <button class="boton-2000" id="btn-avanzar-mes">▶ Advance Month</button>
     <span><b>Date:</b> <span id="estado-fecha">January 2025</span></span>
     <span><b>Cash:</b> <span id="estado-caja">—</span> PLN</span>
+    <span><b>Monthly Payroll:</b> <span id="estado-nomina">0</span> PLN</span>
     <span><b>Roster:</b> <span id="estado-plantilla">0</span> engineers</span>
     <span><b>🤝 Client Trust:</b> <span id="estado-confianza">20</span>/100</span>
     <span><b>👔 Employer Brand:</b> <span id="estado-empleador">50</span>/100</span>
@@ -381,6 +382,25 @@
         <div class="panel">
           <h3>Balances & Budgets</h3>
           <div class="cuerpo presupuestos">
+            <div class="presupuesto" style="grid-column: span 2;border:2px solid #16a34a;background:linear-gradient(135deg,#16213a,#0f2a1a);">
+              <h4 style="color:#4ade80;font-size:14px;border-bottom:1px solid #16a34a;">💰 TOTAL BANK CASH</h4>
+              <div class="saldo" id="saldo-caja-total" style="font-size:26px;color:#4ade80;">0 PLN</div>
+              <div style="font-size:10px;color:#94a3b8;margin-top:4px;" id="info-deuda-total"></div>
+            </div>
+            <div class="presupuesto" style="grid-column: span 2;border:2px solid #b45309;background:linear-gradient(135deg,#16213a,#2a1a0f);">
+              <h4 style="color:#fbbf24;font-size:13px;border-bottom:1px solid #b45309;">🚨 EMERGENCY FINANCING</h4>
+              <div id="seccion-financiacion">
+                <div style="font-size:10px;color:#94a3b8;margin-bottom:6px;">Accumulated Debt: <b id="deuda-actual">0</b> / 40,000 PLN · Interest: <b>1,000 PLN/month</b> per 10,000 PLN block</div>
+                <select id="sel-pool-prestamo" style="width:100%;padding:5px;margin-bottom:6px;border-radius:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;">
+                  <option value="caja">General Cash (salaries)</option>
+                  <option value="formacion">Training Budget</option>
+                  <option value="viajes">Travel Budget</option>
+                  <option value="rewards">Rewards Budget</option>
+                </select>
+                <button class="boton-2000" id="btn-prestamo-emergencia" style="width:100%;background:linear-gradient(180deg,#d97706,#b45309);border-color:#f59e0b;" onclick="solicitarPrestamoEmergencia()">Request Emergency Funding (+10,000 PLN)</button>
+                <div id="aviso-deuda-max" style="color:#f87171;font-weight:bold;font-size:11px;margin-top:4px;display:none;">Maximum Debt Capacity Reached</div>
+              </div>
+            </div>
             <div class="presupuesto"><h4>TRAINING</h4><div class="saldo" id="saldo-formacion">0 PLN</div></div>
             <div class="presupuesto"><h4>TRAVEL</h4><div class="saldo" id="saldo-viajes">0 PLN</div></div>
             <div class="presupuesto"><h4>REWARDS</h4><div class="saldo" id="saldo-rewards">0 PLN</div></div>
@@ -661,7 +681,57 @@ function renderBarraEstado() {
   renderMarcadorCabecera();
 }
 
+function calcularNominaMensual() {
+  var total = 0;
+  estado.plantilla.forEach(function (ing) {
+    total += ing.sueldo;
+  });
+  return total;
+}
+
+function solicitarPrestamoEmergencia() {
+  if (estado.deudaAcumulada >= 40000) {
+    notificar("alerta", "EMERGENCY FUNDING BLOCKED",
+      "Maximum Debt Capacity Reached (40,000 PLN). Repay your debt before requesting more funding.");
+    return;
+  }
+  var sel = document.getElementById("sel-pool-prestamo");
+  var pool = sel ? sel.value : "caja";
+  estado.deudaAcumulada += 10000;
+  if (pool === "formacion") estado.presupuestos.formacion += 10000;
+  else if (pool === "viajes") estado.presupuestos.viajes += 10000;
+  else if (pool === "rewards") estado.presupuestos.rewards += 10000;
+  else capital += 10000;
+  estado.caja = capital;
+  notificar("info", "EMERGENCY FUNDING RECEIVED",
+    "+10,000 PLN injected into the pool '" + pool + "'. Accumulated Debt: " +
+    formatear(estado.deudaAcumulada) + " PLN. Permanent interest: -" +
+    formatear((estado.deudaAcumulada / 10000) * 1000) + " PLN/month while unpaid.");
+  renderTodo();
+}
+
 function renderDespacho() {
+  var elCaja = document.getElementById("saldo-caja-total");
+  if (elCaja) {
+    elCaja.textContent = formatear(Math.max(0, capital)) + " PLN";
+    var elInfoDeuda = document.getElementById("info-deuda-total");
+    if (elInfoDeuda) {
+      elInfoDeuda.innerHTML = estado.deudaAcumulada > 0
+        ? "Accumulated Debt: <b style='color:#f87171;'>" + formatear(estado.deudaAcumulada) +
+          " PLN</b> · Monthly interest: <b style='color:#fbbf24;'>-" +
+          formatear((estado.deudaAcumulada / 10000) * 1000) + " PLN</b>"
+        : "No debt with the Director. Credit available: 40,000 PLN.";
+    }
+    var elDeuda = document.getElementById("deuda-actual");
+    if (elDeuda) elDeuda.textContent = formatear(estado.deudaAcumulada) + " PLN";
+    var btnPrestamo = document.getElementById("btn-prestamo-emergencia");
+    var avisoMax = document.getElementById("aviso-deuda-max");
+    if (btnPrestamo && avisoMax) {
+      var maximo = estado.deudaAcumulada >= 40000;
+      btnPrestamo.disabled = maximo;
+      avisoMax.style.display = maximo ? "block" : "none";
+    }
+  }
   document.getElementById("saldo-formacion").textContent = formatear(estado.presupuestos.formacion) + " PLN";
   document.getElementById("saldo-viajes").textContent = formatear(estado.presupuestos.viajes) + " PLN";
   document.getElementById("saldo-rewards").textContent = formatear(estado.presupuestos.rewards) + " PLN";
@@ -775,7 +845,7 @@ function avanzarMes() {
     notificar("info", "NEW FISCAL YEAR", "Año " + añoActual +
       ": distribuye tus presupuestos en el Despacho y revisa tus compromisos.");
   }
-  if (capital < 0) {
+  if (capital <= 0) {
     gestionarNumerosRojos();
     return;
   }
@@ -784,8 +854,8 @@ function avanzarMes() {
     capital -= interes;
     notificar("pen", "DEBT SERVICE COST",
       "Fixed rescue-loan interest: -" + formatear(interes) +
-      " PLN este mes (deuda acumulada: " + formatear(estado.deudaAcumulada) + " PLN).");
-    if (capital < 0) {
+      " PLN this month (accumulated debt: " + formatear(estado.deudaAcumulada) + " PLN).");
+    if (capital <= 0) {
       gestionarNumerosRojos();
       return;
     }
@@ -1285,61 +1355,53 @@ function mostrarGameOver(motivo) {
 
 function gestionarNumerosRojos() {
   var deuda = estado.deudaAcumulada || 0;
-  if (deuda >= 40000) {
+  var critico = capital < 0;
+  if (deuda >= 40000 && critico) {
     mostrarGameOver("Maximum debt reached (40,000 PLN) and negative capital after the rescue: " +
       "the Managing Director no longer trusts your management.");
     return;
   }
-  var maxBloques = Math.floor((40000 - deuda) / 10000);
-  if (maxBloques < 1) {
-    mostrarGameOver("Credit limit exhausted and no rescue blocks available.");
+  if (deuda >= 40000 && !critico) {
+    activarPausaDeficit("BUDGET AT THE LIMIT",
+      "Capital has reached " + formatear(Math.max(0, capital)) +
+      " PLN with the maximum debt capacity reached (40,000 PLN). " +
+      "Reduce expenses immediately: the next month in the red will end your career.");
     return;
   }
-  capital = 0;
-  var opciones = "";
-  for (var b = 1; b <= maxBloques; b++) {
-    opciones += "<option value='" + (b * 10000) + "'>" + b + " bloque(s) — " + formatear(b * 10000) + " PLN</option>";
+  if (critico) {
+    activarPausaDeficit("⚠️ BUDGET DEVIATION WARNING",
+      "Company capital has fallen into the red (" + formatear(capital) +
+      " PLN). The engine is paused: resolve the balance deficit via the Emergency Financing " +
+      "button in the Manager's Office, or accept the Director's rescue credit.");
+    return;
   }
-  var html = "<p style='font-size:12px;line-height:1.7;'>" +
-    "<b style='color:#f87171;'>The Managing Director has detected a serious budget deviation.</b><br>" +
-    "Company capital has fallen into the red. However, you are in luck: " +
-    "he offers you an unplanned <b>emergency credit line</b> to cover salaries or travel.<br><br>" +
-    "<b>Loan conditions:</b><br>" +
-    "• Maximum available: <b>" + formatear(maxBloques * 10000) + " PLN</b> (in 10,000 PLN blocks)<br>" +
-    "• Cost: <b>1,000 PLN per month por cada bloque</b> pedido, de forma fija mientras no se devuelva<br>" +
-    "• Deuda acumulada actual: <b>" + formatear(deuda) + " PLN</b><br>" +
-    "• If you reach 40,000 PLN in debt and close another month in the red, you will be fired.<br><br>" +
-    "<b style='color:#93c5fd;'>Choose how much money you need:</b> " +
-    "<select id='sel-credito' style='padding:4px;border-radius:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;'>" +
-    opciones + "</select><br><br>" +
-    "<b style='color:#93c5fd;'>Which budget do you inject the rescued money into?</b> " +
-    "<select id='sel-hucha' style='padding:4px;border-radius:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;'>" +
-    "<option value='caja'>General cash (salaries)</option>" +
-    "<option value='viajes'>Travel Budget</option>" +
-    "<option value='formacion'>Training Budget</option>" +
-    "</select></p>";
-  mostrarNotificacionEmergente("⚠️ BUDGET DEVIATION WARNING", html, "alerta", {
-    textoAceptar: "Accept Director's Credit",
-    textoRechazar: "Reject (Game Over)",
+  activarPausaDeficit("⚠️ TREASURY AT ZERO",
+    "Company capital has hit exactly 0 PLN. The engine is paused: top up the balance via the " +
+    "Emergency Financing button in the Manager's Office before advancing the month.");
+}
+
+function activarPausaDeficit(titulo, mensaje) {
+  notificar("pen", titulo, mensaje);
+  activarPestana("despacho");
+  var btnPrestamo = document.getElementById("btn-prestamo-emergencia");
+  if (btnPrestamo) {
+    btnPrestamo.style.outline = "3px solid #f59e0b";
+    btnPrestamo.style.animation = "pulse-prestamo 1.2s infinite";
+  }
+  mostrarNotificacionEmergente(titulo,
+    "<div style='font-size:12px;line-height:1.7;'>" + mensaje + "<br><br>" +
+    "<b style='color:#fbbf24;'>Go to the Manager's Office → Emergency Financing → " +
+    "'Request Emergency Funding (+10,000 PLN)'</b> or use the rescue credit below.</div>", "alerta", {
+    textoAceptar: "Request +10,000 PLN now",
+    textoRechazar: "Review finances first",
     aceptar: function () {
-      var selC = document.getElementById("sel-credito");
-      var selH = document.getElementById("sel-hucha");
-      var cantidad = selC ? parseInt(selC.value, 10) : maxBloques * 10000;
-      var hucha = selH ? selH.value : "caja";
-      estado.deudaAcumulada = (estado.deudaAcumulada || 0) + cantidad;
-      if (hucha === "viajes") estado.presupuestos.viajes += cantidad;
-      else if (hucha === "formacion") estado.presupuestos.formacion += cantidad;
-      else capital += cantidad;
-      notificar("info", "EMERGENCY CREDIT GRANTED",
-        "Rescue of " + formatear(cantidad) + " PLN injected into '" + hucha +
-        "'. Deuda acumulada: " + formatear(estado.deudaAcumulada) +
-        " PLN. Coste fijo: " + formatear((estado.deudaAcumulada / 10000) * 1000) + " PLN/mes.");
-      renderTodo();
+      solicitarPrestamoEmergencia();
     },
     rechazar: function () {
-      mostrarGameOver("You rejected the emergency credit with capital in the red.");
+      notificar("info", "ENGINE PAUSED", "Resolve the balance deficit in the Manager's Office before advancing the month.");
     }
   });
+  renderTodo();
 }
 
 /* =========================================================
@@ -1867,6 +1929,8 @@ function renderMarcadorCabecera() {
   document.getElementById("estado-caja").textContent = formatear(Math.max(0, capital)) +
     (estado.deudaAcumulada > 0 ? " (deuda: " + formatear(estado.deudaAcumulada) + " PLN)" : "");
   document.getElementById("estado-plantilla").textContent = estado.plantilla.length;
+  var elNomina = document.getElementById("estado-nomina");
+  if (elNomina) elNomina.textContent = formatear(calcularNominaMensual());
   var elConf = document.getElementById("estado-confianza");
   if (elConf) elConf.textContent = estado.confianzaCliente;
   var elEmp = document.getElementById("estado-empleador");
