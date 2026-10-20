@@ -358,7 +358,7 @@
   <div class="barra-estado" style="gap:12px;">
     <button class="boton-2000" id="btn-avanzar-mes">▶ Advance Month</button>
     <span><b>Date:</b> <span id="estado-fecha">January 2025</span></span>
-    <span><b>Cash:</b> <span id="estado-caja">—</span> PLN</span>
+    <span><b>Cash:</b> <span id="estado-caja">—</span></span>
     <span><b>Monthly Payroll:</b> <span id="estado-nomina">0</span> PLN</span>
     <span><b>Roster:</b> <span id="estado-plantilla">0</span> engineers</span>
     <span><b>🤝 Client Trust:</b> <span id="estado-confianza">20</span>/100</span>
@@ -1930,8 +1930,8 @@ function renderMarcadorCabecera() {
   while (elFecha.firstChild) elFecha.removeChild(elFecha.firstChild);
   elFecha.appendChild(document.createTextNode(textoFecha));
   elFecha.textContent = textoFecha;
-  document.getElementById("estado-caja").textContent = formatear(Math.max(0, capital)) +
-    (estado.deudaAcumulada > 0 ? " (deuda: " + formatear(estado.deudaAcumulada) + " PLN)" : "");
+  document.getElementById("estado-caja").textContent = formatear(Math.max(0, capital)) + " PLN" +
+    (estado.deudaAcumulada > 0 ? " (Debt: " + formatear(estado.deudaAcumulada) + " PLN)" : "");
   document.getElementById("estado-plantilla").textContent = estado.plantilla.length;
   var elNomina = document.getElementById("estado-nomina");
   if (elNomina) elNomina.textContent = formatear(calcularNominaMensual());
