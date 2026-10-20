@@ -6,39 +6,93 @@
 <title>Engineering Manager Tycoon 2000</title>
 <style>
   :root {
-    --gris-fondo: #9aa5b5;
-    --gris-panel: #d4d0c8;
-    --gris-borde: #808080;
-    --azul-oscuro: #000080;
-    --azul-titulo: #0a246a;
-    --azul-claro: #a6caf0;
-    --rojo: #c00000;
-    --amarillo: #808000;
-    --verde: #25774b;
-    --verde-oscuro: #1f5c2e;
-    --dorado: #b8860b;
+    --gris-fondo: #0f172a;
+    --gris-panel: #1e293b;
+    --gris-borde: #334155;
+    --azul-oscuro: #0ea5e9;
+    --azul-titulo: #93c5fd;
+    --azul-claro: #334155;
+    --rojo: #f87171;
+    --amarillo: #facc15;
+    --verde: #4ade80;
+    --verde-oscuro: #16a34a;
+    --dorado: #fbbf24;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: "MS Sans Serif", "Tahoma", "Verdana", sans-serif;
+    font-family: "Segoe UI", "Tahoma", "Verdana", sans-serif;
     font-size: 12px;
     background: var(--gris-fondo);
-    color: #000;
+    color: #f1f5f9;
     padding: 8px;
     user-select: none;
   }
   .marco {
-    border: 2px outset #fff;
+    border: 1px solid var(--gris-borde);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
     background: var(--gris-panel);
-    max-width: 1000px;
+    max-width: 1160px;
     margin: 0 auto;
-    padding: 3px;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .zona-juego { flex: 1 1 720px; min-width: 640px; }
+  .zona-notificaciones {
+    flex: 0 0 300px;
+    border-left: 1px solid var(--gris-borde);
+    background: rgba(15, 23, 42, 0.6);
+    display: flex;
+    flex-direction: column;
+    max-height: 780px;
+  }
+  .zona-notificaciones h4 {
+    background: linear-gradient(90deg, #1e293b, #0f172a);
+    color: var(--azul-titulo);
+    font-size: 11px;
+    padding: 8px 10px;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--gris-borde);
+  }
+  #centro-comunicaciones {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    scroll-behavior: smooth;
+  }
+  .notificacion {
+    border: 1px solid var(--gris-borde);
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-size: 10.5px;
+    background: rgba(30, 41, 59, 0.85);
+    animation: notif-in 0.35s ease-out;
+    line-height: 1.45;
+  }
+  .notificacion .titulo {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .notificacion.info .titulo { color: var(--azul-titulo); }
+  .notificacion.exito .titulo { color: var(--verde); }
+  .notificacion.alerta .titulo { color: var(--rojo); }
+  .notificacion.urgente .titulo { color: var(--dorado); }
+  .notificacion.pen .titulo { color: #fb7185; }
+  @keyframes notif-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   .barra-titulo {
-    background: linear-gradient(90deg, var(--azul-oscuro), #1084d0);
+    background: linear-gradient(90deg, #0f172a, #1d4ed8);
     color: #fff;
     font-weight: bold;
-    padding: 4px 8px;
+    padding: 6px 12px;
     letter-spacing: 1px;
     display: flex;
     justify-content: space-between;
@@ -54,107 +108,123 @@
     margin-left: 2px;
   }
   .barra-estado {
-    background: #e8e6e0;
+    background: #0f172a;
     border-top: 1px solid var(--gris-borde);
-    padding: 3px 8px;
+    padding: 6px 10px;
     display: flex;
     gap: 24px;
     font-size: 11px;
+    align-items: center;
   }
-  .barra-estado span b { color: var(--azul-oscuro); }
+  .barra-estado span b { color: var(--azul-titulo); }
 
   .nav-pestanas {
     display: flex;
-    gap: 2px;
-    padding: 6px 6px 0 6px;
+    gap: 4px;
+    padding: 8px 10px 0 10px;
   }
   .pestana {
-    border: 2px outset #fff;
-    background: #c0c4c8;
-    padding: 4px 14px;
+    border: 1px solid var(--gris-borde);
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+    background: #16213a;
+    padding: 5px 16px;
     cursor: pointer;
     font-weight: bold;
-    color: #333;
-    border-bottom: none;
+    color: #94a3b8;
   }
   .pestana.activa {
     background: var(--gris-panel);
     color: var(--azul-titulo);
     position: relative;
-    top: 2px;
+    top: 1px;
   }
-  .pestana:not(.activa):hover { background: #d8dce0; }
+  .pestana:not(.activa):hover { background: #1e293b; color: #e2e8f0; }
 
   .contenido {
-    border: 2px inset #fff;
-    background: #f4f2ee;
+    border: 1px solid var(--gris-borde);
+    border-radius: 0 10px 10px 10px;
+    background: #0f172a;
     min-height: 480px;
-    padding: 10px;
+    padding: 12px;
   }
   .panel {
     border: 1px solid var(--gris-borde);
+    border-radius: 12px;
     background: var(--gris-panel);
     margin-bottom: 10px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    overflow: hidden;
   }
   .panel h3 {
-    background: linear-gradient(180deg, #4a6b9e, var(--azul-oscuro));
+    background: linear-gradient(90deg, #1d4ed8, #0f172a);
     color: #fff;
     font-size: 12px;
-    padding: 3px 8px;
+    padding: 5px 12px;
     letter-spacing: 0.5px;
   }
-  .panel .cuerpo { padding: 8px; }
+  .panel .cuerpo { padding: 10px; }
 
   table.tabla {
     width: 100%;
     border-collapse: collapse;
-    background: #fff;
+    background: #16213a;
     border: 1px solid var(--gris-borde);
+    border-radius: 8px;
+    overflow: hidden;
   }
   table.tabla th {
-    background: var(--azul-claro);
+    background: #233250;
     border: 1px solid var(--gris-borde);
-    padding: 3px 6px;
+    padding: 4px 6px;
     font-size: 11px;
     text-align: left;
+    color: var(--azul-titulo);
   }
   table.tabla td {
-    border: 1px solid #b8b8b8;
-    padding: 3px 6px;
+    border: 1px solid #2c3e5d;
+    padding: 4px 6px;
     font-size: 11px;
+    color: #e2e8f0;
   }
-  table.tabla tr:nth-child(even) td { background: #eef2f8; }
+  table.tabla tr:nth-child(even) td { background: #1b2740; }
 
   .presupuestos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .presupuesto {
     border: 1px solid var(--gris-borde);
-    background: #fff;
-    padding: 6px;
+    border-radius: 10px;
+    background: #16213a;
+    padding: 8px;
   }
   .presupuesto h4 {
     font-size: 11px;
-    color: var(--azul-oscuro);
+    color: var(--azul-titulo);
     border-bottom: 1px dashed var(--gris-borde);
     margin-bottom: 4px;
   }
-  .presupuesto .saldo { font-size: 16px; font-weight: bold; color: var(--verde-oscuro); }
+  .presupuesto .saldo { font-size: 16px; font-weight: bold; color: var(--verde); }
 
   .boton-2000 {
-    background: var(--gris-panel);
-    border: 2px outset #fff;
+    background: linear-gradient(180deg, #2563eb, #1d4ed8);
+    border: 1px solid #3b82f6;
+    border-radius: 8px;
     padding: 4px 14px;
     font-family: inherit;
     font-size: 11px;
     font-weight: bold;
     cursor: pointer;
-    color: #000;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(37,99,235,0.4);
+    transition: filter 0.15s;
   }
-  .boton-2000:active { border-style: inset; }
-  .boton-2000:disabled { color: #888; cursor: default; }
+  .boton-2000:hover { filter: brightness(1.15); }
+  .boton-2000:active { transform: translateY(1px); }
+  .boton-2000:disabled { background: #334155; border-color: #475569; color: #64748b; cursor: default; box-shadow: none; }
 
   .tarjeta-ingeniero {
     border: 1px solid var(--gris-borde);
-    background: linear-gradient(180deg, #fff, #dfe3ea);
+    border-radius: 10px;
+    background: #16213a;
     padding: 8px;
     display: flex;
     gap: 10px;
@@ -162,8 +232,9 @@
   }
   .avatar {
     width: 48px; height: 48px;
-    border: 2px inset var(--gris-borde);
-    background: #fff;
+    border: 2px solid var(--gris-borde);
+    border-radius: 10px;
+    background: #16213a;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -174,16 +245,18 @@
   }
   .barra-nivel-caja {
     height: 12px;
-    border: 1px inset var(--gris-borde);
-    background: #fff;
+    border: 1px solid var(--gris-borde);
+    border-radius: 6px;
+    background: #0f172a;
     width: 100%;
+    overflow: hidden;
   }
-  .barra-nivel { height: 100%; background: linear-gradient(180deg, #5cb85c, var(--verde-oscuro)); }
-  .disc { font-weight: bold; padding: 1px 6px; border: 1px solid #444; font-size: 10px; }
-  .disc-D { background: #e05050; color: #fff; }
-  .disc-I { background: #e0c040; color: #333; }
-  .disc-S { background: #4aa564; color: #fff; }
-  .disc-C { background: #5070c0; color: #fff; }
+  .barra-nivel { height: 100%; background: linear-gradient(90deg, #22c55e, #4ade80); }
+  .disc { font-weight: bold; padding: 1px 6px; border: 1px solid var(--gris-borde); border-radius: 6px; font-size: 10px; }
+  .disc-D { background: #dc2626; color: #fff; box-shadow: 0 0 8px rgba(220,38,38,0.6); }
+  .disc-I { background: #eab308; color: #1e293b; box-shadow: 0 0 8px rgba(234,179,8,0.6); }
+  .disc-S { background: #16a34a; color: #fff; box-shadow: 0 0 8px rgba(22,163,74,0.6); }
+  .disc-C { background: #2563eb; color: #fff; box-shadow: 0 0 8px rgba(37,99,235,0.6); }
 
   .cuadricula-tactica {
     display: grid;
@@ -218,10 +291,51 @@
   .ronda-info {
     font-size: 11px;
     font-weight: bold;
-    color: var(--azul-oscuro);
+    color: var(--azul-titulo);
     margin-bottom: 8px;
   }
   .oculto { display: none; }
+
+  .modal-fondo {
+    position: fixed; inset: 0;
+    background: rgba(2, 6, 23, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+  }
+  .modal-caja {
+    background: rgba(30, 41, 59, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    padding: 18px;
+    width: 640px; max-width: 92vw;
+    max-height: 85vh; overflow-y: auto;
+    color: #f1f5f9;
+  }
+  .modal-caja h2 {
+    font-size: 14px; color: var(--azul-titulo);
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--gris-borde);
+    padding-bottom: 6px; margin-bottom: 10px;
+  }
+  .modal-caja .acciones {
+    display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px;
+  }
+  .proyecto-oferta {
+    border: 1px solid var(--gris-borde);
+    border-radius: 10px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    background: rgba(15, 23, 42, 0.6);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .proyecto-oferta.seleccionada { border-color: var(--azul-oscuro); box-shadow: 0 0 10px rgba(14,165,233,0.5); }
+  .proyecto-oferta .datos { font-size: 11px; line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -230,6 +344,7 @@
     <span>ENGINEERING MANAGER TYCOON 2000 — Generic Aerospace Corp.</span>
     <span class="botones"><button>_</button><button>□</button><button>×</button></span>
   </div>
+  <div class="zona-juego">
 
   <div class="barra-estado" style="gap:12px;">
     <button class="boton-2000" id="btn-avanzar-mes">▶ Avanzar Mes</button>
@@ -305,6 +420,22 @@
       </div>
     </div>
 
+  </div><!-- /zona-juego -->
+
+  <div class="zona-notificaciones">
+    <h4>:: CENTRO DE COMUNICACIONES — GENERIC AEROSPACE ::</h4>
+    <div id="centro-comunicaciones"></div>
+  </div>
+</div>
+
+<div id="modal-fondo" class="modal-fondo oculto">
+  <div class="modal-caja">
+    <h2 id="modal-titulo">Planificación de Capacidad Anual</h2>
+    <div id="modal-contenido"></div>
+    <div class="acciones">
+      <button class="boton-2000" id="modal-cancelar">Cancelar</button>
+      <button class="boton-2000" id="modal-confirmar">Confirmar Compromisos</button>
+    </div>
   </div>
 </div>
 
@@ -412,7 +543,7 @@ function contratarCandidato(id) {
   var cand = estado.mercado.find(function (c) { return c.id === id; });
   if (!cand || cand.contratado) return;
   if (estado.caja < cand.sueldoDeseado) {
-    alert("Caja insuficiente para firmar a " + cand.nombre + ".");
+    notificar("alerta", "FICHAJE RECHAZADO", "Caja insuficiente para firmar a " + cand.nombre + ".");
     return;
   }
   estado.caja -= cand.sueldoDeseado;
@@ -431,12 +562,14 @@ function contratarCandidato(id) {
     mesesSinFormacion: 0
   };
   estado.plantilla.push(ficha);
+  notificar("exito", "NUEVO FICHAJE", ficha.nombre + " (" + ficha.rango + ", Nv " + ficha.nivel +
+    ") firmado por " + formatear(ficha.sueldo) + " €.");
   renderTodo();
 }
 
 function siguienteRonda() {
   if (estado.ronda >= estado.maxRondas) {
-    alert("Has agotado las 3 rondas de fichajes. El mercado queda cerrado.");
+    notificar("info", "MERCADO INICIAL CERRADO", "Has agotado las 3 rondas de fichajes. Próxima tanda: mercado trimestral.");
     return;
   }
   estado.ronda++;
@@ -483,8 +616,8 @@ function renderPlantilla() {
       "<td style='min-width:110px;'><div class='barra-nivel-caja'><div class='barra-nivel' style='width:" + ing.nivel + "%;'></div></div> " + ing.nivel + "</td>" +
       "<td>" + formatear(ing.sueldo) + " €</td>" +
       "<td><span class='disc disc-" + ing.disc + "'>" + ing.disc + " · " + ing.discDesc + "</span></td>" +
-      "<td>" + (ing.mesesSinFormacion || 0) + "/" + limiteSinFormacion(ing.rango) + (ing.enFormacion ? " <span class='disc disc-I'>EN FORMACIÓN</span>" : "") + "</td>" +
-      "<td>" + (ing.asignado || "—") + (ing.enFormacion ? " (no aporta este mes)" : "") + "</td>" +
+      "<td>" + (ing.mesesSinFormacion || 0) + "/" + limiteSinFormacion(ing.rango) + (ing.enFormacion ? " <span class='disc disc-I'>EN CAPACITACIÓN</span>" : "") + "</td>" +
+      "<td>" + (ing.asignado || "—") + (ing.enFormacion ? " <b style='color:#fbbf24;'>(no aporta este mes)</b>" : "") + "</td>" +
       "<td><button class='boton-2000' style='padding:2px 8px;font-size:10px;' onclick=\"aplicarFormacion('" + ing.id + "')\">Formar (1.500 €)</button> " +
       "<button class='boton-2000' style='padding:2px 8px;font-size:10px;' onclick=\"darReward('" + ing.id + "')\">Reward (2.000 €)</button></td>" +
       "</tr>";
@@ -549,10 +682,17 @@ function avanzarMes() {
   });
   capital -= costeSalarial;
   eventosMensuales();
+  if (mesActual === 10 && !window._planAnualHecho) {
+    window._planAnualHecho = true;
+    panelPlanificacionAnual();
+  }
   if (mesActual > 12) {
     mesActual = 1;
     añoActual++;
+    window._planAnualHecho = false;
     abrirModalPresupuestos();
+    notificar("info", "NUEVO AÑO FISCAL", "Año " + añoActual +
+      ": distribuye tus presupuestos en el Despacho y revisa tus compromisos.");
   }
   if (capital < 0) {
     mostrarGameOver();
@@ -567,7 +707,8 @@ function simularProyectosCliente() {
     if (!activo) {
       if (proy.tipo !== "URGENTE") {
         capital -= 2000;
-        alert(":: RETRASO :: " + proy.nombre + " sin personal asignado: penalización mensual de $2,000.");
+        notificar("pen", "RETRASO DETECTADO",
+          proy.nombre + ": sin personal asignado. Penalización mensual de $2,000 aplicada.");
       }
       return;
     }
@@ -582,15 +723,15 @@ function simularProyectosCliente() {
     if (vacios > 0) {
       var pen = vacios * 2000;
       capital -= pen;
-      alert(":: VACANTES :: " + proy.nombre + ": " + vacios +
-        " slot(s) sin aporte este mes (incluye a " +
-        "quienes están En Curso de Formación). Penalización mensual: -" + formatear(pen) + " €");
+      notificar("pen", "VACANTES SIN CUBRIR",
+        proy.nombre + ": " + vacios +
+        " slot(s) sin aporte este mes (incluye a quienes están En Capacitación Técnica). Penalización mensual: -" + formatear(pen) + " €");
     }
     var factorOcupacion = aportan / proy.slotsRequeridos;
     var sinViaje = proy.requiereViaje && presupuestoViajesAgotado();
     if (sinViaje) {
-      alert(":: SIN PRESUPUESTO DE VIAJES :: " + proy.nombre +
-        " exige Gasto de Viaje. Sin presupuesto, rinde al 0% este mes.");
+      notificar("pen", "SIN PRESUPUESTO DE VIAJES",
+        proy.nombre + " exige Gasto de Viaje. Sin presupuesto, rinde al 0% este mes.");
       factorOcupacion = 0;
     }
     var ingreso = Math.round(proy.ingresoMes * factorOcupacion);
@@ -610,6 +751,51 @@ function presupuestoViajesAgotado() {
 
 var COSTE_VIAJE_MES = 1000;
 
+/* =========================================================
+   CENTRO DE COMUNICACIONES (notificaciones persistentes)
+   ========================================================= */
+function notificar(tipo, titulo, mensaje) {
+  var cont = document.getElementById("centro-comunicaciones");
+  if (!cont) return;
+  var div = document.createElement("div");
+  div.className = "notificacion " + tipo;
+  var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+  var stamp = meses[Math.max(0, mesActual - 1)] + " Año " + añoActual;
+  div.innerHTML = "<span class='titulo'>" + titulo + "</span>" +
+    "<span style='color:#64748b;font-size:9.5px;'>" + stamp + "</span><br>" + mensaje;
+  cont.appendChild(div);
+  cont.scrollTop = cont.scrollHeight;
+}
+
+function abrirModal(titulo, contenidoHTML, textoConfirmar, onConfirm, obligatorio) {
+  var fondo = document.getElementById("modal-fondo");
+  document.getElementById("modal-titulo").textContent = titulo;
+  document.getElementById("modal-contenido").innerHTML = contenidoHTML;
+  var btnConf = document.getElementById("modal-confirmar");
+  var btnCanc = document.getElementById("modal-cancelar");
+  btnConf.textContent = textoConfirmar || "Confirmar";
+  btnCanc.classList.toggle("oculto", !!obligatorio);
+  btnConf.onclick = function () {
+    cerrarModal();
+    if (onConfirm) onConfirm();
+  };
+  btnCanc.onclick = function () { cerrarModal(); };
+  fondo.classList.remove("oculto");
+}
+
+function cerrarModal() {
+  document.getElementById("modal-fondo").classList.add("oculto");
+}
+
+function proyectosSeleccionadosModal() {
+  var ids = [];
+  document.querySelectorAll("#modal-contenido input[type=checkbox]:checked").forEach(function (cb) {
+    ids.push(cb.value);
+  });
+  return ids;
+}
+
 function cerrarProyecto(proy) {
   var asignados = [];
   proy.slots.forEach(function (id) {
@@ -618,29 +804,31 @@ function cerrarProyecto(proy) {
       if (ing) asignados.push(ing);
     }
   });
-  var msgCierre = ":: CIERRE DE PROYECTO: " + proy.nombre + " ::\n";
+  var msgCierre = "";
+  var bonus = false;
   var valorBase = proy.valorTotal;
   if (asignados.length > 0) {
     var nivelMedio = asignados.reduce(function (acc, e) { return acc + e.nivel; }, 0) / asignados.length;
     var encaje = asignados.filter(function (e) { return e.disc === proy.discRequerido; }).length;
     var mayoria = encaje > asignados.length / 2;
     if (nivelMedio >= proy.minNivelExigido && mayoria) {
-      var bonus = Math.round(valorBase * 0.25);
-      capital += bonus;
-      msgCierre += "¡Bonus de Rendimiento Extra del +25%! +" + formatear(bonus) + " €\n" +
+      var bonusCant = Math.round(valorBase * 0.25);
+      bonus = true;
+      capital += bonusCant;
+      msgCierre += "¡Bonus de Rendimiento Extra del +25%! +" + formatear(bonusCant) + " € — " +
         "Nivel medio " + Math.round(nivelMedio) + " (mín. " + proy.minNivelExigido + "), " +
-        encaje + "/" + asignados.length + " perfiles DISC " + proy.discRequerido + ".\n";
+        encaje + "/" + asignados.length + " perfiles DISC " + proy.discRequerido + ". ";
     } else {
       msgCierre += "Sin bonus: nivel medio " + Math.round(nivelMedio) +
         " (mín. " + proy.minNivelExigido + "), " + encaje + "/" + asignados.length +
-        " perfiles DISC " + proy.discRequerido + ".\n";
+        " perfiles DISC " + proy.discRequerido + ". ";
     }
   }
   var vacios = proy.slots.filter(function (s) { return !s; }).length;
   if (vacios > 0) {
     var penalizacion = vacios * 2000;
     capital -= penalizacion;
-    msgCierre += "Penalización por slots vacíos (" + vacios + " × $2,000): -" + formatear(penalizacion) + " €\n";
+    msgCierre += "Penalización por slots vacíos (" + vacios + " × $2,000): -" + formatear(penalizacion) + " € ";
   }
   asignados.forEach(function (ing) {
     ing.asignado = "I+D Interno";
@@ -649,7 +837,7 @@ function cerrarProyecto(proy) {
   proy.estadoProy = "FINALIZADO";
   var idx = proyectosAsignados.indexOf(proy.id);
   if (idx >= 0) proyectosAsignados.splice(idx, 1);
-  alert(msgCierre);
+  notificar(bonus ? "exito" : "info", "CIERRE DE PROYECTO: " + proy.nombre, msgCierre);
 }
 
 /* =========================================================
@@ -706,19 +894,19 @@ function asignarIngenieroAProyecto(empleadoId, proyectoId, slotIndex) {
   if (slotIndex === undefined || slotIndex === null) {
     slotIndex = proy.slots.findIndex(function (s) { return s === null || s === undefined; });
     if (slotIndex < 0) {
-      alert("Proyecto " + proy.nombre + ": sin slots libres.");
+      notificar("alerta", "SIN SLOTS LIBRES", "Proyecto " + proy.nombre + ": todos los slots están ocupados.");
       return;
     }
   }
   if (proy.slots[slotIndex]) {
-    alert("Ese slot ya está ocupado.");
+    notificar("alerta", "SLOT OCUPADO", "Ese slot ya está ocupado. Libera al ingeniero primero.");
     return;
   }
   if (proy.requiereViaje) {
     if (estado.presupuestos.viajes < COSTE_VIAJE_MES) {
-      alert(":: PRESUPUESTO DE VIAJES AGOTADO ::\n\n" + proy.nombre +
+      notificar("pen", "PRESUPUESTO DE VIAJES AGOTADO", proy.nombre +
         " exige Gasto de Viaje (" + formatear(COSTE_VIAJE_MES) +
-        " € por ingeniero/mes). No se puede asignar personal hasta reponer presupuesto de Viajes.");
+        " € por ingeniero/mes). No se puede asignar personal hasta reponer el presupuesto de Viajes.");
       return;
     }
     estado.presupuestos.viajes -= COSTE_VIAJE_MES;
@@ -755,12 +943,12 @@ function abrirModalPresupuestos() {
   if (respuesta === null) return;
   var partes = respuesta.split(",").map(function (x) { return parseInt(x.trim(), 10) || 0; });
   if (partes.length !== 4) {
-    alert("Formato incorrecto. Se aplicará reparto por defecto.");
+    notificar("alerta", "FORMATO INCORRECTO", "Reparto de presupuestos con formato inválido: se aplica reparto por defecto.");
     partes = [10000, 10000, 10000, 10000];
   }
   var suma = partes[0] + partes[1] + partes[2] + partes[3];
   if (suma > total) {
-    alert("Presupuesto excedido. Se aplicará reparto por defecto.");
+    notificar("alerta", "PRESUPUESTO EXCEDIDO", "La suma supera el máximo anual: se aplica reparto por defecto.");
     partes = [10000, 10000, 10000, 10000];
   }
   presupuestosAnuales = {
@@ -773,11 +961,23 @@ function abrirModalPresupuestos() {
   estado.presupuestos.viajes = partes[1];
   estado.presupuestos.integracion = partes[2];
   estado.presupuestos.rewards = partes[3];
+  notificar("exito", "PRESUPUESTOS ASIGNADOS",
+    "Año " + añoActual + ": Formación " + formatear(partes[0]) + " € · Viajes " + formatear(partes[1]) +
+    " € · Integración " + formatear(partes[2]) + " € · Rewards " + formatear(partes[3]) + " €.");
   renderDespacho();
 }
 
 function mostrarGameOver() {
-  alert("===== GAME OVER =====\n\nCapital en negativo. El Director te ha despedido.\nAño " + añoActual + ", Mes " + mesActual);
+  notificar("alerta", "GAME OVER", "Capital en negativo. El Director te ha despedido. Año " + añoActual + ", Mes " + mesActual + ".");
+  var fondo = document.getElementById("modal-fondo");
+  document.getElementById("modal-titulo").textContent = "GAME OVER";
+  document.getElementById("modal-contenido").innerHTML =
+    "<p style='font-size:13px;line-height:1.6;'>Capital en negativo. El Director de Generic Aerospace te ha despedido.<br>" +
+    "Año " + añoActual + ", Mes " + mesActual + ".</p>";
+  document.getElementById("modal-confirmar").textContent = "Aceptar";
+  document.getElementById("modal-confirmar").onclick = function () { cerrarModal(); };
+  document.getElementById("modal-cancelar").classList.add("oculto");
+  fondo.classList.remove("oculto");
   document.getElementById("btn-avanzar-mes").disabled = true;
 }
 
@@ -815,9 +1015,11 @@ function verificarRetencionPersonal() {
     if (i >= 0) estado.plantilla.splice(i, 1);
   });
   if (renuncias.length > 0) {
-    var nombres = renuncias.map(function (r) { return r.nombre + " (" + r.rango + ")"; }).join(", ");
-    alert(":: ABANDONO DE PLANTILLA ::\n\n" + nombres +
-      "\n\nHan renunciado por falta de formación (sin curso dentro de su límite).");
+    renuncias.forEach(function (ing) {
+      notificar("alerta", "ABANDONO DE PLANTILLA",
+        ing.nombre + " (" + ing.rango + ") ha renunciado por falta de formación " +
+        "(sin curso dentro de su límite). ¡Refuerza el plan de formación o da Rewards!");
+    });
   }
 }
 
@@ -826,7 +1028,7 @@ function aplicarFormacion(empleadoId) {
   if (!ing) return;
   var COSTE_FORMACION = 1500;
   if (estado.presupuestos.formacion < COSTE_FORMACION) {
-    alert("Presupuesto de Formación insuficiente (" +
+    notificar("alerta", "FORMACIÓN BLOQUEADA", "Presupuesto de Formación insuficiente (" +
       formatear(estado.presupuestos.formacion) + " € disponibles, se necesitan " +
       formatear(COSTE_FORMACION) + " €).");
     return;
@@ -835,10 +1037,10 @@ function aplicarFormacion(empleadoId) {
   presupuestosAnuales.formacion = estado.presupuestos.formacion;
   ing.enFormacion = true;
   var eraAsignado = ing.asignado;
-  alert(ing.nombre + " se va En Curso de Formación este mes" +
-    (eraAsignado ? " y DEJA DE APORTAR a su proyecto actual." +
-      "\nUsa la banca (I+D Interno) para cubrir su slot." : ".") +
-    "\nLa subida de nivel se aplicará al final del mes.");
+  notificar("info", "EN CAPACITACIÓN TÉCNICA",
+    ing.nombre + " se va En Capacitación Técnica este mes" +
+    (eraAsignado ? " y DEJA DE APORTAR a su proyecto actual. Usa la banca (I+D Interno) para cubrir su slot." : ".") +
+    " La subida de nivel se aplicará al final del mes.");
   var subida = entero(5, 12);
   ing.nivelPendiente = subida;
   ing.mesesSinFormacion = 0;
@@ -855,7 +1057,9 @@ function eventosMensuales() {
     nuevaRondaMercado();
     mercadoAnualActivo = true;
     estado.ronda = 1;
-    alert(":: MERCADO LABORAL TRIMESTRAL ::\n\nTanda de 5 candidatos disponible en la pestaña Mercado.\nSi avanzas el mes sin firmarlos, desaparecerán para siempre.");
+    notificar("info", "MERCADO LABORAL TRIMESTRAL",
+      "Tanda de 5 candidatos frescos disponible en la pestaña Mercado. " +
+      "Si avanzas el mes sin firmarlos, desaparecerán para siempre.");
   } else {
     if (mercadoAnualActivo) {
       estado.mercado = [];
@@ -907,32 +1111,45 @@ function ofrecerProyectosEmergencia() {
   var n = entero(1, 2);
   var ofertas = [];
   for (var i = 0; i < n; i++) ofertas.push(generarProyectoUrgente());
-  var msg = ":: PROYECTOS DE EMERGENCIA — Generic Aerospace ::\n\n";
-  ofertas.forEach(function (p, idx) {
-    msg += (idx + 1) + ". " + p.nombre + " — " + p.duracionMeses + " meses, " +
-      formatear(p.ingresoMes) + " €/mes (total " + formatear(p.valorTotal) + " €), " +
-      p.slotsRequeridos + " slots" + (p.requiereViaje ? ", REQUIERE VIAJE" : "") + "\n";
+  var html = "<p style='font-size:11px;margin-bottom:10px;color:#94a3b8;'>" +
+    "El Director de Generic Aerospace necesita apoyo URGENTE. Duración corta, alta remuneración. " +
+    "Acepta ahora o ignora la oferta.</p>";
+  ofertas.forEach(function (p) {
+    html += "<div class='proyecto-oferta'><div class='datos'><b>" + p.nombre + "</b> " +
+      "<span class='disc disc-I'>URGENTE</span><br>" +
+      p.duracionMeses + " meses · " + formatear(p.ingresoMes) + " €/mes (total " + formatear(p.valorTotal) + " €) · " +
+      p.slotsRequeridos + " slots" +
+      (p.requiereViaje ? " · <b style='color:#fbbf24;'>REQUIERE VIAJE</b>" : "") + "</div>" +
+      "<input type='checkbox' value='" + p.id + "'></div>";
   });
-  msg += "\nAcepta (números separados por comas) o 0 para rechazar todos.";
-  var resp = prompt(msg, "0");
-  if (resp === null) return;
-  var elegidos = resp.split(",").map(function (x) { return parseInt(x.trim(), 10) || 0; })
-    .filter(function (x) { return x >= 1 && x <= ofertas.length; });
-  elegidos.forEach(function (idx) {
-    var p = ofertas[idx - 1];
-    for (var s = 0; s < p.slotsRequeridos; s++) p.slots.push(null);
-    p.id = "urg-" + proyectosDisponibles.length + "-" + Math.random().toString(36).slice(2, 6);
-    proyectosDisponibles.push(p);
-    alert("EMERGENCIA ACEPTADA: " + p.nombre + "\nAsigna personal YA en Operaciones (duración " + p.duracionMeses + " meses)." +
-      (p.requiereViaje ? "\n¡ATENCIÓN: este proyecto exige Gasto de Viaje!" : ""));
-  });
-  if (elegidos.length === 0) alert("Proyectos de emergencia rechazados.");
-  renderOperaciones();
+  window._urgentesOfertas = ofertas;
+  notificar("urgente", "OFERTA DE EMERGENCIA",
+    n + " proyecto(s) urgente(s) disponibles. Revisa el panel para aceptarlos o ignorarlos.");
+  abrirModal("Proyectos de Emergencia — Generic Aerospace", html,
+    "Aceptar Seleccionados", function () {
+      var elegidos = proyectosSeleccionadosModal();
+      var aceptados = 0;
+      ofertas.forEach(function (p) {
+        if (elegidos.indexOf(p.id) >= 0) {
+          for (var s = 0; s < p.slotsRequeridos; s++) p.slots.push(null);
+          p.id = "urg-" + proyectosDisponibles.length + "-" + Math.random().toString(36).slice(2, 6);
+          proyectosDisponibles.push(p);
+          aceptados++;
+          notificar("urgente", "EMERGENCIA ACEPTADA",
+            p.nombre + ": asigna personal YA en Operaciones (" + p.duracionMeses + " meses)." +
+            (p.requiereViaje ? " ¡Exige Gasto de Viaje!" : ""));
+        }
+      });
+      if (aceptados === 0) notificar("info", "EMERGENCIAS IGNORADAS", "Ofertas de emergencia rechazadas.");
+      renderOperaciones();
+    }, false);
 }
 
 function panelPlanificacionAnual() {
   var candidata = [];
-  var usados = proyectosDisponibles.filter(function (p) { return p.estadoProy === "ACTIVO"; });
+  var usados = proyectosDisponibles.filter(function (p) {
+    return p.estadoProy === "ACTIVO" && p.tipo !== "URGENTE";
+  });
   var idsUsados = usados.map(function (p) { return p.nombre; });
   var pool = NOMBRES_PROYECTOS.concat(NOMBRES_PROYECTOS_URGENTES);
   for (var i = 0; i < 4; i++) {
@@ -960,53 +1177,67 @@ function panelPlanificacionAnual() {
       color: colorAvatar(disc.letra)
     });
   }
-  var msg = ":: PLANIFICACIÓN ANUAL — Octubre Año " + añoActual + " ::\n\n" +
-    "Generic Aerospace presenta sus proyectos para el AÑO ENTRANTE.\n¡Es OBLIGATORIO comprometerse al menos a uno!\n\n";
-  candidata.forEach(function (p, idx) {
-    msg += (idx + 1) + ". " + p.nombre + " — " + p.duracionMeses + " meses, " +
-      formatear(p.ingresoMes) + " €/mes, " + p.slotsRequeridos + " slots, DISC " + p.discRequerido +
-      (p.requiereViaje ? ", REQUIERE VIAJE" : "") + "\n";
-  });
-  var resp = prompt(msg + "\nElige números separados por comas:", "1");
-  if (resp === null) resp = "1";
-  var elegidos = resp.split(",").map(function (x) { return parseInt(x.trim(), 10) || 0; })
-    .filter(function (x) { return x >= 1 && x <= candidata.length; });
-  if (elegidos.length === 0) elegidos = [1];
-  elegidos.forEach(function (idx) {
-    var p = candidata[idx - 1];
-    for (var s = 0; s < p.slotsRequeridos; s++) p.slots.push(null);
-    proyectosDisponibles.push(p);
+  var html = "<p style='font-size:11px;margin-bottom:10px;color:#94a3b8;'>" +
+    "Generic Aerospace presenta sus proyectos para el <b style='color:#93c5fd;'>AÑO " + (añoActual + 1) +
+    "</b>. Selecciona a cuáles te comprometes oficialmente (mínimo 1).</p>";
+  candidata.forEach(function (p) {
+    html += "<div class='proyecto-oferta'><div class='datos'><b>" + p.nombre + "</b><br>" +
+      p.duracionMeses + " meses · " + formatear(p.ingresoMes) + " €/mes · " +
+      p.slotsRequeridos + " slots · DISC <span class='disc disc-" + p.discRequerido + "'>" + p.discRequerido + "</span>" +
+      (p.requiereViaje ? " · <b style='color:#fbbf24;'>REQUIERE VIAJE</b>" : "") + "</div>" +
+      "<input type='checkbox' value='" + p.id + "'></div>";
   });
   if (usados.length > 0) {
-    var msgRen = ":: RENOVACIÓN DE PROYECTOS ACTIVOS ::\n\n" +
-      "Tienes estos proyectos de larga duración aún activos:\n";
-    usados.forEach(function (p, idx) {
-      msgRen += (idx + 1) + ". " + p.nombre + " (restan " +
-        Math.max(0, p.duracionMeses - p.mesesTranscurridos) + " meses)\n";
+    html += "<p style='font-size:11px;margin:12px 0 6px;color:#93c5fd;'><b>Renovación de proyectos activos:</b></p>";
+    usados.forEach(function (p) {
+      html += "<div class='proyecto-oferta'><div class='datos'><b>" + p.nombre + "</b><br>Restan " +
+        Math.max(0, p.duracionMeses - p.mesesTranscurridos) + " meses</div>" +
+        "<label style='font-size:11px;'><input type='checkbox' class='chk-renovar' value='" + p.id + "' checked> Renovar</label></div>";
     });
-    msgRen += "\n¿Renovarlos para el año entrante? (s = renovar todos, n = cancelar todos)";
-    var ren = prompt(msgRen, "s");
-    if (ren !== null && ren.trim().toLowerCase() === "s") {
-      alert("Proyectos activos renovados para el año " + (añoActual + 1) + ".");
-    } else {
-      usados.forEach(function (p) {
-        p.estadoProy = "CANCELADO";
-        p.slots.forEach(function (id) {
-          if (id) {
-            var ing = estado.plantilla.find(function (e) { return e.id === id; });
-            if (ing) ing.asignado = "I+D Interno";
-          }
-        });
-        p.slots = p.slots.map(function () { return null; });
-        var idx = proyectosAsignados.indexOf(p.id);
-        if (idx >= 0) proyectosAsignados.splice(idx, 1);
-      });
-      alert("Proyectos de larga duración CANCELADOS. Personal devuelto a I+D Interno.");
-    }
   }
-  alert("Compromisos registrados para el año " + (añoActual + 1) +
-    ". Los nuevos proyectos ya son asignables en Operaciones.");
-  renderOperaciones();
+  window._planAnualCandidata = candidata;
+  window._planAnualUsados = usados;
+  abrirModal("Planificación de Capacidad Anual — Octubre Año " + añoActual, html,
+    "Confirmar Compromisos", function () {
+      var elegidos = proyectosSeleccionadosModal();
+      if (elegidos.length === 0) {
+        notificar("alerta", "PLANIFICACIÓN RECHAZADA",
+          "Debes comprometerte al menos a 1 proyecto. El panel se reabrirá.");
+        panelPlanificacionAnual();
+        return;
+      }
+      candidata.forEach(function (p) {
+        if (elegidos.indexOf(p.id) >= 0) {
+          for (var s = 0; s < p.slotsRequeridos; s++) p.slots.push(null);
+          proyectosDisponibles.push(p);
+        }
+      });
+      var renovarIds = [];
+      document.querySelectorAll(".chk-renovar").forEach(function (cb) {
+        if (cb.checked) renovarIds.push(cb.value);
+      });
+      usados.forEach(function (p) {
+        if (renovarIds.indexOf(p.id) >= 0) {
+          notificar("info", "PROYECTO RENOVADO", p.nombre + " continúa activo para el año " + (añoActual + 1) + ".");
+        } else {
+          p.estadoProy = "CANCELADO";
+          p.slots.forEach(function (id) {
+            if (id) {
+              var ing = estado.plantilla.find(function (e) { return e.id === id; });
+              if (ing) ing.asignado = "I+D Interno";
+            }
+          });
+          p.slots = p.slots.map(function () { return null; });
+          var idx = proyectosAsignados.indexOf(p.id);
+          if (idx >= 0) proyectosAsignados.splice(idx, 1);
+          notificar("alerta", "PROYECTO DADO DE BAJA", p.nombre + " cancelado. Personal devuelto a I+D Interno.");
+        }
+      });
+      notificar("exito", "COMPROMISOS REGISTRADOS",
+        elegidos.length + " proyecto(s) comprometidos para el año " + (añoActual + 1) +
+        ". Ya son asignables en Operaciones.");
+      renderOperaciones();
+    }, true);
 }
 
 function darReward(empleadoId) {
@@ -1014,7 +1245,7 @@ function darReward(empleadoId) {
   if (!ing) return;
   var COSTE_REWARD = 2000;
   if (estado.presupuestos.rewards < COSTE_REWARD) {
-    alert("Presupuesto de Rewards insuficiente (" +
+    notificar("alerta", "REWARD BLOQUEADO", "Presupuesto de Rewards insuficiente (" +
       formatear(estado.presupuestos.rewards) + " € disponibles, se necesitan " +
       formatear(COSTE_REWARD) + " €).");
     return;
@@ -1023,7 +1254,8 @@ function darReward(empleadoId) {
   presupuestosAnuales.rewards = estado.presupuestos.rewards;
   ing.satisfaccion = 100;
   ing.mesesSinFormacion = 0;
-  alert(ing.nombre + " recibe un Reward/Bono: satisfacción al 100% y contador de meses sin formación reiniciado.");
+  notificar("exito", "REWARD ENTREGADO",
+    ing.nombre + " recibe un Reward/Bono: satisfacción al 100% y riesgo de dimisión retrasado.");
   renderTodo();
 }
 function renderOperaciones() {
@@ -1050,7 +1282,7 @@ function renderOperaciones() {
       if (ing) {
         html += "<div style='border:1px solid #888;margin:2px 0;padding:2px 4px;background:#eef2f8;'>" +
           "<b>" + ing.nombre + "</b> (Nv " + ing.nivel + ", <span class='disc disc-" + ing.disc + "'>" + ing.disc + "</span>)" +
-          (ing.enFormacion ? " <b style='color:#a06000;'>[EN FORMACIÓN — no aporta]</b>" : "") + " " +
+          (ing.enFormacion ? " <b style='color:#fbbf24;'>[EN CAPACITACIÓN — no aporta]</b>" : "") + " " +
           (proy.estadoProy === "ACTIVO" ?
             "<button class='boton-2000' style='padding:1px 6px;font-size:10px;' onclick=\"asignarIngenieroAProyecto('" + ing.id + "','id-interno')\">Liberar</button>" :
             "") +
@@ -1107,6 +1339,8 @@ nuevaRondaMercado();
 inicializarProyectosAeroespaciales();
 renderMarcadorCabecera();
 renderTodo();
+notificar("info", "ÓRDENES DEL DIRECTOR — GENERIC AEROSPACE",
+  "Bienvenido, mánager. Monta tu equipo con las 3 rondas de fichajes iniciales, asigna personal a los proyectos en Operaciones y vigila los presupuestos. ¡El mercado trimestral abrirá en Marzo!");
 
 document.getElementById("btn-avanzar-mes").addEventListener("click", function () {
   avanzarMes();
