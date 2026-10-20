@@ -356,34 +356,34 @@
   <div class="zona-juego">
 
   <div class="barra-estado" style="gap:12px;">
-    <button class="boton-2000" id="btn-avanzar-mes">▶ Avanzar Mes</button>
-    <span><b>Fecha:</b> <span id="estado-fecha">Enero 2025</span></span>
-    <span><b>Caja:</b> <span id="estado-caja">—</span> €</span>
-    <span><b>Plantilla:</b> <span id="estado-plantilla">0</span> ingenieros</span>
-    <span><b>🤝 Confianza del Cliente:</b> <span id="estado-confianza">50</span>/100</span>
-    <span><b>👔 Visión como Empleador:</b> <span id="estado-empleador">50</span>/100</span>
+    <button class="boton-2000" id="btn-avanzar-mes">▶ Advance Month</button>
+    <span><b>Date:</b> <span id="estado-fecha">January 2025</span></span>
+    <span><b>Cash:</b> <span id="estado-caja">—</span> PLN</span>
+    <span><b>Roster:</b> <span id="estado-plantilla">0</span> engineers</span>
+    <span><b>🤝 Client Trust:</b> <span id="estado-confianza">20</span>/100</span>
+    <span><b>👔 Employer Brand:</b> <span id="estado-empleador">50</span>/100</span>
   </div>
 
   <div class="nav-pestanas">
-    <div class="pestana activa" data-tab="despacho">Despacho</div>
-    <div class="pestana" data-tab="plantilla">Plantilla</div>
-    <div class="pestana" data-tab="operaciones">Operaciones</div>
-    <div class="pestana" data-tab="mercado">Mercado</div>
-    <div class="pestana" data-tab="historial">Historial</div>
+    <div class="pestana activa" data-tab="despacho">Manager's Office</div>
+    <div class="pestana" data-tab="plantilla">Roster</div>
+    <div class="pestana" data-tab="operaciones">Operations</div>
+    <div class="pestana" data-tab="mercado">Hiring Market</div>
+    <div class="pestana" data-tab="historial">Contract Archive</div>
   </div>
 
   <div class="contenido">
 
     <!-- DESPACHO -->
     <div id="tab-despacho" class="panel">
-      <h3>:: DESPACHO DEL DIRECTOR ::</h3>
+      <h3>:: MANAGER'S OFFICE ::</h3>
       <div class="cuerpo">
         <div class="panel">
-          <h3>Saldos y Presupuestos</h3>
+          <h3>Balances & Budgets</h3>
           <div class="cuerpo presupuestos">
-            <div class="presupuesto"><h4>FORMACIÓN</h4><div class="saldo" id="saldo-formacion">0 €</div></div>
-            <div class="presupuesto"><h4>VIAJES</h4><div class="saldo" id="saldo-viajes">0 €</div></div>
-            <div class="presupuesto"><h4>REWARDS</h4><div class="saldo" id="saldo-rewards">0 €</div></div>
+            <div class="presupuesto"><h4>TRAINING</h4><div class="saldo" id="saldo-formacion">0 PLN</div></div>
+            <div class="presupuesto"><h4>TRAVEL</h4><div class="saldo" id="saldo-viajes">0 PLN</div></div>
+            <div class="presupuesto"><h4>REWARDS</h4><div class="saldo" id="saldo-rewards">0 PLN</div></div>
           </div>
         </div>
       </div>
@@ -391,45 +391,47 @@
 
     <!-- PLANTILLA -->
     <div id="tab-plantilla" class="panel oculto">
-      <h3>:: PLANTILLA DE INGENIEROS ::</h3>
+      <h3>:: ENGINEERING ROSTER ::</h3>
       <div class="cuerpo" id="lista-plantilla">
-        <p><i>No hay ingenieros contratados. Visita la pestaña Mercado para reclutar.</i></p>
+        <p><i>No engineers hired yet. Visit the Hiring Market tab to recruit.</i></p>
       </div>
     </div>
 
     <!-- HISTORIAL -->
     <div id="tab-historial" class="panel oculto">
-      <h3>:: HISTORIAL DE CONTRATOS CONCLUIDOS ::</h3>
+      <h3>:: CONTRACT ARCHIVE ::</h3>
       <div class="cuerpo">
-        <p style="margin-bottom:8px; font-size:11px;"><i>Registro completo de los proyectos finalizados y cancelados con Generic Aerospace.</i></p>
+        <p style="margin-bottom:8px; font-size:11px;"><i>Complete record of finished and cancelled projects with Generic Aerospace.</i></p>
         <div id="lista-historial"></div>
       </div>
     </div>
 
     <!-- OPERACIONES -->
     <div id="tab-operaciones" class="panel oculto">
-      <h3>:: CUADRÍCULA TÁCTICA — ASIGNACIÓN A PROYECTOS ::</h3>
+      <h3>:: TACTICAL GRID — PROJECT ASSIGNMENT ::</h3>
       <div class="cuerpo">
-        <p style="margin-bottom:8px; font-size:11px;"><i>Asigna tus ingenieros a Proyectos de Generic Aerospace o a líneas de I+D.</i></p>
+        <p style="margin-bottom:8px; font-size:11px;"><i>Assign your engineers to Generic Aerospace projects or R&D lines.</i></p>
         <div class="cuadricula-tactica" id="cuadricula-operaciones">
-          <div class="celda-tactica"><h5>PROYECTO A — AERODINÁMICA</h5><div class="cuerpo-celda"><i>Vacío</i></div></div>
-          <div class="celda-tactica"><h5>PROYECTO B — AVIÓNICA</h5><div class="cuerpo-celda"><i>Vacío</i></div></div>
-          <div class="celda-tactica"><h5>PROYECTO C — MOTOres</h5><div class="cuerpo-celda"><i>Vacío</i></div></div>
-          <div class="celda-tactica"><h5>I+D — MATERIALES</h5><div class="cuerpo-celda"><i>Vacío</i></div></div>
-          <div class="celda-tactica"><h5>I+D — IA EMBEBIDA</h5><div class="cuerpo-celda"><i>Vacío</i></div></div>
-          <div class="celda-tactica"><h5>I+D — SIMULACIÓN</h5><div class="cuerpo-celda"><i>Vacío</i></div></div>
+          <div class="celda-tactica"><h5>PROJECT A — AERODYNAMICS</h5><div class="cuerpo-celda"><i>Empty</i></div></div>
+          <div class="celda-tactica"><h5>PROJECT B — AVIONICS</h5><div class="cuerpo-celda"><i>Empty</i></div></div>
+          <div class="celda-tactica"><h5>PROJECT C — ENGINES</h5><div class="cuerpo-celda"><i>Empty</i></div></div>
+          <div class="celda-tactica"><h5>R&D — MATERIALS</h5><div class="cuerpo-celda"><i>Empty</i></div></div>
+          <div class="celda-tactica"><h5>R&D — EMBEDDED AI</h5><div class="cuerpo-celda"><i>Empty</i></div></div>
+          <div class="celda-tactica"><h5>R&D — SIMULATION</h5><div class="cuerpo-celda"><i>Empty</i></div></div>
         </div>
       </div>
     </div>
 
     <!-- MERCADO -->
     <div id="tab-mercado" class="panel oculto">
-      <h3>:: MERCADO DE RECLUTAMIENTO ::</h3>
+      <h3>:: HIRING MARKET ::</h3>
       <div class="cuerpo">
-        <div class="ronda-info">Tanda inicial de fichajes: <span id="ronda-actual">1</span> / 3 — luego mercado trimestral (Meses 3, 6, 9 y 12)</div>
+        <div class="ronda-info">Initial signing rounds: <span id="ronda-actual">1</span> / 3 — then quarterly market (Months 3, 6, 9 and 12)</div>
         <div id="lista-candidatos"></div>
-        <div style="margin-top:8px; display:flex; gap:8px;">
-          <button class="boton-2000" id="btn-siguiente-ronda">Siguiente Ronda</button>
+        <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="boton-2000" id="btn-siguiente-ronda">Next Round</button>
+          <button class="boton-2000" id="btn-on-demand" style="background:linear-gradient(180deg,#0891b2,#0e7490);border-color:#06b6d4;" onclick="contratacionOnDemand()">🔎 On-Demand Search (2,000 PLN)</button>
+          <button class="boton-2000" id="btn-continua" style="background:linear-gradient(180deg,#7c3aed,#6d28d9);border-color:#8b5cf6;" onclick="toggleBusquedaContinua()">🔄 Continuous Search (500 PLN/month)</button>
         </div>
       </div>
     </div>
@@ -437,19 +439,19 @@
   </div><!-- /zona-juego -->
 
   <div class="zona-notificaciones">
-    <h4>:: CENTRO DE COMUNICACIONES — GENERIC AEROSPACE ::</h4>
+    <h4>:: COMMUNICATIONS CENTER — GENERIC AEROSPACE ::</h4>
     <div id="centro-comunicaciones"></div>
   </div>
 </div>
 
 <div id="modal-fondo" class="modal-fondo oculto">
   <div class="modal-caja">
-    <h2 id="modal-titulo">Planificación de Capacidad Anual</h2>
+    <h2 id="modal-titulo">Annual Capacity Planning</h2>
     <div id="modal-contenido"></div>
     <div class="acciones">
-      <button class="boton-2000" id="modal-ver-plantilla" style="background:linear-gradient(180deg,#475569,#334155);border-color:#64748b;">Ver Plantilla/Saldos</button>
-      <button class="boton-2000" id="modal-cancelar">Cancelar</button>
-      <button class="boton-2000" id="modal-confirmar">Confirmar Compromisos</button>
+      <button class="boton-2000" id="modal-ver-plantilla" style="background:linear-gradient(180deg,#475569,#334155);border-color:#64748b;">View Roster/Balances</button>
+      <button class="boton-2000" id="modal-cancelar">Cancel</button>
+      <button class="boton-2000" id="modal-confirmar">Confirm Commitments</button>
     </div>
   </div>
 </div>
@@ -486,23 +488,24 @@ var estado = {
   ronda: 1,
   maxRondas: 3,
   deudaAcumulada: 0,
-  confianzaCliente: 50,
+  confianzaCliente: 20,
   visionEmpleador: 50
 };
 
 /* =========================================================
    GENERADOR DE CANDIDATOS
    ========================================================= */
-var NOMBRES = ["Ana", "Luis", "Marta", "Javier", "Elena", "Pablo", "Carmen", "Diego",
-  "Sara", "Andrés", "Lucía", "Miguel", "Nuria", "Álvaro", "Rocío", "Jorge",
-  "Beatriz", "Iván", "Clara", "Hugo"];
-var APELLIDOS = ["García", "Martínez", "López", "Sánchez", "Pérez", "Gómez",
-  "Fernández", "Ruiz", "Díaz", "Torres", "Vega", "Navarro", "Ramos", "Gil", "Serrano"];
+var NOMBRES = ["Mateusz", "Agnieszka", "Janusz", "Karolina", "Piotr", "Małgorzata",
+  "Tomasz", "Anna", "Krzysztof", "Magdalena", "Andrzej", "Katarzyna",
+  "Marcin", "Ewa", "Paweł", "Joanna", "Michał", "Justyna", "Łukasz", "Natalia"];
+var APELLIDOS = ["Kowalski", "Wójcik", "Kamiński", "Lewandowska", "Zieliński", "Szymańska",
+  "Nowak", "Woźniak", "Dąbrowski", "Jankowska", "Mazur", "Krawczyk",
+  "Kaczyński", "Piotrowska", "Grabowski", "Zając", "Pawlik", "Michalska", "Król", "Wróbel"];
 var DISC_PERFILES = [
-  { letra: "D", color: "#c04040", desc: "Dominante" },
-  { letra: "I", color: "#c8a820", desc: "Influyente" },
-  { letra: "S", color: "#4a9a5e", desc: "Estable" },
-  { letra: "C", color: "#4a70b8", desc: "Concienzudo" }
+  { letra: "D", color: "#c04040", desc: "Dominant" },
+  { letra: "I", color: "#c8a820", desc: "Influential" },
+  { letra: "S", color: "#4a9a5e", desc: "Steady" },
+  { letra: "C", color: "#4a70b8", desc: "Conscientious" }
 ];
 
 function entero(min, max) {
@@ -510,11 +513,11 @@ function entero(min, max) {
 }
 
 function rangoPorNivel(nivel) {
-  if (nivel >= 10 && nivel <= 30) return "Internship";
-  if (nivel >= 31 && nivel <= 60) return "Ingeniero";
+  if (nivel >= 10 && nivel <= 30) return "Junior";
+  if (nivel >= 31 && nivel <= 60) return "Mid";
   if (nivel >= 61 && nivel <= 85) return "Senior";
   if (nivel >= 86 && nivel <= 100) return "Staff";
-  return "Internship";
+  return "Junior";
 }
 
 function sueldoDeseado(nivel) {
@@ -528,8 +531,8 @@ function colorAvatar(disc) {
 }
 
 var TRAMOS_EDAD = [
-  { rango: "Internship", edadMin: 18, edadMax: 24, nivelMin: 5, nivelMax: 20, sueldoBase: 600, sueldoPorNivel: 20 },
-  { rango: "Ingeniero", edadMin: 25, edadMax: 34, nivelMin: 21, nivelMax: 50, sueldoBase: 1200, sueldoPorNivel: 35 },
+  { rango: "Junior", edadMin: 18, edadMax: 24, nivelMin: 5, nivelMax: 20, sueldoBase: 600, sueldoPorNivel: 20 },
+  { rango: "Mid", edadMin: 25, edadMax: 34, nivelMin: 21, nivelMax: 50, sueldoBase: 1200, sueldoPorNivel: 35 },
   { rango: "Senior", edadMin: 35, edadMax: 47, nivelMin: 51, nivelMax: 79, sueldoBase: 2500, sueldoPorNivel: 55 },
   { rango: "Staff", edadMin: 48, edadMax: 65, nivelMin: 80, nivelMax: 100, sueldoBase: 4200, sueldoPorNivel: 80 }
 ];
@@ -566,11 +569,21 @@ function nuevaRondaMercado() {
 /* =========================================================
    FICHAJES — 3 RONDAS
    ========================================================= */
+function mesesAviso(rango) {
+  switch (rango) {
+    case "Junior": return 0;
+    case "Mid": return 1;
+    case "Senior": return 2;
+    case "Staff": return 3;
+    default: return 0;
+  }
+}
+
 function contratarCandidato(id) {
   var cand = estado.mercado.find(function (c) { return c.id === id; });
   if (!cand || cand.contratado) return;
   if (estado.caja < cand.sueldoDeseado) {
-    notificar("alerta", "FICHAJE RECHAZADO", "Caja insuficiente para firmar a " + cand.nombre + ".");
+    notificar("alerta", "HIRE REJECTED", "Insufficient cash to sign " + cand.nombre + ".");
     return;
   }
   estado.caja -= cand.sueldoDeseado;
@@ -586,22 +599,55 @@ function contratarCandidato(id) {
     discDesc: cand.discDesc,
     color: cand.color,
     asignado: null,
-    mesesSinFormacion: 0
+    mesesSinFormacion: 0,
+    mesesAvisoRestantes: mesesAviso(cand.rango)
   };
   estado.plantilla.push(ficha);
-  notificar("exito", "NUEVO FICHAJE", ficha.nombre + " (" + ficha.rango + ", Nv " + ficha.nivel +
-    ") firmado por " + formatear(ficha.sueldo) + " €.");
+  notificar("exito", "NEW HIRE", ficha.nombre + " (" + ficha.rango + ", Lv " + ficha.nivel +
+    ") signed for " + formatear(ficha.sueldo) + " PLN." +
+    (ficha.mesesAvisoRestantes > 0
+      ? " [Hired - Notice Period: " + ficha.mesesAvisoRestantes + " month(s) remaining]"
+      : " Available immediately (no notice period)."));
   renderTodo();
 }
 
 function siguienteRonda() {
   if (estado.ronda >= estado.maxRondas) {
-    notificar("info", "MERCADO INICIAL CERRADO", "Has agotado las 3 rondas de fichajes. Próxima tanda: mercado trimestral.");
+    notificar("info", "INITIAL MARKET CLOSED", "You have used up the 3 initial signing rounds. Next batch: quarterly market.");
     return;
   }
   estado.ronda++;
   nuevaRondaMercado();
   renderTodo();
+}
+
+var COSTE_ON_DEMAND = 2000;
+var COSTE_CONTINUO = 500;
+var busquedaContinuaActiva = false;
+
+function contratacionOnDemand() {
+  if (estado.caja < COSTE_ON_DEMAND) {
+    notificar("alerta", "ON-DEMAND SEARCH BLOCKED", "Insufficient cash for the surgical search (" +
+      formatear(COSTE_ON_DEMAND) + " PLN needed).");
+    return;
+  }
+  capital -= COSTE_ON_DEMAND;
+  estado.caja = capital;
+  nuevaRondaMercado();
+  notificar("info", "ON-DEMAND SEARCH LAUNCHED",
+    "Surgical search completed for " + formatear(COSTE_ON_DEMAND) +
+    " PLN: a fresh batch of 5 candidates is now in the Hiring Market (1-month delay applied to hires).");
+  renderTodo();
+}
+
+function toggleBusquedaContinua() {
+  busquedaContinuaActiva = !busquedaContinuaActiva;
+  notificar("info", busquedaContinuaActiva ? "CONTINUOUS SEARCH ACTIVATED" : "CONTINUOUS SEARCH STOPPED",
+    busquedaContinuaActiva
+      ? "Continuous talent pipeline active for " + formatear(COSTE_CONTINUO) +
+        " PLN/month: a fresh batch of candidates arrives every quarter automatically."
+      : "The continuous talent pipeline has been stopped.");
+  renderMercado();
 }
 
 /* =========================================================
@@ -616,18 +662,18 @@ function renderBarraEstado() {
 }
 
 function renderDespacho() {
-  document.getElementById("saldo-formacion").textContent = formatear(estado.presupuestos.formacion) + " €";
-  document.getElementById("saldo-viajes").textContent = formatear(estado.presupuestos.viajes) + " €";
-  document.getElementById("saldo-rewards").textContent = formatear(estado.presupuestos.rewards) + " €";
+  document.getElementById("saldo-formacion").textContent = formatear(estado.presupuestos.formacion) + " PLN";
+  document.getElementById("saldo-viajes").textContent = formatear(estado.presupuestos.viajes) + " PLN";
+  document.getElementById("saldo-rewards").textContent = formatear(estado.presupuestos.rewards) + " PLN";
 }
 
 function renderPlantilla() {
   var cont = document.getElementById("lista-plantilla");
   if (estado.plantilla.length === 0) {
-    cont.innerHTML = "<p><i>No hay ingenieros contratados. Visita la pestaña Mercado para reclutar.</i></p>";
+    cont.innerHTML = "<p><i>No engineers hired yet. Visit the Hiring Market tab to recruit.</i></p>";
     return;
   }
-  var html = '<table class="tabla"><tr><th>Avatar</th><th>Nombre</th><th>Edad</th><th>Rango</th><th>Nivel</th><th>Sueldo</th><th>DISC</th><th>Meses sin form.</th><th>Asignación</th><th>Formación</th></tr>';
+  var html = '<table class="tabla"><tr><th>Avatar</th><th>Name</th><th>Age</th><th>Rank</th><th>Level</th><th>Salary</th><th>DISC</th><th>Months w/o training</th><th>Assignment</th><th>Training & Rewards</th></tr>';
   estado.plantilla.forEach(function (ing) {
     html += "<tr>" +
       "<td><div class='avatar' style='background:" + ing.color + ";width:32px;height:32px;font-size:12px;'>" + ing.nombre.charAt(0) + "</div></td>" +
@@ -635,11 +681,11 @@ function renderPlantilla() {
       "<td>" + ing.edad + "</td>" +
       "<td>" + ing.rango + "</td>" +
       "<td style='min-width:110px;'><div class='barra-nivel-caja'><div class='barra-nivel' style='width:" + ing.nivel + "%;'></div></div> " + ing.nivel + "</td>" +
-      "<td>" + formatear(ing.sueldo) + " €</td>" +
+      "<td>" + formatear(ing.sueldo) + " PLN</td>" +
       "<td><span class='disc disc-" + ing.disc + "'>" + ing.disc + " · " + ing.discDesc + "</span></td>" +
-      "<td>" + (ing.mesesSinFormacion || 0) + "/" + limiteSinFormacion(ing.rango) + (ing.enFormacion ? " <span class='disc disc-I'>EN CAPACITACIÓN</span>" : "") + "</td>" +
-      "<td>" + (ing.asignado || "—") + (ing.enFormacion ? " <b style='color:#fbbf24;'>(no aporta este mes)</b>" : "") + "</td>" +
-      "<td><button class='boton-2000' style='padding:2px 8px;font-size:10px;' onclick=\"aplicarFormacion('" + ing.id + "')\">Formar (1.500 €)</button> " +
+      "<td>" + (ing.mesesSinFormacion || 0) + "/" + limiteSinFormacion(ing.rango) + (ing.enFormacion ? " <span class='disc disc-I'>IN TRAINING</span>" : "") + "</td>" +
+      "<td>" + (ing.asignado || "—") + (ing.enFormacion ? " <b style='color:#fbbf24;'>(no output this month)</b>" : "") + "</td>" +
+      "<td><button class='boton-2000' style='padding:2px 8px;font-size:10px;' onclick=\"aplicarFormacion('" + ing.id + "')\">Train (1,500 PLN)</button> " +
       "<button class='boton-2000' style='padding:2px 8px;font-size:10px;' onclick=\"darReward('" + ing.id + "')\">🎁 Rewards</button></td>" +
       "</tr>";
   });
@@ -650,23 +696,29 @@ function renderPlantilla() {
 function renderMercado() {
   document.getElementById("ronda-actual").textContent = estado.ronda;
   var cont = document.getElementById("lista-candidatos");
-  var html = '<table class="tabla"><tr><th>Avatar</th><th>Nombre</th><th>Edad</th><th>Rango</th><th>Nivel</th><th>Sueldo deseado</th><th>DISC</th><th></th></tr>';
+  var html = '<table class="tabla"><tr><th>Avatar</th><th>Name</th><th>Age</th><th>Rank</th><th>Level</th><th>Expected salary</th><th>DISC</th><th></th></tr>';
   estado.mercado.forEach(function (c) {
     html += "<tr" + (c.contratado ? " style='opacity:0.5;'" : "") + ">" +
       "<td><div class='avatar' style='background:" + c.color + ";width:32px;height:32px;font-size:12px;'>" + c.nombre.charAt(0) + "</div></td>" +
-      "<td>" + c.nombre + (c.contratado ? " (CONTRATADO)" : "") + "</td>" +
+      "<td>" + c.nombre + (c.contratado ? " (HIRED)" : "") + "</td>" +
       "<td>" + c.edad + "</td>" +
       "<td>" + c.rango + "</td>" +
       "<td style='min-width:110px;'><div class='barra-nivel-caja'><div class='barra-nivel' style='width:" + c.nivel + "%;'></div></div> " + c.nivel + "</td>" +
-      "<td>" + formatear(c.sueldoDeseado) + " €</td>" +
+      "<td>" + formatear(c.sueldoDeseado) + " PLN</td>" +
       "<td><span class='disc disc-" + c.disc + "'>" + c.disc + " · " + c.discDesc + "</span></td>" +
       "<td>" + (c.contratado ? "" :
-        "<button class='boton-2000' onclick=\"contratarCandidato('" + c.id + "')\">Firmar</button>") + "</td>" +
+        "<button class='boton-2000' onclick=\"contratarCandidato('" + c.id + "')\">Sign</button>") + "</td>" +
       "</tr>";
   });
   html += "</table>";
   cont.innerHTML = html;
   document.getElementById("btn-siguiente-ronda").disabled = estado.ronda >= estado.maxRondas;
+  var btnCont = document.getElementById("btn-continua");
+  if (btnCont) {
+    btnCont.textContent = busquedaContinuaActiva
+      ? "⏸ Stop Continuous Search (500 PLN/month)"
+      : "🔄 Continuous Search (500 PLN/month)";
+  }
 }
 
 /* =========================================================
@@ -693,7 +745,7 @@ document.querySelectorAll(".pestana").forEach(function (p) {
 document.getElementById("btn-siguiente-ronda").addEventListener("click", siguienteRonda);
 
 /* =========================================================
-   MOTOR DE SIMULACIÓN (fase futura — vacío a propósito)
+   TIME ENGINE (core monthly loop)
    ========================================================= */
 function avanzarMes() {
   mesActual++;
@@ -704,6 +756,11 @@ function avanzarMes() {
     costeSalarial += ing.sueldo;
   });
   capital -= costeSalarial;
+  if (busquedaContinuaActiva) {
+    capital -= COSTE_CONTINUO;
+    notificar("info", "CONTINUOUS SEARCH FEE",
+      "Talent pipeline fee: -" + formatear(COSTE_CONTINUO) + " PLN this month.");
+  }
   eventosMensuales();
   var faseArranque = (añoActual < 1);
   if (!faseArranque && añoActual >= 1 && mesActual === 10 && !window._planAnualHecho) {
@@ -715,7 +772,7 @@ function avanzarMes() {
     añoActual++;
     window._planAnualHecho = false;
     abrirModalPresupuestos();
-    notificar("info", "NUEVO AÑO FISCAL", "Año " + añoActual +
+    notificar("info", "NEW FISCAL YEAR", "Año " + añoActual +
       ": distribuye tus presupuestos en el Despacho y revisa tus compromisos.");
   }
   if (capital < 0) {
@@ -725,9 +782,9 @@ function avanzarMes() {
   if (estado.deudaAcumulada > 0) {
     var interes = (estado.deudaAcumulada / 10000) * 1000;
     capital -= interes;
-    notificar("pen", "COSTE DE LA DEUDA",
-      "Interés fijo del préstamo de rescate: -" + formatear(interes) +
-      " € este mes (deuda acumulada: " + formatear(estado.deudaAcumulada) + " €).");
+    notificar("pen", "DEBT SERVICE COST",
+      "Fixed rescue-loan interest: -" + formatear(interes) +
+      " PLN este mes (deuda acumulada: " + formatear(estado.deudaAcumulada) + " PLN).");
     if (capital < 0) {
       gestionarNumerosRojos();
       return;
@@ -757,9 +814,9 @@ function simularProyectosCliente() {
     if (!activo) {
       if (proy.tipo !== "URGENTE" && pasadoDeadline) {
         capital -= proy.penalizacionMes;
-        notificar("pen", "RETRASO DETECTADO",
-          proy.nombre + ": sin personal asignado y Deadline superado. Penalización mensual de " +
-          formatear(proy.penalizacionMes) + " € aplicada.");
+        notificar("pen", "DELAY DETECTED",
+          proy.nombre + ": no staff assigned and Deadline exceeded. Monthly penalty of " +
+          formatear(proy.penalizacionMes) + " PLN applied.");
       }
       return;
     }
@@ -775,24 +832,24 @@ function simularProyectosCliente() {
     var penTotal = 0;
     if (vacios > 0 && pasadoDeadline) {
       penTotal += vacios * proy.penalizacionMes;
-      notificar("pen", "VACANTES SIN CUBRIR (Deadline superado)",
+      notificar("pen", "UNFILLED SLOTS (Deadline exceeded)",
         proy.nombre + ": " + vacios +
-        " slot(s) sin aporte y Deadline vencido. Penalización mensual: -" +
-        formatear(vacios * proy.penalizacionMes) + " €");
+        " slot(s) with no output and Deadline overdue. Monthly penalty: -" +
+        formatear(vacios * proy.penalizacionMes) + " PLN");
     }
     if (faltaLiderazgo && pasadoDeadline) {
       penTotal += proy.penalizacionMes;
-      notificar("pen", "FALTA LIDERAZGO TÉCNICO (Deadline superado)",
+      notificar("pen", "LACK OF TECHNICAL LEADERSHIP (Deadline exceeded)",
         proy.nombre + ": se requiere" + (lideresRequeridos(proy.slotsRequeridos) === 1 ? " 1 ingeniero" : "n 2 ingenieros") +
-        " con nivel ≥ " + proy.minNivelExigido + " (Líder Técnico). El proyecto rinde al 0% y acumula penalización de " +
-        formatear(proy.penalizacionMes) + " € este mes.");
+        " with level ≥ " + proy.minNivelExigido + " (Technical Lead). The project outputs 0% and accrues a penalty of " +
+        formatear(proy.penalizacionMes) + " PLN este mes.");
     }
     if (pasadoDeadline && proy.mesesTranscurridos - proy.duracionMeses > 0) {
       var mesesRetraso = proy.mesesTranscurridos - proy.duracionMeses;
       if (mesesRetraso % 2 === 0) {
         estado.confianzaCliente = Math.max(0, estado.confianzaCliente - 1);
-        notificar("pen", "CONFIANZA DEL CLIENTE -1",
-          proy.nombre + ": entregado tarde (" + mesesRetraso + " meses de retraso). Confianza: " +
+        notificar("pen", "CLIENT TRUST -1",
+          proy.nombre + ": delivered late (" + mesesRetraso + " months of delay). Trust: " +
           estado.confianzaCliente + "/100.");
       }
     }
@@ -800,8 +857,8 @@ function simularProyectosCliente() {
     var factorOcupacion = faltaLiderazgo ? 0 : aportan / proy.slotsRequeridos;
     var sinViaje = proy.requiereViaje && presupuestoViajesAgotado();
     if (sinViaje) {
-      notificar("pen", "SIN PRESUPUESTO DE VIAJES",
-        proy.nombre + " exige Gasto de Viaje. Sin presupuesto, rinde al 0% este mes.");
+      notificar("pen", "NO TRAVEL BUDGET LEFT",
+        proy.nombre + " requires Travel Expense. Without budget, it outputs 0% this month.");
       factorOcupacion = 0;
     }
     var ingreso = Math.round(proy.ingresoMes * factorOcupacion * multiplicadorConfianza());
@@ -852,9 +909,9 @@ function notificar(tipo, titulo, mensaje) {
   if (!cont) return;
   var div = document.createElement("div");
   div.className = "notificacion " + tipo;
-  var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-  var stamp = meses[Math.max(0, mesActual - 1)] + " Año " + añoActual;
+  var meses = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+  var stamp = meses[Math.max(0, mesActual - 1)] + " " + añoActual;
   div.innerHTML = "<span class='titulo'>" + titulo + "</span>" +
     "<span style='color:#64748b;font-size:9.5px;'>" + stamp + "</span><br>" + mensaje;
   if (cont.firstChild) cont.insertBefore(div, cont.firstChild);
@@ -886,7 +943,7 @@ function cerrarModal() {
 }
 
 /* =========================================================
-   POP-UPS DE ACCIÓN (pausan el juego hasta decisión)
+   ACTION POP-UPS (pause the game until decision)
    ========================================================= */
 var colaEmergentes = [];
 var emergenteAbierto = false;
@@ -918,7 +975,7 @@ function procesarSiguienteEmergente() {
   var item = colaEmergentes.shift();
   var iconos = {
     info: "director",
-    alerta: "dimitió",
+    alerta: "resignation",
     urgente: "emergencia",
     exito: "acierto"
   };
@@ -946,9 +1003,9 @@ function procesarSiguienteEmergente() {
     window._emergenteMinimizado = true;
     fondo.style.display = "none";
     fondo.style.pointerEvents = "none";
-    notificar("info", "CONSULTA LIBRE ACTIVADA",
-      "Pop-up minimizado. Navega libremente por las pestañas para auditar recursos. " +
-      "Al pulsar 'Avanzar Mes' se reabrirá la decisión pendiente.");
+    notificar("info", "FREE BROWSING ENABLED",
+      "Pop-up hidden. Browse the tabs freely to audit your resources. " +
+      "Pressing 'Advance Month' will reopen the pending decision.");
   };
   window._emergenteMinimizado = false;
   if (esIndividual) {
@@ -1026,51 +1083,51 @@ function cerrarProyecto(proy) {
       bonus = true;
       proy.bonusObtenido = bonusCant;
       capital += bonusCant;
-      msgCierre += "¡Bonus de Rendimiento Extra del +25%! +" + formatear(bonusCant) + " € — " +
-        "Nivel medio " + Math.round(nivelMedio) + " (mín. " + proy.minNivelExigido + "), " +
-        encaje + "/" + asignados.length + " perfiles DISC " + proy.discRequerido + ". ";
+      msgCierre += "Performance Bonus of +25%! +" + formatear(bonusCant) + " PLN — " +
+        "Average level " + Math.round(nivelMedio) + " (min. " + proy.minNivelExigido + "), " +
+        encaje + "/" + asignados.length + " DISC profiles " + proy.discRequerido + ". ";
     } else {
-      msgCierre += "Sin bonus: nivel medio " + Math.round(nivelMedio) +
-        " (mín. " + proy.minNivelExigido + "), " + encaje + "/" + asignados.length +
-        " perfiles DISC " + proy.discRequerido + ". ";
+      msgCierre += "No bonus: average level " + Math.round(nivelMedio) +
+        " (min. " + proy.minNivelExigido + "), " + encaje + "/" + asignados.length +
+        " DISC profiles " + proy.discRequerido + ". ";
     }
   }
   var vacios = proy.slots.filter(function (s) { return !s; }).length;
   if (vacios > 0) {
     var penalizacion = vacios * 2000;
     capital -= penalizacion;
-    msgCierre += "Penalización por slots vacíos (" + vacios + " × $2,000): -" + formatear(penalizacion) + " € ";
+    msgCierre += "Penalty for empty slots (" + vacios + " × 2,000 PLN): -" + formatear(penalizacion) + " PLN ";
   }
   asignados.forEach(function (ing) {
-    ing.asignado = "I+D Interno";
+    ing.asignado = "Internal R&D";
   });
   proy.slots = proy.slots.map(function () { return null; });
   proy.estadoProy = "FINALIZADO";
   proy.fechaCierre = MESES_ABREV[Math.max(0, mesActual - 1)] + " " + añoActual;
   estado.confianzaCliente = Math.min(100, estado.confianzaCliente + 1);
-  notificar("info", "CONFIANZA DEL CLIENTE +1",
-    "Proyecto " + proy.nombre + " completado con éxito. Confianza de Generic Aerospace: " + estado.confianzaCliente + "/100.");
+  notificar("info", "CLIENT TRUST +1",
+    "Proyecto " + proy.nombre + " completed successfully. Generic Aerospace trust: " + estado.confianzaCliente + "/100.");
   proy.ingresosObtenidos = proy.valorTotal - (proy.slots.filter(function (s) { return !s; }).length * 2000);
   var idx = proyectosAsignados.indexOf(proy.id);
   if (idx >= 0) proyectosAsignados.splice(idx, 1);
-  notificar(bonus ? "exito" : "info", "CIERRE DE PROYECTO: " + proy.nombre, msgCierre);
+  notificar(bonus ? "exito" : "info", "PROJECT CLOSURE: " + proy.nombre, msgCierre);
 }
 
 /* =========================================================
    FASE 2 — PROYECTOS Y ASIGNACIONES
    ========================================================= */
 var NOMBRES_PROYECTOS = [
-  "Fuselaje Alfa-7",
-  "Turbina Halcón",
-  "Aviónica Nébula",
-  "Blindaje Órbita"
+  "Fuselage Alpha-7",
+  "Halcyon Turbine",
+  "Nebula Avionics",
+  "Orbit Shielding"
 ];
 
 function nivelExigidoPorAnio() {
   if (añoActual <= 2025) return entero(20, 40);
-  var extraAños = añoActual - 2025;
-  if (extraAños === 1) return entero(40, 60);
-  if (extraAños === 2) return entero(55, 75);
+  var extraYears = añoActual - 2025;
+  if (extraYears === 1) return entero(40, 60);
+  if (extraYears === 2) return entero(55, 75);
   return entero(70, 90);
 }
 
@@ -1115,15 +1172,21 @@ function inicializarProyectosAeroespaciales() {
 function asignarIngenieroAProyecto(empleadoId, proyectoId, slotIndex) {
   var ing = estado.plantilla.find(function (e) { return e.id === empleadoId; });
   if (!ing) return;
-  if (ing.asignado && ing.asignado !== "I+D Interno") {
+  if (ing.mesesAvisoRestantes > 0) {
+    notificar("alerta", "NOTICE PERIOD ACTIVE",
+      ing.nombre + " is still serving the notice period (" + ing.mesesAvisoRestantes +
+      " month(s) remaining) and cannot be assigned to a project yet.");
+    return;
+  }
+  if (ing.asignado && ing.asignado !== "Internal R&D") {
     estado.visionEmpleador = Math.max(0, estado.visionEmpleador - 2);
-    notificar("pen", "VISIÓN COMO EMPLEADOR -2",
+    notificar("pen", "EMPLOYER BRAND -2",
       "Cambio brusco de proyecto de " + ing.nombre +
-      " (inestabilidad). Visión como Empleador: " + estado.visionEmpleador + "/100.");
+      " (instability). Employer Brand: " + estado.visionEmpleador + "/100.");
     desasignarIngeniero(empleadoId);
   }
   if (proyectoId === "id-interno") {
-    ing.asignado = "I+D Interno";
+    ing.asignado = "Internal R&D";
     renderTodo();
     return;
   }
@@ -1132,12 +1195,12 @@ function asignarIngenieroAProyecto(empleadoId, proyectoId, slotIndex) {
   if (slotIndex === undefined || slotIndex === null) {
     slotIndex = proy.slots.findIndex(function (s) { return s === null || s === undefined; });
     if (slotIndex < 0) {
-      notificar("alerta", "SIN SLOTS LIBRES", "Proyecto " + proy.nombre + ": todos los slots están ocupados.");
+      notificar("alerta", "NO FREE SLOTS", "Project " + proy.nombre + ": all slots are taken.");
       return;
     }
   }
   if (proy.slots[slotIndex]) {
-    notificar("alerta", "SLOT OCUPADO", "Ese slot ya está ocupado. Libera al ingeniero primero.");
+    notificar("alerta", "SLOT TAKEN", "That slot is already taken. Release the engineer first.");
     return;
   }
   if (proy.requiereViaje) {
@@ -1145,7 +1208,7 @@ function asignarIngenieroAProyecto(empleadoId, proyectoId, slotIndex) {
     if (estado.presupuestos.viajes < costeViaje) {
       notificar("pen", "PRESUPUESTO DE VIAJES AGOTADO", proy.nombre +
         " exige Gasto de Viaje (" + formatear(costeViaje) +
-        " €/mes por asignación). No se puede asignar personal hasta reponer el presupuesto de Viajes.");
+        " PLN/month per assignment). No staff can be assigned until the Travel Budget is replenished.");
       return;
     }
     estado.presupuestos.viajes -= costeViaje;
@@ -1175,19 +1238,19 @@ function desasignarIngeniero(empleadoId) {
    ========================================================= */
 function abrirModalPresupuestos() {
   var total = 40000;
-  var msg = "Año " + añoActual + " — Distribuye el presupuesto anual (máx. " + formatear(total) + " €):\n\n" +
-    "0 = Formación, 1 = Viajes, 2 = Rewards\n" +
-    "Introduce cantidades separadas por comas: f,v,r";
+  var msg = "Año " + añoActual + " — Distribuye el presupuesto anual (máx. " + formatear(total) + " PLN):\n\n" +
+    "0 = Training, 1 = Travel, 2 = Rewards\n" +
+    "Enter amounts separated by commas: t,tr,r";
   var respuesta = prompt(msg, "13000,13000,14000");
   if (respuesta === null) return;
   var partes = respuesta.split(",").map(function (x) { return parseInt(x.trim(), 10) || 0; });
   if (partes.length !== 3) {
-    notificar("alerta", "FORMATO INCORRECTO", "Reparto de presupuestos con formato inválido: se aplica reparto por defecto.");
+    notificar("alerta", "INVALID FORMAT", "Budget allocation with invalid format: default split applied.");
     partes = [13000, 13000, 14000];
   }
   var suma = partes[0] + partes[1] + partes[2];
   if (suma > total) {
-    notificar("alerta", "PRESUPUESTO EXCEDIDO", "La suma supera el máximo anual: se aplica reparto por defecto.");
+    notificar("alerta", "BUDGET EXCEEDED", "The sum exceeds the annual maximum: default split applied.");
     partes = [13000, 13000, 14000];
   }
   presupuestosAnuales = {
@@ -1198,21 +1261,21 @@ function abrirModalPresupuestos() {
   estado.presupuestos.formacion = partes[0];
   estado.presupuestos.viajes = partes[1];
   estado.presupuestos.rewards = partes[2];
-  notificar("exito", "PRESUPUESTOS ASIGNADOS",
-    "Año " + añoActual + ": Formación " + formatear(partes[0]) + " € · Viajes " + formatear(partes[1]) +
-    " € · Rewards " + formatear(partes[2]) + " €.");
+  notificar("exito", "BUDGETS ALLOCATED",
+    "Year " + añoActual + ": Training " + formatear(partes[0]) + " PLN · Travel " + formatear(partes[1]) +
+    " PLN · Rewards " + formatear(partes[2]) + " PLN.");
   renderDespacho();
 }
 
 function mostrarGameOver(motivo) {
-  notificar("alerta", "GAME OVER", "Capital en negativo. El Director te ha despedido. Año " + añoActual + ", Mes " + mesActual + ".");
+  notificar("alerta", "GAME OVER", "Negative capital. The Director has fired you. Year " + añoActual + ", Mes " + mesActual + ".");
   var fondo = document.getElementById("modal-fondo");
-  document.getElementById("modal-titulo").textContent = "GAME OVER — BANCARROTA E INSOLVENCIA";
+  document.getElementById("modal-titulo").textContent = "GAME OVER — BANKRUPTCY & INSOLVENCY";
   document.getElementById("modal-contenido").innerHTML =
     "<p style='font-size:13px;line-height:1.6;'><b style='color:#f87171;'>El Director General te ha despedido oficialmente.</b><br><br>" +
-    (motivo || "Capital en negativo y línea de crédito agotada.") + "<br>" +
+    (motivo || "Negative capital and credit line exhausted.") + "<br>" +
     "Año " + añoActual + ", Mes " + mesActual + ".<br><br>" +
-    "Deuda acumulada con el Director: <b style='color:#f87171;'>" + formatear(estado.deudaAcumulada || 0) + " €</b></p>";
+    "Deuda acumulada con el Director: <b style='color:#f87171;'>" + formatear(estado.deudaAcumulada || 0) + " PLN</b></p>";
   document.getElementById("modal-confirmar").textContent = "Aceptar";
   document.getElementById("modal-confirmar").onclick = function () { cerrarModal(); };
   document.getElementById("modal-cancelar").classList.add("oculto");
@@ -1223,41 +1286,41 @@ function mostrarGameOver(motivo) {
 function gestionarNumerosRojos() {
   var deuda = estado.deudaAcumulada || 0;
   if (deuda >= 40000) {
-    mostrarGameOver("Máximo de deuda alcanzado ($40,000) y capital negativo tras el rescate: " +
-      "el Director General no confía más en tu gestión.");
+    mostrarGameOver("Maximum debt reached (40,000 PLN) and negative capital after the rescue: " +
+      "the Managing Director no longer trusts your management.");
     return;
   }
   var maxBloques = Math.floor((40000 - deuda) / 10000);
   if (maxBloques < 1) {
-    mostrarGameOver("Límite de crédito agotado y no hay bloques de rescate disponibles.");
+    mostrarGameOver("Credit limit exhausted and no rescue blocks available.");
     return;
   }
   capital = 0;
   var opciones = "";
   for (var b = 1; b <= maxBloques; b++) {
-    opciones += "<option value='" + (b * 10000) + "'>" + b + " bloque(s) — " + formatear(b * 10000) + " €</option>";
+    opciones += "<option value='" + (b * 10000) + "'>" + b + " bloque(s) — " + formatear(b * 10000) + " PLN</option>";
   }
   var html = "<p style='font-size:12px;line-height:1.7;'>" +
-    "<b style='color:#f87171;'>El Director General ha detectado una desviación presupuestaria grave.</b><br>" +
-    "El capital de la empresa ha caído en números rojos. Sin embargo, estás de suerte: " +
-    "te ofrece una <b>línea de crédito de emergencia</b> no planificada para cubrir salarios o viajes.<br><br>" +
-    "<b>Condiciones del préstamo:</b><br>" +
-    "• Máximo disponible: <b>" + formatear(maxBloques * 10000) + " €</b> (en bloques de $10,000)<br>" +
-    "• Coste: <b>$1,000 al mes por cada bloque</b> pedido, de forma fija mientras no se devuelva<br>" +
-    "• Deuda acumulada actual: <b>" + formatear(deuda) + " €</b><br>" +
-    "• Si alcanzas los $40,000 de deuda y vuelves a cerrar un mes en negativo, serás despedido.<br><br>" +
-    "<b style='color:#93c5fd;'>Elige cuánto dinero necesitas:</b> " +
+    "<b style='color:#f87171;'>The Managing Director has detected a serious budget deviation.</b><br>" +
+    "Company capital has fallen into the red. However, you are in luck: " +
+    "he offers you an unplanned <b>emergency credit line</b> to cover salaries or travel.<br><br>" +
+    "<b>Loan conditions:</b><br>" +
+    "• Maximum available: <b>" + formatear(maxBloques * 10000) + " PLN</b> (in 10,000 PLN blocks)<br>" +
+    "• Cost: <b>1,000 PLN per month por cada bloque</b> pedido, de forma fija mientras no se devuelva<br>" +
+    "• Deuda acumulada actual: <b>" + formatear(deuda) + " PLN</b><br>" +
+    "• If you reach 40,000 PLN in debt and close another month in the red, you will be fired.<br><br>" +
+    "<b style='color:#93c5fd;'>Choose how much money you need:</b> " +
     "<select id='sel-credito' style='padding:4px;border-radius:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;'>" +
     opciones + "</select><br><br>" +
-    "<b style='color:#93c5fd;'>¿A qué hucha inyectas el dinero rescatado?</b> " +
+    "<b style='color:#93c5fd;'>Which budget do you inject the rescued money into?</b> " +
     "<select id='sel-hucha' style='padding:4px;border-radius:6px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;'>" +
-    "<option value='caja'>Caja general (salarios)</option>" +
-    "<option value='viajes'>Presupuesto de Viajes</option>" +
-    "<option value='formacion'>Presupuesto de Formación</option>" +
+    "<option value='caja'>General cash (salaries)</option>" +
+    "<option value='viajes'>Travel Budget</option>" +
+    "<option value='formacion'>Training Budget</option>" +
     "</select></p>";
-  mostrarNotificacionEmergente("⚠️ AVISO DE DESVIACIÓN PRESUPUESTARIA", html, "alerta", {
-    textoAceptar: "Aceptar Crédito del Jefe",
-    textoRechazar: "Rechazar (Game Over)",
+  mostrarNotificacionEmergente("⚠️ BUDGET DEVIATION WARNING", html, "alerta", {
+    textoAceptar: "Accept Director's Credit",
+    textoRechazar: "Reject (Game Over)",
     aceptar: function () {
       var selC = document.getElementById("sel-credito");
       var selH = document.getElementById("sel-hucha");
@@ -1267,14 +1330,14 @@ function gestionarNumerosRojos() {
       if (hucha === "viajes") estado.presupuestos.viajes += cantidad;
       else if (hucha === "formacion") estado.presupuestos.formacion += cantidad;
       else capital += cantidad;
-      notificar("info", "CRÉDITO DE EMERGENCIA CONCEDIDO",
-        "Rescate de " + formatear(cantidad) + " € inyectado en '" + hucha +
+      notificar("info", "EMERGENCY CREDIT GRANTED",
+        "Rescue of " + formatear(cantidad) + " PLN injected into '" + hucha +
         "'. Deuda acumulada: " + formatear(estado.deudaAcumulada) +
-        " €. Coste fijo: " + formatear((estado.deudaAcumulada / 10000) * 1000) + " €/mes.");
+        " PLN. Coste fijo: " + formatear((estado.deudaAcumulada / 10000) * 1000) + " PLN/mes.");
       renderTodo();
     },
     rechazar: function () {
-      mostrarGameOver("Rechazaste el crédito de emergencia con el capital en negativo.");
+      mostrarGameOver("You rejected the emergency credit with capital in the red.");
     }
   });
 }
@@ -1295,6 +1358,14 @@ function limiteSinFormacion(rango) {
 function verificarRetencionPersonal() {
   var renuncias = [];
   estado.plantilla.forEach(function (ing) {
+    if (ing.mesesAvisoRestantes > 0) {
+      ing.mesesAvisoRestantes--;
+      if (ing.mesesAvisoRestantes === 0) {
+        notificar("info", "NOTICE PERIOD COMPLETED",
+          ing.nombre + " has finished the notice period and is now fully available for assignment.");
+      }
+      return;
+    }
     var ritmoQuemado = 1;
     if (estado.visionEmpleador > 75) ritmoQuemado = 0.5;
     else if (estado.visionEmpleador < 30) ritmoQuemado = 2;
@@ -1325,17 +1396,17 @@ function verificarRetencionPersonal() {
   if (renuncias.length > 0) {
     var nombres = renuncias.map(function (r) { return r.nombre + " (" + r.rango + ")"; }).join(", ");
     estado.visionEmpleador = Math.max(0, estado.visionEmpleador - 5 * renuncias.length);
-    notificar("pen", "VISIÓN COMO EMPLEADOR -" + (5 * renuncias.length),
-      "Clima laboral dañado por dimisiones. Visión como Empleador: " + estado.visionEmpleador + "/100.");
+    notificar("pen", "EMPLOYER BRAND -" + (5 * renuncias.length),
+      "Work climate damaged by resignations. Employer Brand: " + estado.visionEmpleador + "/100.");
     renuncias.forEach(function (ing) {
-      notificar("alerta", "ABANDONO DE PLANTILLA",
-        ing.nombre + " (" + ing.rango + ") ha renunciado por falta de formación.");
+      notificar("alerta", "ROSTER DEPARTURE",
+        ing.nombre + " (" + ing.rango + ") has resigned due to lack of training.");
     });
-    mostrarNotificacionEmergente("⚠ Dimisión por Falta de Formación",
-      "<b>" + nombres + "</b> ha(n) renunciado: superaron su límite de meses sin curso de formación.<br><br>" +
-      "Su plaza en el proyecto queda vacante y genera penalización mensual hasta que la cubras.<br>" +
-      "<b style='color:#fbbf24;'>Consejo:</b> usa la banca (I+D Interno) como sustituto inmediato y " +
-      "planifica Formación o Rewards para el resto de la plantilla.", "alerta");
+    mostrarNotificacionEmergente("⚠ Resignation due to Lack of Training",
+      "<b>" + nombres + "</b> have resigned: they exceeded their limit of months without a training course.<br><br>" +
+      "Their slot in the project is now vacant and accrues a monthly penalty until you fill it.<br>" +
+      "<b style='color:#fbbf24;'>Tip:</b> use the bench (Internal R&D) as an immediate substitute and " +
+      "plan Training or Rewards for the rest of the roster.", "alerta");
   }
 }
 
@@ -1344,31 +1415,31 @@ function aplicarFormacion(empleadoId) {
   if (!ing) return;
   var COSTE_FORMACION = 1500;
   if (estado.presupuestos.formacion < COSTE_FORMACION) {
-    notificar("alerta", "FORMACIÓN BLOQUEADA", "Presupuesto de Formación insuficiente (" +
-      formatear(estado.presupuestos.formacion) + " € disponibles, se necesitan " +
-      formatear(COSTE_FORMACION) + " €).");
+    notificar("alerta", "TRAINING BLOCKED", "Insufficient Training budget (" +
+      formatear(estado.presupuestos.formacion) + " PLN available, need " +
+      formatear(COSTE_FORMACION) + " PLN).");
     return;
   }
   estado.presupuestos.formacion -= COSTE_FORMACION;
   presupuestosAnuales.formacion = estado.presupuestos.formacion;
   ing.enFormacion = true;
   var eraAsignado = ing.asignado;
-  if (eraAsignado && eraAsignado !== "I+D Interno") {
+  if (eraAsignado && eraAsignado !== "Internal R&D") {
     desasignarIngeniero(empleadoId);
-    notificar("alerta", "SLOT LIBERADO POR FORMACIÓN",
-      ing.nombre + " ha sido desasignado de su proyecto para ir a En Capacitación Técnica. " +
-      "Coloca un sustituto desde la banca (I+D Interno) para mantener el Liderazgo Técnico del proyecto.");
+    notificar("alerta", "SLOT RELEASED BY TRAINING",
+      ing.nombre + " has been unassigned from the project to attend Technical Training. " +
+      "Place a substitute from the bench (Internal R&D) to maintain the project's Technical Leadership.");
   }
-  notificar("info", "EN CAPACITACIÓN TÉCNICA",
-    ing.nombre + " se va En Capacitación Técnica este mes" +
-    (eraAsignado ? " y DEJA DE APORTAR a su proyecto actual. Usa la banca (I+D Interno) para cubrir su slot." : ".") +
-    " La subida de nivel se aplicará al final del mes.");
+  notificar("info", "IN TRAINING TÉCNICA",
+    ing.nombre + " goes into Technical Training this month" +
+    (eraAsignado ? " y DEJA DE APORTAR a su proyecto actual. Usa la banca (Internal R&D) para cubrir su slot." : ".") +
+    " The level increase will apply at the end of the month.");
   var subida = entero(5, 12);
   ing.nivelPendiente = subida;
   ing.mesesSinFormacion = 0;
   estado.visionEmpleador = Math.min(100, estado.visionEmpleador + 1);
-  notificar("exito", "VISIÓN COMO EMPLEADOR +1",
-    "Inversión en formación de " + ing.nombre + ". Visión como Empleador: " + estado.visionEmpleador + "/100.");
+  notificar("exito", "EMPLOYER BRAND +1",
+    "Training investment for " + ing.nombre + ". Employer Brand: " + estado.visionEmpleador + "/100.");
   renderTodo();
   renderOperaciones();
 }
@@ -1379,24 +1450,24 @@ function aplicarFormacion(empleadoId) {
 function eventosMensuales() {
   if (mesActual === 6 || mesActual === 12) {
     var ordenes6m = [
-      "Revisa la moral del equipo: los que acumulan meses sin formación están en riesgo de dimitir.",
-      "Optimiza tus slots: cada vacante sin cubrir cuesta $2,000 al mes en proyectos comprometidos.",
-      "Prepara la banca: un buen colchón en I+D Interno salva proyectos cuando alguien se va a formar.",
-      "Vigila el presupuesto de Viajes: sin él, los proyectos con desplazamientos rinden al 0%."
+      "Review team morale: engineers stacking months without training are at risk of resigning.",
+      "Optimize your slots: every unfilled vacancy costs 2,000 PLN per month on committed projects.",
+      "Prepare the bench: a good cushion in Internal R&D saves projects when someone goes to training.",
+      "Watch the Travel Budget: without it, travel projects output 0%."
     ];
-    mostrarNotificacionEmergente("📋 Órdenes del Director — Generic Aerospace",
-      "<b>Memorándum del Director — Mes " + mesActual + ", Año " + añoActual + "</b><br><br>" +
+    mostrarNotificacionEmergente("📋 Director's Orders — Generic Aerospace",
+      "<b>Director's Memorandum — Month " + mesActual + ", Year " + añoActual + "</b><br><br>" +
       ordenes6m[entero(0, ordenes6m.length - 1)] + "<br><br>" +
-      "<i style='color:#94a3b8;'>El juego queda en pausa hasta que leas la orden.</i>", "info");
+      "<i style='color:#94a3b8;'>The game is paused until you read the order.</i>", "info");
   }
-  var faseInicial = (añoActual === 1 && mesActual <= 2);
+  var faseInicial = (añoActual === 2025 && mesActual <= 2);
   if (!faseInicial && (mesActual === 3 || mesActual === 6 || mesActual === 9 || mesActual === 12)) {
     nuevaRondaMercado();
     mercadoAnualActivo = true;
     estado.ronda = 1;
-    notificar("info", "MERCADO LABORAL TRIMESTRAL",
-      "Tanda de 5 candidatos frescos disponible en la pestaña Mercado. " +
-      "Si avanzas el mes sin firmarlos, desaparecerán para siempre.");
+    notificar("info", "QUARTERLY HIRING MARKET",
+      "A fresh batch of 5 candidates is available in the Hiring Market tab. " +
+      "If you advance the month without signing them, they will be gone forever.");
   } else {
     if (mercadoAnualActivo) {
       estado.mercado = [];
@@ -1412,9 +1483,9 @@ function eventosMensuales() {
 }
 
 var NOMBRES_PROYECTOS_URGENTES = [
-  "Revisión Certificación SAT-9",
-  "Rescate Telemetría Delta",
-  "Parche Blindaje Cápsula"
+  "SAT-9 Certification Review",
+  "Delta Telemetry Rescue",
+  "Capsule Shielding Patch"
 ];
 
 function generarProyectoUrgente() {
@@ -1448,39 +1519,39 @@ function ofrecerProyectosEmergencia() {
   var ofertas = [];
   for (var i = 0; i < n; i++) ofertas.push(generarProyectoUrgente());
   var html = "<p style='font-size:11px;margin-bottom:10px;color:#94a3b8;'>" +
-    "El Director de Generic Aerospace necesita apoyo URGENTE. Duración corta, alta remuneración. " +
+    "The Director of Generic Aerospace needs URGENT support. Short duration, high pay. " +
     "Acepta ahora o ignora la oferta.</p>";
   var html = "<p style='font-size:11px;margin-bottom:10px;color:#94a3b8;'>" +
-    "El Director de Generic Aerospace necesita apoyo URGENTE. Duración corta, alta remuneración. " +
-    "Decide proyecto a proyecto. Puedes consultar tus recursos con 'Ver Plantilla/Saldos'.</p>";
+    "The Director of Generic Aerospace needs URGENT support. Short duration, high pay. " +
+    "Decide project by project. You can audit your resources with 'View Roster/Balances'.</p>";
   ofertas.forEach(function (p) {
     var dl = calcularDeadline(mesActual, añoActual, p.duracionMeses);
     html += "<div class='proyecto-oferta' id='oferta-" + p.id + "'><div class='datos'><b>" + p.nombre + "</b> " +
       "<span class='disc disc-I'>URGENTE</span>" +
       "<table style='font-size:11px;margin-top:4px;border-collapse:collapse;'>" +
-      "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Duración:</td><td><b>" + p.duracionMeses + " meses</b></td></tr>" +
+      "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Duration:</td><td><b>" + p.duracionMeses + " months</b></td></tr>" +
       "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Deadline:</td><td><b style='color:#f87171;'>" + dl + "</b></td></tr>" +
-      "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Perfil DISC preferido:</td><td><span class='disc disc-" + p.discRequerido + "'>" + p.discRequerido + " · " + p.discDesc + "</span></td></tr>" +
-      "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Ingresos mensuales:</td><td><b style='color:#4ade80;'>" + formatear(p.ingresoMes) + " €/mes</b> (total " + formatear(p.valorTotal) + " €)</td></tr>" +
-      "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Gasto de Viaje:</td><td>" +
-      (p.requiereViaje ? "<b style='color:#fbbf24;'>SÍ — Consume " + formatear(p.costeViajeMes || 1000) + "/mes de tu Presupuesto de Viajes</b>" : "No") + "</td></tr>" +
-      "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Slots requeridos:</td><td><b>" + p.slotsRequeridos + "</b> (nivel mín. " + p.minNivelExigido + ")</td></tr>" +
+      "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Preferred DISC profile:</td><td><span class='disc disc-" + p.discRequerido + "'>" + p.discRequerido + " · " + p.discDesc + "</span></td></tr>" +
+      "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Monthly revenue:</td><td><b style='color:#4ade80;'>" + formatear(p.ingresoMes) + " PLN/month</b> (total " + formatear(p.valorTotal) + " PLN)</td></tr>" +
+      "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Travel Expense:</td><td>" +
+      (p.requiereViaje ? "<b style='color:#fbbf24;'>SÍ — Consume " + formatear(p.costeViajeMes || 1000) + "/month of your Travel Budget</b>" : "No") + "</td></tr>" +
+      "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Slots required:</td><td><b>" + p.slotsRequeridos + "</b> (min level " + p.minNivelExigido + ")</td></tr>" +
       "</table>" +
       "<div style='margin-top:8px;display:flex;gap:8px;'>" +
-      "<button class='boton-2000' style='background:linear-gradient(180deg,#16a34a,#15803d);border-color:#22c55e;' onclick=\"decidirEmergencia('" + p.id + "', true)\">✔ Aceptar</button>" +
-      "<button class='boton-2000' style='background:linear-gradient(180deg,#dc2626,#b91c1c);border-color:#ef4444;' onclick=\"decidirEmergencia('" + p.id + "', false)\">✘ Rechazar</button>" +
+      "<button class='boton-2000' style='background:linear-gradient(180deg,#16a34a,#15803d);border-color:#22c55e;' onclick=\"decidirEmergencia('" + p.id + "', true)\">✔ Accept</button>" +
+      "<button class='boton-2000' style='background:linear-gradient(180deg,#dc2626,#b91c1c);border-color:#ef4444;' onclick=\"decidirEmergencia('" + p.id + "', false)\">✘ Reject</button>" +
       "</div></div></div>";
   });
   window._urgentesOfertas = ofertas;
-  notificar("urgente", "OFERTA DE EMERGENCIA",
-    n + " proyecto(s) urgente(s) disponibles. Revisa el panel para decidirlos.");
+  notificar("urgente", "EMERGENCY OFFER",
+    n + " urgent project(s) available. Check the panel to decide.");
   mostrarNotificacionEmergente("🚨 Proyectos de Emergencia — Generic Aerospace", html, "urgente", {
     decisionIndividual: true,
     alCerrar: function () {
       if (window._urgentesOfertas && window._urgentesOfertas.length > 0) {
-        notificar("info", "EMERGENCIAS PENDIENTES",
+        notificar("info", "EMERGENCIES PENDING",
           "Quedan " + window._urgentesOfertas.length +
-          " oferta(s) urgente(s) por decidir. Al pulsar 'Avanzar Mes' se reabrirá el panel.");
+          " urgent offer(s) pending decision. Pressing 'Advance Month' will reopen the panel.");
       }
     }
   });
@@ -1498,12 +1569,12 @@ function decidirEmergencia(proyectoId, aceptar) {
     p.id = "urg-" + proyectosDisponibles.length + "-" + Math.random().toString(36).slice(2, 6);
     p.deadline = calcularDeadline(mesActual, añoActual, p.duracionMeses);
     proyectosDisponibles.push(p);
-    notificar("urgente", "EMERGENCIA ACEPTADA",
-      p.nombre + ": asigna personal YA en Operaciones (" + p.duracionMeses + " meses)." +
-      (p.requiereViaje ? " ¡Exige Gasto de Viaje!" : ""));
+    notificar("urgente", "EMERGENCY ACCEPTED",
+      p.nombre + ": assign staff NOW in Operations (" + p.duracionMeses + " months)." +
+      (p.requiereViaje ? " It requires Travel Expense!" : ""));
     renderOperaciones();
   } else {
-    notificar("info", "EMERGENCIA RECHAZADA", p.nombre + ": oferta rechazada.");
+    notificar("info", "EMERGENCY REJECTED", p.nombre + ": offer rejected.");
   }
   if (ofertas.length === 0) {
     window._urgentesOfertas = null;
@@ -1550,31 +1621,31 @@ function panelPlanificacionAnual() {
     });
   }
   var html = "<p style='font-size:11px;margin-bottom:10px;color:#94a3b8;'>" +
-    "Generic Aerospace presenta sus proyectos para el <b style='color:#93c5fd;'>AÑO " + (añoActual + 1) +
-    "</b>. Selecciona a cuáles te comprometes oficialmente (mínimo 1).</p>";
+    "Generic Aerospace presents its projects for <b style='color:#93c5fd;'>YEAR " + (añoActual + 1) +
+    "</b>. Select which ones you officially commit to (minimum 1).</p>";
   candidata.forEach(function (p) {
     html += "<div class='proyecto-oferta'><div class='datos'><b>" + p.nombre + "</b><br>" +
-      p.duracionMeses + " meses · " + formatear(p.ingresoMes) + " €/mes · " +
+      p.duracionMeses + " meses · " + formatear(p.ingresoMes) + " PLN/mes · " +
       p.slotsRequeridos + " slots · DISC <span class='disc disc-" + p.discRequerido + "'>" + p.discRequerido + "</span>" +
       (p.requiereViaje ? " · <b style='color:#fbbf24;'>REQUIERE VIAJE</b>" : "") + "</div>" +
       "<input type='checkbox' value='" + p.id + "'></div>";
   });
   if (usados.length > 0) {
-    html += "<p style='font-size:11px;margin:12px 0 6px;color:#93c5fd;'><b>Renovación de proyectos activos:</b></p>";
+    html += "<p style='font-size:11px;margin:12px 0 6px;color:#93c5fd;'><b>Renewal of active projects:</b></p>";
     usados.forEach(function (p) {
-      html += "<div class='proyecto-oferta'><div class='datos'><b>" + p.nombre + "</b><br>Restan " +
-        Math.max(0, p.duracionMeses - p.mesesTranscurridos) + " meses</div>" +
-        "<label style='font-size:11px;'><input type='checkbox' class='chk-renovar' value='" + p.id + "' checked> Renovar</label></div>";
+      html += "<div class='proyecto-oferta'><div class='datos'><b>" + p.nombre + "</b><br>" + "Remaining: " +
+        Math.max(0, p.duracionMeses - p.mesesTranscurridos) + " months</div>" +
+        "<label style='font-size:11px;'><input type='checkbox' class='chk-renovar' value='" + p.id + "' checked> Renew</label></div>";
     });
   }
   window._planAnualCandidata = candidata;
   window._planAnualUsados = usados;
-  abrirModal("Planificación de Capacidad Anual — Octubre Año " + añoActual, html,
+  abrirModal("Annual Capacity Planning — October Year " + añoActual, html,
     "Confirmar Compromisos", function () {
       var elegidos = proyectosSeleccionadosModal();
       if (elegidos.length === 0) {
-        notificar("alerta", "PLANIFICACIÓN RECHAZADA",
-          "Debes comprometerte al menos a 1 proyecto. El panel se reabrirá.");
+        notificar("alerta", "PLANNING REJECTED",
+          "You must commit to at least 1 project. The panel will reopen.");
         panelPlanificacionAnual();
         return;
       }
@@ -1591,27 +1662,27 @@ function panelPlanificacionAnual() {
       });
       usados.forEach(function (p) {
         if (renovarIds.indexOf(p.id) >= 0) {
-          notificar("info", "PROYECTO RENOVADO", p.nombre + " continúa activo para el año " + (añoActual + 1) + ".");
+          notificar("info", "PROJECT RENOVADO", p.nombre + " remains active for year " + (añoActual + 1) + ".");
         } else {
           p.estadoProy = "CANCELADO";
           p.slots.forEach(function (id) {
             if (id) {
               var ing = estado.plantilla.find(function (e) { return e.id === id; });
-              if (ing) ing.asignado = "I+D Interno";
+              if (ing) ing.asignado = "Internal R&D";
             }
           });
           p.slots = p.slots.map(function () { return null; });
           var idx = proyectosAsignados.indexOf(p.id);
           if (idx >= 0) proyectosAsignados.splice(idx, 1);
-          notificar("alerta", "PROYECTO DADO DE BAJA", p.nombre + " cancelado. Personal devuelto a I+D Interno.");
+          notificar("alerta", "PROJECT CANCELLED", p.nombre + " cancelled. Staff returned to Internal R&D.");
           estado.confianzaCliente = Math.max(0, estado.confianzaCliente - 2);
-          notificar("pen", "CONFIANZA DEL CLIENTE -2",
-            "Cancelación de " + p.nombre + ": la confianza de Generic Aerospace cae a " + estado.confianzaCliente + "/100.");
+          notificar("pen", "CLIENT TRUST -2",
+            "Cancellation of " + p.nombre + ": Generic Aerospace trust drops to " + estado.confianzaCliente + "/100.");
         }
       });
-      notificar("exito", "COMPROMISOS REGISTRADOS",
-        elegidos.length + " proyecto(s) comprometidos para el año " + (añoActual + 1) +
-        ". Ya son asignables en Operaciones.");
+      notificar("exito", "COMMITMENTS REGISTERED",
+        elegidos.length + " project(s) committed for year " + (añoActual + 1) +
+        ". They are now assignable in Operations.");
       renderOperaciones();
     }, true);
 }
@@ -1620,14 +1691,14 @@ function darReward(empleadoId) {
   var ing = estado.plantilla.find(function (e) { return e.id === empleadoId; });
   if (!ing) return;
   mostrarNotificacionEmergente("🎁 Rewards — " + ing.nombre,
-    "<b>Elige la recompensa para " + ing.nombre + " (" + ing.rango + ", Nv " + ing.nivel + "):</b><br><br>" +
-    "<div class='proyecto-oferta'><div class='datos'><b style='color:#4ade80;'>1. Bono de Éxito ($2,000)</b><br>" +
-    "Restaura la satisfacción al 100% de inmediato y congela su riesgo de dimisión durante <b>6 meses</b>.</div></div>" +
-    "<div class='proyecto-oferta'><div class='datos'><b style='color:#93c5fd;'>2. Plan de Carrera / Promoción ($4,000 + 20% de sueldo)</b><br>" +
-    "Sube oficialmente el rango del empleado, aumenta su salario un 20%, pero <b>duplica su paciencia y lealtad</b> a largo plazo.</div></div><br>" +
-    "<i style='color:#94a3b8;'>Presupuesto de Rewards disponible: " + formatear(estado.presupuestos.rewards) + " €</i>", "info", {
-      textoAceptar: "Bono de Éxito ($2,000)",
-      textoRechazar: "Promoción ($4,000)",
+    "<b>Choose the reward for " + ing.nombre + " (" + ing.rango + ", Lv " + ing.nivel + "):</b><br><br>" +
+    "<div class='proyecto-oferta'><div class='datos'><b style='color:#4ade80;'>1. Success Bonus (2,000 PLN)</b><br>" +
+    "Restores satisfaction to 100% immediately and freezes their resignation risk for <b>6 months</b>.</div></div>" +
+    "<div class='proyecto-oferta'><div class='datos'><b style='color:#93c5fd;'>2. Career Plan / Promotion (4,000 PLN + 20% salary)</b><br>" +
+    "Officially promotes the employee's rank, raises their salary by 20%, and <b>doubles their patience and loyalty</b> long-term.</div></div><br>" +
+    "<i style='color:#94a3b8;'>Presupuesto de Rewards disponible: " + formatear(estado.presupuestos.rewards) + " PLN</i>", "info", {
+      textoAceptar: "Success Bonus (2,000 PLN)",
+      textoRechazar: "Promotion (4,000 PLN)",
       aceptar: function () { aplicarBonoExito(ing); },
       rechazar: function () { aplicarPromocion(ing); }
     });
@@ -1636,8 +1707,8 @@ function darReward(empleadoId) {
 function aplicarBonoExito(ing) {
   var COSTE = 2000;
   if (estado.presupuestos.rewards < COSTE) {
-    notificar("alerta", "BONO BLOQUEADO", "Presupuesto de Rewards insuficiente (" +
-      formatear(estado.presupuestos.rewards) + " € disponibles, se necesitan " + formatear(COSTE) + " €).");
+    notificar("alerta", "BONUS BLOCKED", "Presupuesto de Rewards insuficiente (" +
+      formatear(estado.presupuestos.rewards) + " PLN available, need " + formatear(COSTE) + " PLN).");
     return;
   }
   estado.presupuestos.rewards -= COSTE;
@@ -1646,9 +1717,9 @@ function aplicarBonoExito(ing) {
   ing.mesesSinFormacion = 0;
   ing.mesesCongelados = 6;
   estado.visionEmpleador = Math.min(100, estado.visionEmpleador + 2);
-  notificar("exito", "BONO DE ÉXITO ENTREGADO",
-    ing.nombre + ": satisfacción al 100% y riesgo de dimisión congelado durante 6 meses.");
-  notificar("exito", "VISIÓN COMO EMPLEADOR +2",
+  notificar("exito", "SUCCESS BONUS GRANTED",
+    ing.nombre + ": satisfaction restored to 100% and resignation risk frozen for 6 months.");
+  notificar("exito", "EMPLOYER BRAND +2",
     "Reward entregado. Visión como Empleador: " + estado.visionEmpleador + "/100.");
   renderTodo();
 }
@@ -1656,14 +1727,14 @@ function aplicarBonoExito(ing) {
 function aplicarPromocion(ing) {
   var COSTE = 4000;
   if (estado.presupuestos.rewards < COSTE) {
-    notificar("alerta", "PROMOCIÓN BLOQUEADA", "Presupuesto de Rewards insuficiente (" +
-      formatear(estado.presupuestos.rewards) + " € disponibles, se necesitan " + formatear(COSTE) + " €).");
+    notificar("alerta", "PROMOTION BLOCKED", "Presupuesto de Rewards insuficiente (" +
+      formatear(estado.presupuestos.rewards) + " PLN available, need " + formatear(COSTE) + " PLN).");
     return;
   }
   var ORDEN = ["Internship", "Ingeniero", "Senior", "Staff"];
   var idx = ORDEN.indexOf(ing.rango);
   if (idx < 0 || idx >= ORDEN.length - 1) {
-    notificar("alerta", "PROMOCIÓN IMPOSIBLE", ing.nombre + " ya tiene el rango máximo (Staff).");
+    notificar("alerta", "PROMOCIÓN IMPOSIBLE", ing.nombre + " already holds the maximum rank (Staff).");
     return;
   }
   estado.presupuestos.rewards -= COSTE;
@@ -1674,10 +1745,10 @@ function aplicarPromocion(ing) {
   ing.satisfaccion = 100;
   ing.mesesSinFormacion = 0;
   estado.visionEmpleador = Math.min(100, estado.visionEmpleador + 2);
-  notificar("exito", "PROMOCIÓN OFICIAL",
-    ing.nombre + " asciende a " + ing.rango + ". Nuevo sueldo: " + formatear(ing.sueldo) +
-    " €. Paciencia y lealtad duplicadas a largo plazo.");
-  notificar("exito", "VISIÓN COMO EMPLEADOR +2",
+  notificar("exito", "OFFICIAL PROMOTION",
+    ing.nombre + " is promoted to " + ing.rango + ". New salary: " + formatear(ing.sueldo) +
+    " PLN. Paciencia y lealtad duplicadas a largo plazo.");
+  notificar("exito", "EMPLOYER BRAND +2",
     "Reward entregado. Visión como Empleador: " + estado.visionEmpleador + "/100.");
   renderTodo();
 }
@@ -1693,18 +1764,18 @@ function renderOperaciones() {
       " <span style='color:#b91c1c;background:#fee2e2;padding:0 4px;border-radius:4px;'>⏰ Deadline: " +
       (proy.deadline || deadlineDeProyecto(proy)) + "</span></h5>";
     html += "<div style='font-size:10px;margin-bottom:4px;'>" +
-      "Cliente: " + proy.cliente +
+      "Client: " + proy.cliente +
       " · DISC <span class='disc disc-" + proy.discRequerido + "'>" + proy.discRequerido + "</span>" +
-      " · Nivel mín. " + proy.minNivelExigido + "<br>";
-    html += "Duración: " + proy.duracionMeses + " meses (restan " +
-      Math.max(0, proy.duracionMeses - proy.mesesTranscurridos) + ") · Total " + formatear(proy.valorTotal) + " €";
-    html += "<br><b style='color:#16a34a;'>Ingresos: " + formatear(proy.ingresoMes) + " €/mes</b>";
-    html += " · <b style='color:#b91c1c;'>Penalización por Retraso: " + formatear(proy.penalizacionMes) + " €/mes</b>";
-    html += "<br><b style='color:#0f172a;'>Liderazgo: " + lideresRequeridos(proy.slotsRequeridos) +
-      " ingeniero(s) con nivel ≥ " + proy.minNivelExigido + "</b>";
+      " · Min level " + proy.minNivelExigido + "<br>";
+    html += "Duration: " + proy.duracionMeses + " months (" +
+      Math.max(0, proy.duracionMeses - proy.mesesTranscurridos) + ") · Total " + formatear(proy.valorTotal) + " PLN";
+    html += "<br><b style='color:#16a34a;'>Revenue: " + formatear(proy.ingresoMes) + " PLN/mes</b>";
+    html += " · <b style='color:#b91c1c;'>Delay Penalty: " + formatear(proy.penalizacionMes) + " PLN/mes</b>";
+    html += "<br><b style='color:#0f172a;'>Leadership: " + lideresRequeridos(proy.slotsRequeridos) +
+      " engineer(s) with level ≥ " + proy.minNivelExigido + "</b>";
     if (proy.requiereViaje) {
-      html += "<br><b style='color:#b45309;'>Gasto de Viaje: SÍ — Consume " + formatear(costeViajeDe(proy)) +
-        "/mes de tu Presupuesto de Viajes</b>";
+      html += "<br><b style='color:#b45309;'>Travel Expense: YES — Consumes " + formatear(costeViajeDe(proy)) +
+        "/month of your Travel Budget</b>";
     }
     html += "</div>";
     for (var s = 0; s < proy.slotsRequeridos; s++) {
@@ -1713,18 +1784,18 @@ function renderOperaciones() {
       if (ing) {
         html += "<div style='border:1px solid #888;margin:2px 0;padding:2px 4px;background:#eef2f8;'>" +
           "<b>" + ing.nombre + "</b> (Nv " + ing.nivel + ", <span class='disc disc-" + ing.disc + "'>" + ing.disc + "</span>)" +
-          (ing.enFormacion ? " <b style='color:#fbbf24;'>[EN CAPACITACIÓN — no aporta]</b>" : "") + " " +
+          (ing.enFormacion ? " <b style='color:#fbbf24;'>[IN TRAINING — no aporta]</b>" : "") + " " +
           (proy.estadoProy === "ACTIVO" ?
-            "<button class='boton-2000' style='padding:1px 6px;font-size:10px;' onclick=\"asignarIngenieroAProyecto('" + ing.id + "','id-interno')\">Liberar</button>" :
+            "<button class='boton-2000' style='padding:1px 6px;font-size:10px;' onclick=\"asignarIngenieroAProyecto('" + ing.id + "','id-interno')\">Release</button>" :
             "") +
           "</div>";
       } else {
-        html += "<div style='border:1px dashed #999;margin:2px 0;padding:2px 4px;color:#334155;'>SLOT " + (s + 1) + " — Vacío";
+        html += "<div style='border:1px dashed #999;margin:2px 0;padding:2px 4px;color:#334155;'>SLOT " + (s + 1) + " — Empty";
         if (proy.estadoProy === "ACTIVO") {
           html += " <select style='font-size:10px;' onchange=\"if(this.value){asignarIngenieroAProyecto(this.value,'" + proy.id + "'," + s + ");}\">";
-          html += "<option value=''>Asignar...</option>";
+          html += "<option value=''>Assign...</option>";
           estado.plantilla.forEach(function (libre) {
-            if (!libre.asignado || libre.asignado === "I+D Interno") {
+            if (!libre.asignado || libre.asignado === "Internal R&D") {
               html += "<option value='" + libre.id + "'>" + libre.nombre + " (Nv " + libre.nivel + ", " + libre.disc + ")</option>";
             }
           });
@@ -1735,9 +1806,9 @@ function renderOperaciones() {
     }
     html += "</div>";
   });
-  html += "<div class='celda-tactica'><h5>I+D INTERNO</h5>";
+  html += "<div class='celda-tactica'><h5>INTERNAL R&D</h5>";
   estado.plantilla.forEach(function (ing) {
-    if (ing.asignado === "I+D Interno" || !ing.asignado) {
+    if (ing.asignado === "Internal R&D" || !ing.asignado) {
       html += "<div style='border:1px solid #888;margin:2px 0;padding:2px 4px;background:#eef2f8;'>" +
         "<b>" + ing.nombre + "</b> (Nv " + ing.nivel + ", <span class='disc disc-" + ing.disc + "'>" + ing.disc + "</span>)</div>";
     }
@@ -1753,21 +1824,21 @@ function renderHistorial() {
     return p.estadoProy === "FINALIZADO" || p.estadoProy === "CANCELADO";
   });
   if (concluidos.length === 0) {
-    cont.innerHTML = "<p><i style='color:#94a3b8;'>Todavía no hay contratos concluidos. Cierra tu primer proyecto para verlo aquí.</i></p>";
+    cont.innerHTML = "<p><i style='color:#94a3b8;'>No concluded contracts yet. Close your first project to see it here.</i></p>";
     return;
   }
-  var html = '<table class="tabla"><tr><th>Proyecto</th><th>Estado</th><th>Fecha de Finalización</th><th>Ingresos Totales</th><th>Bonus DISC</th></tr>';
+  var html = '<table class="tabla"><tr><th>Project</th><th>Status</th><th>Completion Date</th><th>Total Revenue</th><th>DISC Bonus</th></tr>';
   concluidos.forEach(function (proy) {
     html += "<tr>" +
       "<td><b>" + proy.nombre + "</b>" + (proy.tipo === "URGENTE" ? " <span class='disc disc-I'>URGENTE</span>" : "") + "</td>" +
       "<td>" + (proy.estadoProy === "FINALIZADO" ?
-        "<span style='color:#4ade80;'>✓ Finalizado</span>" :
-        "<span style='color:#f87171;'>✗ Cancelado</span>") + "</td>" +
+        "<span style='color:#4ade80;'>✓ Finished</span>" :
+        "<span style='color:#f87171;'>✗ Cancelled</span>") + "</td>" +
       "<td>" + (proy.fechaCierre || proy.deadline || "—") + "</td>" +
-      "<td style='color:#4ade80;'><b>" + formatear(proy.valorTotal) + " €</b>" +
-      (proy.ingresosObtenidos !== undefined ? " (cobrado: " + formatear(proy.ingresosObtenidos) + " €)" : "") + "</td>" +
+      "<td style='color:#4ade80;'><b>" + formatear(proy.valorTotal) + " PLN</b>" +
+      (proy.ingresosObtenidos !== undefined ? " (collected: " + formatear(proy.ingresosObtenidos) + " PLN)" : "") + "</td>" +
       "<td>" + (proy.bonusObtenido > 0 ?
-        "<span style='color:#fbbf24;'><b>✦ +" + formatear(proy.bonusObtenido) + " €</b></span>" :
+        "<span style='color:#fbbf24;'><b>✦ +" + formatear(proy.bonusObtenido) + " PLN</b></span>" :
         "<span style='color:#64748b;'>—</span>") + "</td>" +
       "</tr>";
   });
@@ -1785,8 +1856,8 @@ function renderTodo() {
 }
 
 function renderMarcadorCabecera() {
-  var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+  var meses = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
   var idxMes = ((mesActual - 1) % 12 + 12) % 12;
   var elFecha = document.getElementById("estado-fecha");
   var textoFecha = meses[idxMes] + " " + añoActual;
@@ -1794,7 +1865,7 @@ function renderMarcadorCabecera() {
   elFecha.appendChild(document.createTextNode(textoFecha));
   elFecha.textContent = textoFecha;
   document.getElementById("estado-caja").textContent = formatear(Math.max(0, capital)) +
-    (estado.deudaAcumulada > 0 ? " (deuda: " + formatear(estado.deudaAcumulada) + " €)" : "");
+    (estado.deudaAcumulada > 0 ? " (deuda: " + formatear(estado.deudaAcumulada) + " PLN)" : "");
   document.getElementById("estado-plantilla").textContent = estado.plantilla.length;
   var elConf = document.getElementById("estado-confianza");
   if (elConf) elConf.textContent = estado.confianzaCliente;
@@ -1805,8 +1876,8 @@ function renderMarcadorCabecera() {
   estado.caja = capital;
 }
 
-var MESES_ABREV = ["Ene", "Feb", "Mar", "Abr", "May", "Jun",
-  "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+var MESES_ABREV = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 function calcularDeadline(mesInicio, anioInicio, duracionMeses) {
   var idx = (mesInicio - 1) + duracionMeses;
@@ -1830,16 +1901,16 @@ window._planAnualHecho = false;
 cerrarModal();
 renderMarcadorCabecera();
 renderTodo();
-mostrarNotificacionEmergente("✉️ MENSAJE DEL DIRECTOR GENERAL",
-  "Bienvenido a la división, Mánager. No te voy a engañar: asumes el cargo en un momento crítico para Pilot. " +
-  "El mánager anterior nos dejó con una <b style='color:#f87171;'>herencia envenenada</b>: " +
-  "4 macroproyectos aeroespaciales congelados con Generic Aerospace, plazos de entrega asfixiantes que vencen en pocos meses " +
-  "y, para colmo, la plantilla completamente vacía.<br><br>" +
-  "Sé que el volumen de trabajo pendiente es abrumador y que las primeras penalizaciones por retraso son inminentes, " +
-  "pero el comité de dirección confía plenamente en tu capacidad estratégica y de liderazgo para revertir la situación.<br><br>" +
-  "Tienes un fondo inicial de <b style='color:#4ade80;'>$150,000 en caja</b>. Tu prioridad absoluta hoy es visitar el <b>Mercado Laboral</b>, " +
-  "reclutar un equipo de ingenieros de élite y asignarlos tácticamente para apagar estos fuegos.<br><br>" +
-  "<b style='color:#93c5fd;'>Mucha suerte, el futuro de Pilot está en tus manos.</b>", "info");
+mostrarNotificacionEmergente("✉️ MSG FROM THE MANAGING DIRECTOR",
+  "Welcome to the division, Manager. I won't sugarcoat it: you are taking over at a critical time for Pilot. " +
+  "The previous manager left us a <b style='color:#f87171;'>toxic legacy</b>: " +
+  "4 core aerospace projects with Generic Aerospace are completely frozen, deadlines are suffocating and bleeding cash, " +
+  "and to make matters worse, your engineering roster is completely empty.<br><br>" +
+  "I know the backlog is overwhelming and immediate delay penalties are imminent, " +
+  "but the board has full confidence in your strategic leadership to turn this around.<br><br>" +
+  "You have an initial funding of <b style='color:#4ade80;'>150,000 PLN in cash</b>. Your top priority today is to visit the <b>Hiring Market</b>, " +
+  "recruit a crack team of engineers, and tactically assign them to slots before penalties drive us into bankruptcy.<br><br>" +
+  "<b style='color:#93c5fd;'>Good luck, the future of Pilot is in your hands.</b>", "info");
 
 function pausarSiEmergenteAbierto() {
   return (emergenteAbierto && !window._emergenteMinimizado) ||
@@ -1852,8 +1923,8 @@ document.getElementById("btn-avanzar-mes").addEventListener("click", function ()
     window._emergenteMinimizado = false;
     fondo.style.display = "flex";
     fondo.style.pointerEvents = "auto";
-    notificar("info", "DECISIÓN PENDIENTE",
-      "Hay una decisión pendiente en el pop-up. Resuélvela antes de avanzar el mes.");
+    notificar("info", "PENDING DECISION",
+      "There is a pending decision in the pop-up. Resolve it before advancing the month.");
     return;
   }
   if (pausarSiEmergenteAbierto()) return;
