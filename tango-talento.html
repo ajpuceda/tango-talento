@@ -380,7 +380,6 @@
           <div class="cuerpo presupuestos">
             <div class="presupuesto"><h4>FORMACIÓN</h4><div class="saldo" id="saldo-formacion">0 €</div></div>
             <div class="presupuesto"><h4>VIAJES</h4><div class="saldo" id="saldo-viajes">0 €</div></div>
-            <div class="presupuesto"><h4>INTEGRACIÓN</h4><div class="saldo" id="saldo-integracion">0 €</div></div>
             <div class="presupuesto"><h4>REWARDS</h4><div class="saldo" id="saldo-rewards">0 €</div></div>
           </div>
         </div>
@@ -436,6 +435,7 @@
     <h2 id="modal-titulo">Planificación de Capacidad Anual</h2>
     <div id="modal-contenido"></div>
     <div class="acciones">
+      <button class="boton-2000" id="modal-ver-plantilla" style="background:linear-gradient(180deg,#475569,#334155);border-color:#64748b;">Ver Plantilla/Saldos</button>
       <button class="boton-2000" id="modal-cancelar">Cancelar</button>
       <button class="boton-2000" id="modal-confirmar">Confirmar Compromisos</button>
     </div>
@@ -449,9 +449,9 @@
    VARIABLES DE ESTADO — FASE 2
    ========================================================= */
 let mesActual = 1;
-let añoActual = 1;
+let añoActual = 2025;
 let capital = 150000;
-let presupuestosAnuales = { formacion: 0, viajes: 0, integracion: 0, rewards: 0 };
+let presupuestosAnuales = { formacion: 0, viajes: 0, rewards: 0 };
 let proyectosDisponibles = [];
 let proyectosAsignados = [];
 let proyectosUrgentesOfrecidos = [];
@@ -462,12 +462,11 @@ let mesesEmergenciaUsados = [];
    ESTADO GLOBAL
    ========================================================= */
 var estado = {
-  fecha: { mes: 0, anio: 2000 },
+  fecha: { mes: 0, anio: 2025 },
   caja: 100000,
   presupuestos: {
     formacion: 20000,
     viajes: 10000,
-    integracion: 8000,
     rewards: 15000
   },
   plantilla: [],
@@ -599,7 +598,6 @@ function renderBarraEstado() {
 function renderDespacho() {
   document.getElementById("saldo-formacion").textContent = formatear(estado.presupuestos.formacion) + " €";
   document.getElementById("saldo-viajes").textContent = formatear(estado.presupuestos.viajes) + " €";
-  document.getElementById("saldo-integracion").textContent = formatear(estado.presupuestos.integracion) + " €";
   document.getElementById("saldo-rewards").textContent = formatear(estado.presupuestos.rewards) + " €";
 }
 
@@ -802,7 +800,14 @@ var colaEmergentes = [];
 var emergenteAbierto = false;
 
 function mostrarNotificacionEmergente(titulo, mensaje, tipo, accion) {
-  colaEmergentes.push({ titulo: titulo, mensaje: mensaje, tipo: tipo || "info", accion: accion || null });
+  var item = { titulo: titulo, mensaje: mensaje, tipo: tipo || "info", accion: accion || null };
+  if (tipo === "urgente" || (accion && accion.aceptar)) {
+    var idxInfo = colaEmergentes.findIndex(function (it) { return !it.accion || !it.accion.aceptar; });
+    if (idxInfo >= 0) colaEmergentes.splice(idxInfo, 0, item);
+    else colaEmergentes.push(item);
+  } else {
+    colaEmergentes.push(item);
+  }
   var modalVisible = !document.getElementById("modal-fondo").classList.contains("oculto");
   if (!emergenteAbierto || !modalVisible) {
     emergenteAbierto = false;
@@ -837,6 +842,46 @@ function procesarSiguienteEmergente() {
   document.getElementById("modal-contenido").innerHTML = html;
   var btnConf = document.getElementById("modal-confirmar");
   var btnCanc = document.getElementById("modal-cancelar");
+  var btnVer = document.getElementById("modal-ver-plantilla");
+  fondo.style.alignItems = "center";
+  fondo.style.justifyContent = "center";
+  btnVer.classList.remove("oculto");
+  btnVer.onclick = function () {
+    fondo.style.alignItems = "flex-end";
+    fondo.style.justifyContent = "flex-end";
+    fondo.style.pointerEvents = "none";
+    fondo.querySelector(".modal-caja").style.pointerEvents = "auto";
+    fondo.querySelector(".modal-caja").style.position = "fixed";
+    fondo.querySelector(".modal-caja").style.bottom = "12px";
+    fondo.querySelector(".modal-caja").style.right = "12px";
+    fondo.querySelector(".modal-caja").style.left = "auto";
+    fondo.querySelector(".modal-caja").style.top = "auto";
+    fondo.querySelector(".modal-caja").style.width = "320px";
+    fondo.querySelector(".modal-caja").style.maxHeight = "40vh";
+    fondo.querySelector(".modal-caja").style.overflow = "auto";
+    btnVer.classList.add("oculto");
+    var restaurar = document.createElement("button");
+    restaurar.id = "modal-restaurar";
+    restaurar.className = "boton-2000";
+    restaurar.textContent = "⤢ Volver a la decisión";
+    restaurar.style.marginTop = "8px";
+    document.getElementById("modal-contenido").appendChild(restaurar);
+    restaurar.onclick = function () {
+      fondo.style.alignItems = "center";
+      fondo.style.justifyContent = "center";
+      fondo.style.pointerEvents = "auto";
+      var caja = fondo.querySelector(".modal-caja");
+      caja.style.position = "";
+      caja.style.bottom = "";
+      caja.style.right = "";
+      caja.style.left = "";
+      caja.style.top = "";
+      caja.style.width = "";
+      caja.style.maxHeight = "";
+      if (restaurar.parentNode) restaurar.parentNode.removeChild(restaurar);
+      btnVer.classList.remove("oculto");
+    };
+  };
   if (esDecision) {
     btnConf.textContent = item.accion.textoAceptar || "Aceptar Proyecto";
     btnCanc.textContent = item.accion.textoRechazar || "Rechazar";
@@ -869,6 +914,8 @@ function procesarSiguienteEmergente() {
   }
   fondo.classList.remove("oculto");
   fondo.style.display = "flex";
+  if (item.tipo !== "urgente") btnVer.classList.add("oculto");
+  else btnVer.classList.remove("oculto");
 }
 
 function proyectosSeleccionadosModal() {
@@ -941,7 +988,7 @@ function inicializarProyectosAeroespaciales() {
       id: "proy-" + i,
       nombre: NOMBRES_PROYECTOS[i],
       cliente: "Generic Aerospace",
-      duracionMeses: entero(3, 12),
+      duracionMeses: entero(2, 11),
       mesesTranscurridos: 0,
       slotsRequeridos: entero(2, 4),
       slots: [],
@@ -949,6 +996,7 @@ function inicializarProyectosAeroespaciales() {
       valorTotal: 0,
       minNivelExigido: entero(35, 70),
       estadoProy: "ACTIVO",
+      deadline: "",
       discRequerido: disc.letra,
       discDesc: disc.desc,
       color: colorAvatar(disc.letra)
@@ -957,6 +1005,7 @@ function inicializarProyectosAeroespaciales() {
       proyectosDisponibles[i].slots.push(null);
     }
     proyectosDisponibles[i].valorTotal = proyectosDisponibles[i].ingresoMes * proyectosDisponibles[i].duracionMeses;
+    proyectosDisponibles[i].deadline = calcularDeadline(mesActual, añoActual, proyectosDisponibles[i].duracionMeses);
   }
   proyectosAsignados = [];
 }
@@ -1020,33 +1069,31 @@ function desasignarIngeniero(empleadoId) {
 function abrirModalPresupuestos() {
   var total = 40000;
   var msg = "Año " + añoActual + " — Distribuye el presupuesto anual (máx. " + formatear(total) + " €):\n\n" +
-    "0 = Formación, 1 = Viajes, 2 = Integración, 3 = Rewards\n" +
-    "Introduce cantidades separadas por comas: f,v,i,r";
-  var respuesta = prompt(msg, "10000,10000,10000,10000");
+    "0 = Formación, 1 = Viajes, 2 = Rewards\n" +
+    "Introduce cantidades separadas por comas: f,v,r";
+  var respuesta = prompt(msg, "13000,13000,14000");
   if (respuesta === null) return;
   var partes = respuesta.split(",").map(function (x) { return parseInt(x.trim(), 10) || 0; });
-  if (partes.length !== 4) {
+  if (partes.length !== 3) {
     notificar("alerta", "FORMATO INCORRECTO", "Reparto de presupuestos con formato inválido: se aplica reparto por defecto.");
-    partes = [10000, 10000, 10000, 10000];
+    partes = [13000, 13000, 14000];
   }
-  var suma = partes[0] + partes[1] + partes[2] + partes[3];
+  var suma = partes[0] + partes[1] + partes[2];
   if (suma > total) {
     notificar("alerta", "PRESUPUESTO EXCEDIDO", "La suma supera el máximo anual: se aplica reparto por defecto.");
-    partes = [10000, 10000, 10000, 10000];
+    partes = [13000, 13000, 14000];
   }
   presupuestosAnuales = {
     formacion: partes[0],
     viajes: partes[1],
-    integracion: partes[2],
-    rewards: partes[3]
+    rewards: partes[2]
   };
   estado.presupuestos.formacion = partes[0];
   estado.presupuestos.viajes = partes[1];
-  estado.presupuestos.integracion = partes[2];
-  estado.presupuestos.rewards = partes[3];
+  estado.presupuestos.rewards = partes[2];
   notificar("exito", "PRESUPUESTOS ASIGNADOS",
     "Año " + añoActual + ": Formación " + formatear(partes[0]) + " € · Viajes " + formatear(partes[1]) +
-    " € · Integración " + formatear(partes[2]) + " € · Rewards " + formatear(partes[3]) + " €.");
+    " € · Rewards " + formatear(partes[2]) + " €.");
   renderDespacho();
 }
 
@@ -1197,6 +1244,7 @@ function generarProyectoUrgente() {
     minNivelExigido: entero(40, 75),
     estadoProy: "ACTIVO",
     tipo: "URGENTE",
+    deadline: "",
     requiereViaje: entero(1, 100) <= 50,
     discRequerido: disc.letra,
     discDesc: disc.desc,
@@ -1212,11 +1260,18 @@ function ofrecerProyectosEmergencia() {
     "El Director de Generic Aerospace necesita apoyo URGENTE. Duración corta, alta remuneración. " +
     "Acepta ahora o ignora la oferta.</p>";
   ofertas.forEach(function (p) {
+    var dl = calcularDeadline(mesActual, añoActual, p.duracionMeses);
     html += "<div class='proyecto-oferta'><div class='datos'><b>" + p.nombre + "</b> " +
-      "<span class='disc disc-I'>URGENTE</span><br>" +
-      p.duracionMeses + " meses · " + formatear(p.ingresoMes) + " €/mes (total " + formatear(p.valorTotal) + " €) · " +
-      p.slotsRequeridos + " slots" +
-      (p.requiereViaje ? " · <b style='color:#fbbf24;'>REQUIERE VIAJE</b>" : "") + "</div>" +
+      "<span class='disc disc-I'>URGENTE</span>" +
+      "<table style='font-size:11px;margin-top:4px;border-collapse:collapse;'>" +
+      "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Duración:</td><td><b>" + p.duracionMeses + " meses</b></td></tr>" +
+      "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Deadline:</td><td><b style='color:#f87171;'>" + dl + "</b></td></tr>" +
+      "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Perfil DISC preferido:</td><td><span class='disc disc-" + p.discRequerido + "'>" + p.discRequerido + " · " + p.discDesc + "</span></td></tr>" +
+      "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Ingresos mensuales:</td><td><b style='color:#4ade80;'>" + formatear(p.ingresoMes) + " €/mes</b> (total " + formatear(p.valorTotal) + " €)</td></tr>" +
+      "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Gasto de Viaje:</td><td>" +
+      (p.requiereViaje ? "<b style='color:#fbbf24;'>SÍ — consume presupuesto de Viajes</b>" : "No") + "</td></tr>" +
+      "<tr><td style='padding:1px 10px 1px 0;color:#94a3b8;'>Slots requeridos:</td><td><b>" + p.slotsRequeridos + "</b> (nivel mín. " + p.minNivelExigido + ")</td></tr>" +
+      "</table></div>" +
       "<input type='checkbox' value='" + p.id + "'></div>";
   });
   window._urgentesOfertas = ofertas;
@@ -1232,6 +1287,7 @@ function ofrecerProyectosEmergencia() {
         if (elegidos.indexOf(p.id) >= 0) {
           for (var s = 0; s < p.slotsRequeridos; s++) p.slots.push(null);
           p.id = "urg-" + proyectosDisponibles.length + "-" + Math.random().toString(36).slice(2, 6);
+          p.deadline = calcularDeadline(mesActual, añoActual, p.duracionMeses);
           proyectosDisponibles.push(p);
           aceptados++;
           notificar("urgente", "EMERGENCIA ACEPTADA",
@@ -1258,7 +1314,7 @@ function panelPlanificacionAnual() {
     var nombre = pool[entero(0, pool.length - 1)];
     while (idsUsados.indexOf(nombre) >= 0) nombre = pool[entero(0, pool.length - 1)] + " " + (i + 1);
     var disc = DISC_PERFILES[entero(0, 3)];
-    var dur = entero(3, 12);
+    var dur = entero(2, 11);
     var ing = entero(4, 12) * 1000;
     candidata.push({
       id: "plan-" + añoActual + "-" + i + "-" + Math.random().toString(36).slice(2, 6),
@@ -1311,6 +1367,7 @@ function panelPlanificacionAnual() {
       candidata.forEach(function (p) {
         if (elegidos.indexOf(p.id) >= 0) {
           for (var s = 0; s < p.slotsRequeridos; s++) p.slots.push(null);
+          p.deadline = calcularDeadline(mesActual, añoActual, p.duracionMeses);
           proyectosDisponibles.push(p);
         }
       });
@@ -1363,14 +1420,20 @@ function darReward(empleadoId) {
 function renderOperaciones() {
   var cont = document.getElementById("cuadricula-operaciones");
   if (!cont) return;
-  var html = "";
+  var html = "<div style='display:flex;gap:10px;align-items:flex-start;'>";
+  html += "<div class='cuadricula-tactica' style='flex:1;'>";
+  var concluidos = [];
   proyectosDisponibles.forEach(function (proy) {
+    if (proy.estadoProy === "FINALIZADO" || proy.estadoProy === "CANCELADO") {
+      concluidos.push(proy);
+      return;
+    }
     html += "<div class='celda-tactica'><h5>" + proy.nombre +
       (proy.tipo === "URGENTE" ? " [URGENTE]" : "") +
       (proy.requiereViaje ? " [VIAJE]" : "") +
-      (proy.estadoProy === "FINALIZADO" ? " [FINALIZADO]" : "") +
-      (proy.estadoProy === "CANCELADO" ? " [CANCELADO]" : "") + "</h5>";
-    html += "<div style='font-size:10px;margin-bottom:4px;'>'" +
+      " <span style='color:#b91c1c;background:#fee2e2;padding:0 4px;border-radius:4px;'>⏰ Deadline: " +
+      (proy.deadline || deadlineDeProyecto(proy)) + "</span></h5>";
+    html += "<div style='font-size:10px;margin-bottom:4px;'>" +
       "Cliente: " + proy.cliente +
       " · DISC <span class='disc disc-" + proy.discRequerido + "'>" + proy.discRequerido + "</span>" +
       " · Nivel mín. " + proy.minNivelExigido + "<br>";
@@ -1414,6 +1477,22 @@ function renderOperaciones() {
     }
   });
   html += "</div>";
+  html += "</div>";
+  html += "<div style='flex:0 0 190px;border:1px solid var(--gris-borde);border-radius:10px;background:#16213a;padding:8px;max-height:560px;overflow-y:auto;'>" +
+    "<h5 style='font-size:11px;color:#93c5fd;border-bottom:1px dashed var(--gris-borde);margin-bottom:6px;'>:: HISTORIAL DE CONTRATOS CONCLUIDOS ::</h5>";
+  if (concluidos.length === 0) {
+    html += "<div style='font-size:10px;color:#64748b;font-style:italic;'>Sin contratos concluidos todavía.</div>";
+  } else {
+    concluidos.forEach(function (proy) {
+      html += "<div style='border:1px solid #334155;margin:4px 0;padding:4px 6px;border-radius:6px;font-size:10px;background:#0f172a;'>" +
+        "<b style='color:#94a3b8;'>" + proy.nombre + "</b><br>" +
+        (proy.estadoProy === "FINALIZADO" ? "<span style='color:#4ade80;'>✓ Finalizado</span>" : "<span style='color:#f87171;'>✗ Cancelado</span>") +
+        " · Deadline " + (proy.deadline || "—") + "<br>" +
+        "Total " + formatear(proy.valorTotal) + " €</div>";
+    });
+  }
+  html += "</div>";
+  html += "</div>";
   cont.innerHTML = html;
 }
 
@@ -1429,9 +1508,27 @@ function renderMarcadorCabecera() {
   var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
   document.getElementById("estado-fecha").textContent =
-    meses[Math.max(0, mesActual - 1)] + " Año " + añoActual;
+    meses[Math.max(0, mesActual - 1)] + " " + añoActual;
   document.getElementById("estado-caja").textContent = formatear(Math.max(0, capital));
+  estado.fecha.mes = mesActual - 1;
+  estado.fecha.anio = añoActual;
   estado.caja = capital;
+}
+
+var MESES_ABREV = ["Ene", "Feb", "Mar", "Abr", "May", "Jun",
+  "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+function calcularDeadline(mesInicio, anioInicio, duracionMeses) {
+  var idx = (mesInicio - 1) + duracionMeses;
+  var anioDeadline = anioInicio + Math.floor(idx / 12);
+  var mesDeadline = (idx % 12);
+  return MESES_ABREV[mesDeadline] + " " + anioDeadline;
+}
+
+function deadlineDeProyecto(proy) {
+  if (proy.deadline) return proy.deadline;
+  proy.deadline = calcularDeadline(mesActual, añoActual, proy.duracionMeses);
+  return proy.deadline;
 }
 
 /* =========================================================
