@@ -761,7 +761,8 @@ function renderPlantilla() {
       "<td>" + (ing.mesesSinFormacion || 0) + "/" + limiteSinFormacion(ing.rango) + (ing.enFormacion ? " <span class='disc disc-I'>IN TRAINING</span>" : "") + "</td>" +
       "<td>" + (ing.asignado || "—") + (ing.enFormacion ? " <b style='color:#fbbf24;'>(no output this month)</b>" : "") + "</td>" +
       "<td><button class='boton-2000' style='padding:2px 8px;font-size:10px;' onclick=\"aplicarFormacion('" + ing.id + "')\">Train (1,500 PLN)</button> " +
-      "<button class='boton-2000' style='padding:2px 8px;font-size:10px;' onclick=\"darReward('" + ing.id + "')\">🎁 Rewards</button></td>" +
+      "<button class='boton-2000' style='padding:2px 8px;font-size:10px;' onclick=\"darReward('" + ing.id + "')\">🎁 Rewards</button> " +
+      "<button class='boton-2000' style='padding:2px 8px;font-size:10px;background:linear-gradient(180deg,#dc2626,#991b1b);border-color:#ef4444;' onclick=\"despedirIngeniero('" + ing.id + "')\">🔥 Fire</button></td>" +
       "</tr>";
   });
   html += "</table>";
@@ -1313,33 +1314,82 @@ function desasignarIngeniero(empleadoId) {
    ========================================================= */
 function abrirModalPresupuestos() {
   var total = 40000;
-  var msg = "Año " + añoActual + " — Distribuye el presupuesto anual (máx. " + formatear(total) + " PLN):\n\n" +
-    "0 = Training, 1 = Travel, 2 = Rewards\n" +
-    "Enter amounts separated by commas: t,tr,r";
-  var respuesta = prompt(msg, "13000,13000,14000");
-  if (respuesta === null) return;
-  var partes = respuesta.split(",").map(function (x) { return parseInt(x.trim(), 10) || 0; });
-  if (partes.length !== 3) {
-    notificar("alerta", "INVALID FORMAT", "Budget allocation with invalid format: default split applied.");
-    partes = [13000, 13000, 14000];
+  var actual = estado.presupuestos || {};
+  var html =
+    "<p style='font-size:12px;line-height:1.6;color:#94a3b8;margin-bottom:14px;'>" +
+    "Distribute the annual budgets for <b style='color:#93c5fd;'>Year " + añoActual + "</b> across the three programs. " +
+    "The total must not exceed the maximum allowance of " + formatear(total) + " PLN.</p>" +
+    "<div style='display:flex;flex-direction:column;gap:12px;'>" +
+    "<div>" +
+    "<label style='display:block;font-size:11px;font-weight:bold;color:#93c5fd;margin-bottom:4px;'>🎓 Training Budget (PLN)</label>" +
+    "<input type='number' id='pres-formacion' min='0' max='40000' step='500' value='" + (actual.formacion || 13000) + "' " +
+    "style='width:100%;padding:9px;border-radius:8px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;font-size:13px;' oninput='validarPresupuestoModal()' />" +
+    "</div>" +
+    "<div>" +
+    "<label style='display:block;font-size:11px;font-weight:bold;color:#93c5fd;margin-bottom:4px;'>✈️ Travel Budget (PLN)</label>" +
+    "<input type='number' id='pres-viajes' min='0' max='40000' step='500' value='" + (actual.viajes || 13000) + "' " +
+    "style='width:100%;padding:9px;border-radius:8px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;font-size:13px;' oninput='validarPresupuestoModal()' />" +
+    "</div>" +
+    "<div>" +
+    "<label style='display:block;font-size:11px;font-weight:bold;color:#93c5fd;margin-bottom:4px;'>🎁 Rewards Budget (PLN)</label>" +
+    "<input type='number' id='pres-rewards' min='0' max='40000' step='500' value='" + (actual.rewards || 14000) + "' " +
+    "style='width:100%;padding:9px;border-radius:8px;background:#0f172a;color:#e2e8f0;border:1px solid #334155;font-size:13px;' oninput='validarPresupuestoModal()' />" +
+    "</div>" +
+    "</div>" +
+    "<div id='pres-contador' style='margin-top:14px;padding:9px 12px;border-radius:8px;background:#0f172a;border:1px solid #334155;font-size:13px;font-weight:bold;color:#4ade80;text-align:center;'></div>" +
+    "<div id='pres-aviso' style='display:none;margin-top:8px;font-size:11.5px;font-weight:bold;color:#f87171;text-align:center;'></div>";
+  mostrarNotificacionEmergente("📊 Annual Budget Allocation — Year " + añoActual, html, "info", {
+    textoAceptar: "Confirm Budget",
+    textoRechazar: "Keep Previous Budget",
+    aceptar: function () {
+      var f = parseInt(document.getElementById("pres-formacion").value, 10) || 0;
+      var v = parseInt(document.getElementById("pres-viajes").value, 10) || 0;
+      var r = parseInt(document.getElementById("pres-rewards").value, 10) || 0;
+      if (f + v + r > total) {
+        notificar("alerta", "BUDGET EXCEEDED",
+          "The allocation exceeds the maximum allowance of " + formatear(total) + " PLN. The previous budget is kept.");
+        return;
+      }
+      presupuestosAnuales = { formacion: f, viajes: v, rewards: r };
+      estado.presupuestos.formacion = f;
+      estado.presupuestos.viajes = v;
+      estado.presupuestos.rewards = r;
+      notificar("exito", "BUDGETS ALLOCATED",
+        "Year " + añoActual + ": Training " + formatear(f) + " PLN · Travel " + formatear(v) +
+        " PLN · Rewards " + formatear(r) + " PLN.");
+      renderDespacho();
+    },
+    rechazar: function () {
+      notificar("info", "BUDGET KEPT",
+        "Previous budget allocation kept for Year " + añoActual + ".");
+    }
+  });
+  validarPresupuestoModal();
+}
+
+function validarPresupuestoModal() {
+  var total = 40000;
+  var f = parseInt((document.getElementById("pres-formacion") || {}).value, 10) || 0;
+  var v = parseInt((document.getElementById("pres-viajes") || {}).value, 10) || 0;
+  var r = parseInt((document.getElementById("pres-rewards") || {}).value, 10) || 0;
+  var suma = f + v + r;
+  var contador = document.getElementById("pres-contador");
+  var aviso = document.getElementById("pres-aviso");
+  var btn = document.getElementById("modal-confirmar");
+  if (contador) {
+    contador.textContent = "Total Assigned: " + formatear(suma) + " / " + formatear(total) + " PLN";
+    contador.style.color = suma > total ? "#f87171" : "#4ade80";
+    contador.style.borderColor = suma > total ? "#f87171" : "#334155";
   }
-  var suma = partes[0] + partes[1] + partes[2];
-  if (suma > total) {
-    notificar("alerta", "BUDGET EXCEEDED", "The sum exceeds the annual maximum: default split applied.");
-    partes = [13000, 13000, 14000];
+  if (aviso) {
+    if (suma > total) {
+      aviso.style.display = "block";
+      aviso.textContent = "⚠ Budget allocation exceeds the maximum allowance of " + formatear(total) + " PLN";
+    } else {
+      aviso.style.display = "none";
+    }
   }
-  presupuestosAnuales = {
-    formacion: partes[0],
-    viajes: partes[1],
-    rewards: partes[2]
-  };
-  estado.presupuestos.formacion = partes[0];
-  estado.presupuestos.viajes = partes[1];
-  estado.presupuestos.rewards = partes[2];
-  notificar("exito", "BUDGETS ALLOCATED",
-    "Year " + añoActual + ": Training " + formatear(partes[0]) + " PLN · Travel " + formatear(partes[1]) +
-    " PLN · Rewards " + formatear(partes[2]) + " PLN.");
-  renderDespacho();
+  if (btn) btn.disabled = (suma > total);
 }
 
 function mostrarGameOver(motivo) {
@@ -1472,6 +1522,29 @@ function verificarRetencionPersonal() {
       "<b style='color:#fbbf24;'>Tip:</b> use the bench (Internal R&D) as an immediate substitute and " +
       "plan Training or Rewards for the rest of the roster.", "alerta");
   }
+}
+
+function despedirIngeniero(empleadoId) {
+  var ing = estado.plantilla.find(function (e) { return e.id === empleadoId; });
+  if (!ing) return;
+  var severancia = ing.sueldo * 3;
+  if (capital < severancia) {
+    notificar("alerta", "FIRE BLOCKED",
+      "Insufficient cash for the severance payment of " + ing.nombre + " (" +
+      formatear(severancia) + " PLN = 3 months of salary).");
+    return;
+  }
+  desasignarIngeniero(empleadoId);
+  capital -= severancia;
+  estado.caja = capital;
+  estado.visionEmpleador = Math.max(0, estado.visionEmpleador - 4);
+  var i = estado.plantilla.indexOf(ing);
+  if (i >= 0) estado.plantilla.splice(i, 1);
+  notificar("alerta", "ENGINEER FIRED",
+    ing.nombre + " (" + ing.rango + ") has been dismissed. Severance paid: -" +
+    formatear(severancia) + " PLN (3 months of salary). Employer Brand: " +
+    estado.visionEmpleador + "/100.");
+  renderTodo();
 }
 
 function aplicarFormacion(empleadoId) {
