@@ -3,990 +3,875 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tango Talento: Simulación Estratégica de Capital Humano (15 Años)</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<title>Engineering Manager Tycoon 2000</title>
 <style>
-:root{
-  --bg:#0f1420; --bg2:#151c2e; --card:#1a2338; --card2:#212c47;
-  --border:#2c3a5c; --text:#e8edf7; --muted:#93a1c0;
-  --accent:#4da3ff; --accent2:#7c5cff;
-  --green:#2ecc71; --red:#e74c3c; --yellow:#f1c40f; --orange:#e67e22;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh}
-button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;padding:8px 14px;font-weight:600;transition:all .15s;font-size:.85rem}
-button:disabled{opacity:.35;cursor:not-allowed}
-input,select{font-family:inherit;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 10px;font-size:.85rem}
-h1,h2,h3{font-weight:700}
-.hidden{display:none!important}
-/* HEADER */
-#gameHeader{background:linear-gradient(135deg,#1b2540,#141b2e);border-bottom:2px solid var(--border);padding:12px 20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
-#gameHeader .title{font-size:1.1rem;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
-.kpis{display:flex;gap:8px;flex-wrap:wrap}
-.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:6px 12px;min-width:100px}
-.kpi .lab{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-.kpi .val{font-size:1rem;font-weight:700;margin-top:1px}
-.pos{color:var(--green)} .neg{color:var(--red)}
-#teamBadge{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border-radius:8px;padding:8px 14px;font-weight:700;font-size:.85rem}
-.hdr-actions{display:flex;gap:8px}
-/* LAYOUT */
-#mainContent{max-width:1440px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:14px}
-.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
-.panel h2{font-size:1rem;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
-.panel h2 .sub{font-size:.7rem;color:var(--muted);font-weight:400}
-.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
-.grid2b{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:1100px){.grid2,.grid2b{grid-template-columns:1fr}}
-/* EMPLOYEE CARDS */
-.emp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:10px}
-.emp{background:var(--card2);border-left:4px solid var(--border);border-radius:10px;padding:10px}
-.emp.rojo{border-left-color:var(--red)} .emp.azul{border-left-color:var(--accent)} .emp.verde{border-left-color:var(--green)} .emp.amarillo{border-left-color:var(--yellow)}
-.emp .head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
-.fris{font-size:.6rem;padding:2px 8px;border-radius:10px;font-weight:700;text-transform:uppercase}
-.fris.rojo{background:var(--red);color:#fff}.fris.azul{background:var(--accent);color:#fff}.fris.verde{background:var(--green);color:#fff}.fris.amarillo{background:var(--yellow);color:#1a1a1a}
-.emp .meta{font-size:.72rem;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
-.tag{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1px 7px;font-size:.66rem}
-.sat-bar{height:7px;background:var(--bg);border-radius:4px;overflow:hidden;margin:4px 0}
-.sat-fill{height:100%;border-radius:4px}
-.warn{font-size:.63rem;color:var(--orange);margin-top:4px}
-.actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
-.btn-mini{font-size:.66rem;padding:4px 8px;background:var(--bg2);border:1px solid var(--border);color:var(--text)}
-.btn-mini:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
-.btn-mini.done{background:var(--green);color:#fff;border-color:var(--green)}
-.course-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;padding-top:6px;border-top:1px dashed var(--border)}
-/* PROJECTS */
-.proj{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px}
-.proj .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:4px}
-.slot{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px;margin-top:6px;font-size:.75rem}
-.slot.ok{border-color:var(--green)} .slot.bad{border-color:var(--orange)}
-.slot select{width:100%;margin-top:5px;font-size:.78rem}
-.req-pill{display:inline-block;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;margin:2px 4px 2px 0;font-size:.66rem}
-.req-pill.ok{border-color:var(--green);color:var(--green)} .req-pill.no{border-color:var(--red);color:var(--red)}
-.btn-main{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
-.btn-accept{background:var(--green);color:#fff}
-.btn-danger{background:var(--red);color:#fff}
-/* CONTROL BAR */
-#turnControlBar{position:sticky;bottom:0;background:linear-gradient(0deg,rgba(15,20,32,.97),rgba(15,20,32,.9));border-top:2px solid var(--border);padding:12px 20px;display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;z-index:60}
-.big-btn{font-size:.95rem;padding:12px 26px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
-.big-btn:hover:not(:disabled){transform:translateY(-1px)}
-/* OVERLAYS */
-.overlay{position:fixed;inset:0;background:rgba(10,14,24,.97);z-index:100;overflow:auto;padding:26px 16px}
-.center-box{max-width:980px;margin:12px auto;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:26px}
-.center-box h1{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:14px;font-size:1.5rem}
-table.rank{width:100%;border-collapse:collapse;margin:12px 0}
-table.rank th{color:var(--muted);font-size:.65rem;text-transform:uppercase;text-align:left;padding:7px;border-bottom:2px solid var(--border)}
-table.rank td{padding:9px 7px;border-bottom:1px solid var(--border);font-size:.85rem}
-table.rank tr.me td{background:rgba(77,163,255,.08)}
-#log{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px;max-height:190px;overflow:auto;font-size:.72rem}
-#log div{padding:2px 0;border-bottom:1px dashed rgba(44,58,92,.5)}
-#log .good{color:var(--green)} #log .bad{color:var(--red)} #log .info{color:var(--muted)}
-.chart-wrap{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px;margin:12px 0}
-.winner-card{background:linear-gradient(135deg,#23365c,#1a2338);border:1px solid var(--accent);border-radius:14px;padding:18px;margin:12px 0}
-.pedag{background:var(--bg2);border-left:4px solid var(--accent2);border-radius:8px;padding:12px;margin:8px 0;font-size:.83rem;line-height:1.5}
-.section-title{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 8px}
-/* WELCOME */
-#welcome{position:fixed;inset:0;background:linear-gradient(135deg,#141b2e,#0f1420);z-index:200;overflow:auto;display:flex;align-items:center;justify-content:center;padding:20px}
-.welcome-box{max-width:640px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:34px}
-.welcome-box h1{font-size:1.7rem;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:8px}
-.team-name-row{display:flex;gap:8px;align-items:center;margin:8px 0}
-.team-name-row input{flex:1}
-.num-btns{display:flex;gap:8px;margin:12px 0}
-.num-btns button{flex:1;padding:14px;font-size:1.1rem;background:var(--bg2);border:2px solid var(--border);color:var(--text)}
-.num-btns button.sel{border-color:var(--accent);background:rgba(77,163,255,.15);color:var(--accent)}
-/* HELP MODAL + FLOATING BTN */
-#helpBtn{position:fixed;right:18px;bottom:80px;z-index:90;background:linear-gradient(90deg,var(--accent2),var(--accent));color:#fff;border-radius:50px;padding:12px 18px;font-size:.85rem;box-shadow:0 4px 20px rgba(0,0,0,.5)}
-#helpModal .help-tab{background:var(--bg2);border:1px solid var(--border);border-radius:8px 8px 0 0;padding:8px 14px;color:var(--muted);font-size:.8rem}
-#helpModal .help-tab.on{background:var(--card2);color:var(--accent);border-bottom-color:var(--card2)}
-.help-body{background:var(--card2);border:1px solid var(--border);border-radius:0 10px 10px 10px;padding:16px;font-size:.85rem;line-height:1.6;max-height:55vh;overflow:auto}
-.help-body h3{color:var(--accent);margin:10px 0 4px}
-.color-dot{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px}
-/* BOARD OVERLAY */
-.board-toggle{background:var(--card2);border:1px solid var(--border);color:var(--text)}
-.board-toggle:hover{border-color:var(--accent);color:var(--accent)}
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.filters select,.filters input{font-size:.78rem;padding:6px 8px}
-.cand-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
-.retire-note{background:rgba(231,76,60,.12);border:1px solid var(--red);border-radius:8px;padding:8px;font-size:.75rem;margin:6px 0}
-@media(max-width:800px){#helpBtn{bottom:100px}}
+  :root {
+    --gris-fondo: #9aa5b5;
+    --gris-panel: #d4d0c8;
+    --gris-borde: #808080;
+    --azul-oscuro: #000080;
+    --azul-titulo: #0a246a;
+    --azul-claro: #a6caf0;
+    --rojo: #c00000;
+    --amarillo: #808000;
+    --verde: #25774b;
+    --verde-oscuro: #1f5c2e;
+    --dorado: #b8860b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "MS Sans Serif", "Tahoma", "Verdana", sans-serif;
+    font-size: 12px;
+    background: var(--gris-fondo);
+    color: #000;
+    padding: 8px;
+    user-select: none;
+  }
+  .marco {
+    border: 2px outset #fff;
+    background: var(--gris-panel);
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 3px;
+  }
+  .barra-titulo {
+    background: linear-gradient(90deg, var(--azul-oscuro), #1084d0);
+    color: #fff;
+    font-weight: bold;
+    padding: 4px 8px;
+    letter-spacing: 1px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .barra-titulo .botones button {
+    width: 16px; height: 14px;
+    background: var(--gris-panel);
+    border: 1px outset #fff;
+    font-size: 9px;
+    line-height: 1;
+    cursor: pointer;
+    margin-left: 2px;
+  }
+  .barra-estado {
+    background: #e8e6e0;
+    border-top: 1px solid var(--gris-borde);
+    padding: 3px 8px;
+    display: flex;
+    gap: 24px;
+    font-size: 11px;
+  }
+  .barra-estado span b { color: var(--azul-oscuro); }
+
+  .nav-pestanas {
+    display: flex;
+    gap: 2px;
+    padding: 6px 6px 0 6px;
+  }
+  .pestana {
+    border: 2px outset #fff;
+    background: #c0c4c8;
+    padding: 4px 14px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #333;
+    border-bottom: none;
+  }
+  .pestana.activa {
+    background: var(--gris-panel);
+    color: var(--azul-titulo);
+    position: relative;
+    top: 2px;
+  }
+  .pestana:not(.activa):hover { background: #d8dce0; }
+
+  .contenido {
+    border: 2px inset #fff;
+    background: #f4f2ee;
+    min-height: 480px;
+    padding: 10px;
+  }
+  .panel {
+    border: 1px solid var(--gris-borde);
+    background: var(--gris-panel);
+    margin-bottom: 10px;
+  }
+  .panel h3 {
+    background: linear-gradient(180deg, #4a6b9e, var(--azul-oscuro));
+    color: #fff;
+    font-size: 12px;
+    padding: 3px 8px;
+    letter-spacing: 0.5px;
+  }
+  .panel .cuerpo { padding: 8px; }
+
+  table.tabla {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border: 1px solid var(--gris-borde);
+  }
+  table.tabla th {
+    background: var(--azul-claro);
+    border: 1px solid var(--gris-borde);
+    padding: 3px 6px;
+    font-size: 11px;
+    text-align: left;
+  }
+  table.tabla td {
+    border: 1px solid #b8b8b8;
+    padding: 3px 6px;
+    font-size: 11px;
+  }
+  table.tabla tr:nth-child(even) td { background: #eef2f8; }
+
+  .presupuestos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .presupuesto {
+    border: 1px solid var(--gris-borde);
+    background: #fff;
+    padding: 6px;
+  }
+  .presupuesto h4 {
+    font-size: 11px;
+    color: var(--azul-oscuro);
+    border-bottom: 1px dashed var(--gris-borde);
+    margin-bottom: 4px;
+  }
+  .presupuesto .saldo { font-size: 16px; font-weight: bold; color: var(--verde-oscuro); }
+
+  .boton-2000 {
+    background: var(--gris-panel);
+    border: 2px outset #fff;
+    padding: 4px 14px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #000;
+  }
+  .boton-2000:active { border-style: inset; }
+  .boton-2000:disabled { color: #888; cursor: default; }
+
+  .tarjeta-ingeniero {
+    border: 1px solid var(--gris-borde);
+    background: linear-gradient(180deg, #fff, #dfe3ea);
+    padding: 8px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .avatar {
+    width: 48px; height: 48px;
+    border: 2px inset var(--gris-borde);
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .barra-nivel-caja {
+    height: 12px;
+    border: 1px inset var(--gris-borde);
+    background: #fff;
+    width: 100%;
+  }
+  .barra-nivel { height: 100%; background: linear-gradient(180deg, #5cb85c, var(--verde-oscuro)); }
+  .disc { font-weight: bold; padding: 1px 6px; border: 1px solid #444; font-size: 10px; }
+  .disc-D { background: #e05050; color: #fff; }
+  .disc-I { background: #e0c040; color: #333; }
+  .disc-S { background: #4aa564; color: #fff; }
+  .disc-C { background: #5070c0; color: #fff; }
+
+  .cuadricula-tactica {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .celda-tactica {
+    border: 1px solid var(--gris-borde);
+    background: #fff;
+    min-height: 90px;
+    padding: 6px;
+    font-size: 11px;
+  }
+  .celda-tactica h5 {
+    font-size: 11px;
+    color: var(--azul-oscuro);
+    border-bottom: 1px dashed var(--gris-borde);
+    margin-bottom: 6px;
+  }
+
+  .candidato {
+    border: 1px solid var(--gris-borde);
+    background: #fff;
+    padding: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .candidato .info { font-size: 11px; }
+  .ronda-info {
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--azul-oscuro);
+    margin-bottom: 8px;
+  }
+  .oculto { display: none; }
 </style>
 </head>
 <body>
+<div class="marco">
+  <div class="barra-titulo">
+    <span>ENGINEERING MANAGER TYCOON 2000 — Generic Aerospace Corp.</span>
+    <span class="botones"><button>_</button><button>□</button><button>×</button></span>
+  </div>
 
-<div id="welcome">
-  <div class="welcome-box">
-    <h1>💃 Tango Talento <span style="font-size:.9rem">· vs IA</span></h1>
-    <p style="color:var(--muted);font-size:.9rem;margin-bottom:18px">Simulación estratégica de capital humano a <b>15 años (60 trimestres)</b>. Compite contra empresas rivales controladas por IA con personalidades distintas: Agresiva/Tech, Conservadora/Tradicional y Equilibrada.</p>
-    <div class="team-name-row"><span style="color:var(--muted);font-size:.85rem;min-width:130px">Tu empresa</span><input id="myName" placeholder="Nombre de tu empresa" value="Mi Empresa"></div>
-    <h3 style="margin:14px 0 6px">¿Cuántos rivales de IA quieres enfrentar?</h3>
-    <div class="num-btns" id="numTeamBtns"></div>
-    <div id="botPreview" style="font-size:.78rem;color:var(--muted);margin-top:6px;line-height:1.5"></div>
-    <button class="big-btn" id="btnStart" style="width:100%;margin-top:16px">🚀 Iniciar Simulación — Año 1, Trimestre 1</button>
+  <div class="barra-estado" style="gap:12px;">
+    <button class="boton-2000" id="btn-avanzar-mes">▶ Avanzar Mes</button>
+    <span><b>Fecha:</b> <span id="estado-fecha">Enero 2000</span></span>
+    <span><b>Caja:</b> <span id="estado-caja">—</span> €</span>
+    <span><b>Plantilla:</b> <span id="estado-plantilla">0</span> ingenieros</span>
   </div>
-</div>
 
-<div id="gameHeader" class="hidden">
-  <span id="teamBadge">—</span>
-  <span class="title">Tango Talento · 15 Años</span>
-  <div class="kpis">
-    <div class="kpi"><div class="lab">Año / Trim.</div><div class="val" id="kpiTime">1·T1</div></div>
-    <div class="kpi"><div class="lab">Presupuesto</div><div class="val" id="kpiCash">$0</div></div>
-    <div class="kpi"><div class="lab">Margen</div><div class="val" id="kpiMargin">$0</div></div>
-    <div class="kpi"><div class="lab">Rotación Hist.</div><div class="val" id="kpiRot">0%</div></div>
-    <div class="kpi"><div class="lab">Innovación</div><div class="val" id="kpiInno">0%</div></div>
-    <div class="kpi"><div class="lab">Satisf. Media</div><div class="val" id="kpiSat">—</div></div>
+  <div class="nav-pestanas">
+    <div class="pestana activa" data-tab="despacho">Despacho</div>
+    <div class="pestana" data-tab="plantilla">Plantilla</div>
+    <div class="pestana" data-tab="operaciones">Operaciones</div>
+    <div class="pestana" data-tab="mercado">Mercado</div>
   </div>
-  <div class="hdr-actions">
-    <button class="board-toggle" id="btnBoard">📊 Tablero de Competencia</button>
-    <button class="board-toggle" id="btnHelp2">❓ Manual</button>
-  </div>
-</div>
 
-<div id="mainContent" class="hidden">
-  <div class="panel">
-    <h2>📋 Resumen del Turno <span class="sub" id="turnPhase"></span></h2>
-    <div id="log"></div>
-  </div>
-  <div class="grid2">
-    <div class="panel">
-      <h2>👥 Plantilla <span class="sub" id="rosterCount"></span></h2>
-      <div class="emp-grid" id="roster"></div>
-    </div>
-    <div>
-      <div class="panel">
-        <h2>🌍 Decisiones Globales</h2>
-        <p style="font-size:.75rem;color:var(--muted);margin-bottom:8px">Clima Laboral ($5,000): +10% satisfacción de toda la plantilla.</p>
-        <button class="btn-main" id="btnClimate">🎉 Invertir en Clima Laboral ($5,000)</button>
-      </div>
-      <div class="panel" style="margin-top:14px">
-        <h2>💼 Proyectos Activos <span class="sub">asigna personal a cada slot</span></h2>
-        <div id="activeProjects"></div>
+  <div class="contenido">
+
+    <!-- DESPACHO -->
+    <div id="tab-despacho" class="panel">
+      <h3>:: DESPACHO DEL DIRECTOR ::</h3>
+      <div class="cuerpo">
+        <div class="panel" style="margin-bottom:8px;">
+          <h3>Órdenes del Director</h3>
+          <div class="cuerpo">
+            <p id="ordenes-director">Bienvenido, mánager. Construye tu equipo y prepárate para los proyectos de Generic Aerospace.</p>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Saldos y Presupuestos</h3>
+          <div class="cuerpo presupuestos">
+            <div class="presupuesto"><h4>FORMACIÓN</h4><div class="saldo" id="saldo-formacion">0 €</div></div>
+            <div class="presupuesto"><h4>VIAJES</h4><div class="saldo" id="saldo-viajes">0 €</div></div>
+            <div class="presupuesto"><h4>INTEGRACIÓN</h4><div class="saldo" id="saldo-integracion">0 €</div></div>
+            <div class="presupuesto"><h4>REWARDS</h4><div class="saldo" id="saldo-rewards">0 €</div></div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="grid2b">
-    <div class="panel">
-      <h2>🧑‍💼 Bolsa de Empleo Nacional <span class="sub" id="poolCount"></span></h2>
-      <div class="filters" id="poolFilters"></div>
-      <div class="cand-list" id="jobMarket"></div>
+
+    <!-- PLANTILLA -->
+    <div id="tab-plantilla" class="panel oculto">
+      <h3>:: PLANTILLA DE INGENIEROS ::</h3>
+      <div class="cuerpo" id="lista-plantilla">
+        <p><i>No hay ingenieros contratados. Visita la pestaña Mercado para reclutar.</i></p>
+      </div>
     </div>
-    <div class="panel">
-      <h2>📈 Mercado de Clientes <span class="sub">4 oportunidades por trimestre</span></h2>
-      <div id="projMarket"></div>
+
+    <!-- OPERACIONES -->
+    <div id="tab-operaciones" class="panel oculto">
+      <h3>:: CUADRÍCULA TÁCTICA — ASIGNACIÓN A PROYECTOS ::</h3>
+      <div class="cuerpo">
+        <p style="margin-bottom:8px; font-size:11px;"><i>Asigna tus ingenieros a Proyectos de Generic Aerospace o a líneas de I+D.</i></p>
+        <div class="cuadricula-tactica" id="cuadricula-operaciones">
+          <div class="celda-tactica"><h5>PROYECTO A — AERODINÁMICA</h5><div class="cuerpo-celda"><i>Vacío</i></div></div>
+          <div class="celda-tactica"><h5>PROYECTO B — AVIÓNICA</h5><div class="cuerpo-celda"><i>Vacío</i></div></div>
+          <div class="celda-tactica"><h5>PROYECTO C — MOTOres</h5><div class="cuerpo-celda"><i>Vacío</i></div></div>
+          <div class="celda-tactica"><h5>I+D — MATERIALES</h5><div class="cuerpo-celda"><i>Vacío</i></div></div>
+          <div class="celda-tactica"><h5>I+D — IA EMBEBIDA</h5><div class="cuerpo-celda"><i>Vacío</i></div></div>
+          <div class="celda-tactica"><h5>I+D — SIMULACIÓN</h5><div class="cuerpo-celda"><i>Vacío</i></div></div>
+        </div>
+      </div>
     </div>
+
+    <!-- MERCADO -->
+    <div id="tab-mercado" class="panel oculto">
+      <h3>:: MERCADO DE RECLUTAMIENTO ::</h3>
+      <div class="cuerpo">
+        <div class="ronda-info">Ronda de fichajes: <span id="ronda-actual">1</span> / 3</div>
+        <div id="lista-candidatos"></div>
+        <div style="margin-top:8px; display:flex; gap:8px;">
+          <button class="boton-2000" id="btn-siguiente-ronda">Siguiente Ronda</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
-
-<div id="turnControlBar" class="hidden">
-  <button class="big-btn" id="btnEndTurn">✅ Finalizar Trimestre</button>
-  <button class="big-btn" id="btnFastYear" style="background:linear-gradient(90deg,#7c5cff,#4da3ff)">⚡ Avanzar Año (auto)</button>
-</div>
-
-<button id="helpBtn" class="hidden">❓ Ayuda / Manual de Gestión</button>
-
-<div id="interScreen" class="overlay hidden"></div>
-<div id="finalScreen" class="overlay hidden"></div>
-<div id="boardScreen" class="overlay hidden"></div>
-<div id="helpModal" class="overlay hidden"></div>
 
 <script>
 "use strict";
-/* ================= DATOS BASE ================= */
-const FIRST=["Sofía","Mateo","Valentina","Lautaro","Camila","Thiago","Martina","Bautista","Julieta","Franco","Agustina","Bruno","Delfina","Renata","Nicolás","Emilio","Isabella","Facundo","Mía","Ramiro","Elena","Dante","Paula","Iván","Luciana","Gonzalo","Abril","Tomás","Catalina","Joaquín","Emma","Santiago","Olivia","Felipe","Máximo","Zoe","Álvaro","Fabiana","Cristian","Noelia","Esteban","Milagros","Ariel","Constanza","Ignacio","Josefina","Matías","Lucía","Agustín","Manuela"];
-const LAST=["García","Rodríguez","Fernández","López","Martínez","Díaz","Álvarez","Romero","Ruiz","Herrera","Molina","Sosa","Castro","Ferreira","Acosta","Medina","Quiroga","Vega","Peralta","Coronel","Ledesma","Ponce","Ibarra","Salazar","Aguirre","Bianchi","Duarte","Escobar","Paz","Rojas"];
-const COLORS=["rojo","azul","verde","amarillo"];
-const EXP=["Junior","Mid","Senior"];
-const YEARS=15, TRIMESTERS_PER_YEAR=4, TOTAL_TURNS=YEARS*TRIMESTERS_PER_YEAR;
-const START_CASH=100000;
-const HIRING_FEE=3000, VACANT_PENALTY=2000, CLIMATE_COST=5000, RETIRE_AGE=65;
-const ONBOARD_TURNS=2;
-const BASE_INCOME=6000;
-const CATALOG={
-  tecnico:{name:"Curso Técnico",cost:1000,desc:"+2 pts de progreso de nivel"},
-  sinergia:{name:"Taller de Sinergia y Clima",cost:1500,desc:"+30% satisfacción (ideal Verdes)"},
-  liderazgo:{name:"Programa de Liderazgo Financiero",cost:2500,desc:"Desbloquea bono de eficiencia (Rojo/Azul)"},
-  mentoria:{name:"Mentoría Senior-Junior",cost:500,desc:"Junior sube de nivel gratis tras 4 turnos con un Senior en su proyecto"}
-};
-const COLOR_NAMES={rojo:"Rojo (Ambicioso)",azul:"Azul (Analista)",verde:"Verde (Empático)",amarillo:"Amarillo (Creativo)"};
-const COLOR_MOTIVE={rojo:"Le motivan el poder, los logros y el reconocimiento. Exige aumentos o promoción cada 3 turnos.",azul:"Le motivan la seguridad, las reglas y la calidad. Leal, sufre con la rotación de compañeros.",verde:"Le motivan las personas y la armonía. Sensible al clima laboral; si renuncia, golpea la moral de todos.",amarillo:"Le motivan la variedad y la creatividad. Se aburre tras 3 turnos en el mismo proyecto."};
-const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
-const pick=(arr)=>arr[rand(0,arr.length-1)];
-const fmt=(n)=>"$"+Math.round(n).toLocaleString("en-US");
-const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
-const cap=(s)=>s.charAt(0).toUpperCase()+s.slice(1);
-let EMP_SEQ=1;
 
-/* ================= EMPLEADOS ================= */
-function makeEmployee(market){
-  const age=rand(20,58);
-  let exp = age<25 ? (Math.random()<.8?"Junior":"Mid") : age<38 ? pick(["Junior","Mid","Mid","Senior"]) : age<50 ? pick(["Mid","Senior","Senior"]) : "Senior";
-  const salBase = exp==="Junior"?rand(1600,2100):exp==="Mid"?rand(2400,3100):rand(3400,4300);
-  const sal = Math.round((salBase + (age>=48?300:0))/10)*10;
-  return {
-    id:EMP_SEQ++, name:pick(FIRST)+" "+pick(LAST), age, exp, color:pick(COLORS),
-    salary:sal, sat:rand(70,92), turnsSinceTrain:rand(0,1), turnsSinceRaise:rand(0,2),
-    turnsInProject:0, projectId:null, onboardingLeft:0, market:!!market,
-    expProgress:0, leadership:false, mentorProg:0, mentorActive:false
-  };
-}
-const ageGroup=e=>e.age<=32?"joven":(e.age>=48?"mayor":"medio");
-const effFactor=e=>{
-  let f=e.onboardingLeft>0?0.5:(e.exp==="Junior"?0.8:(e.exp==="Senior"?1.15:1));
-  if(e.leadership&&(e.color==="rojo"||e.color==="azul")) f*=1.15;
-  return f;
-};
-const expNeed=e=>e.exp==="Junior"?4:(e.exp==="Mid"?6:99);
+/* =========================================================
+   VARIABLES DE ESTADO — FASE 2
+   ========================================================= */
+let mesActual = 1;
+let añoActual = 1;
+let capital = 150000;
+let presupuestosAnuales = { formacion: 0, viajes: 0, integracion: 0, rewards: 0 };
+let proyectosDisponibles = [];
+let proyectosAsignados = [];
 
-/* ================= BOTS IA ================= */
-const BOT_STYLES=[
-  {key:"tech",label:"Agresivo/Tech",tag:"🤖 Agresiva",colorTag:"var(--red)",
-   desc:"Prioriza jóvenes y Amarillos, invierte en innovación, puja por los proyectos más caros asumiendo alta rotación."},
-  {key:"cons",label:"Conservador",tag:"🏛️ Conservadora",colorTag:"var(--accent)",
-   desc:"Solo contrata mayores y azules, busca proyectos estables de auditoría, gasta muy poco en reclutamiento."},
-  {key:"mix",label:"Equilibrado",tag:"⚖️ Equilibrada",colorTag:"var(--green)",
-   desc:"Mantiene un mix de colores FRIS y edades óptimas, asigna perfiles con encaje quirúrgico."}
+/* =========================================================
+   ESTADO GLOBAL
+   ========================================================= */
+var estado = {
+  fecha: { mes: 0, anio: 2000 },
+  caja: 100000,
+  presupuestos: {
+    formacion: 20000,
+    viajes: 10000,
+    integracion: 8000,
+    rewards: 15000
+  },
+  plantilla: [],
+  mercado: [],
+  ronda: 1,
+  maxRondas: 3
+};
+
+/* =========================================================
+   GENERADOR DE CANDIDATOS
+   ========================================================= */
+var NOMBRES = ["Ana", "Luis", "Marta", "Javier", "Elena", "Pablo", "Carmen", "Diego",
+  "Sara", "Andrés", "Lucía", "Miguel", "Nuria", "Álvaro", "Rocío", "Jorge",
+  "Beatriz", "Iván", "Clara", "Hugo"];
+var APELLIDOS = ["García", "Martínez", "López", "Sánchez", "Pérez", "Gómez",
+  "Fernández", "Ruiz", "Díaz", "Torres", "Vega", "Navarro", "Ramos", "Gil", "Serrano"];
+var DISC_PERFILES = [
+  { letra: "D", color: "#c04040", desc: "Dominante" },
+  { letra: "I", color: "#c8a820", desc: "Influyente" },
+  { letra: "S", color: "#4a9a5e", desc: "Estable" },
+  { letra: "C", color: "#4a70b8", desc: "Concienzudo" }
 ];
-const BOT_NAMES={tech:["NovaTech","QuantumLabs","Disruptiva SA","Hyperion","ByteStorm"],
-                  cons:["AuditorPrime","Solidez SA","Tradición Group","Fortaleza","Vetania"],
-                  mix:["Estratego","Zenit Consulting","Armonía Group","PrimeBalance","Kairos"]};
-function botPickStyle(i){ return BOT_STYLES[i%3]; }
-function botPickName(styleKey,usedIdx){
-  const pool=BOT_NAMES[styleKey];
-  for(let k=0;k<pool.length;k++){ const idx=(usedIdx+k)%pool.length; if(!BOT_NAMES._used.has(styleKey+idx)){BOT_NAMES._used.add(styleKey+idx);return pool[idx];} }
-  return pool[usedIdx%pool.length]+" II";
-}
-BOT_NAMES._used=new Set();
 
-/* ================= EQUIPOS ================= */
-function makeTeam(id,name){
-  const t={id,name,cash:START_CASH,revenueTotal:0,salaryCostTotal:0,
-    rotCostTotal:0,hireCostTotal:0,lostEmployees:0,retiredCount:0,climateInvestTotal:0,
-    projects:[],history:[],avgSatHistory:[],initialSize:0,hiredCount:0,recentQuit:false,
-    trainSpendThisTurn:0,isBot:false,botStyle:null};
-  t.roster=[];
-  for(let i=0;i<6;i++) t.roster.push(makeEmployee(false));
-  t.initialSize=t.roster.length;
-  return t;
+function entero(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-/* ================= MERCADOS ================= */
-const nationalPool=[];
-function refreshNationalPool(){
-  while(nationalPool.length<12) nationalPool.push(makeEmployee(true));
-}
-function makeProjMarket(turn){
-  const year=Math.ceil(turn/4), scale=1+(turn-1)*0.015;
-  const list=[];
-  for(let i=0;i<4;i++){
-    const r=Math.random();
-    let p;
-    if(r<0.35){ // innovación
-      p={id:"P"+turn+"-"+i,type:"innovacion",name:pick(["App FinTech Disruptiva","Plataforma IA Generativa","Sistema Blockchain","Rediseño Digital Ágil","Chatbot Avanzado","Migración Cloud-Native"]),
-         innoReq:rand(20,42),effReq:0,revenue:Math.round((19000+rand(0,8000))*scale),
-         slots:makeSlots(["any","joven"] , "innovacion")};
-    }else if(r<0.65){ // complejo
-      p={id:"P"+turn+"-"+i,type:"complejo",name:pick(["Auditoría Fiscal Anual","Reestructuración Logística","Consultoría de Riesgos","Auditoría de Procesos","Integración ERP Corporativo","Debida Diligencia M&A"]),
-         innoReq:0,effReq:rand(26,48),revenue:Math.round((16500+rand(0,7000))*scale),
-         slots:makeSlots(["Senior","azul"],"complejo")};
-    }else{ // tradicional
-      p={id:"P"+turn+"-"+i,type:"tradicional",name:pick(["Outsourcing Contable","Soporte Administrativo","Gestión de Nómina","Back-Office Retail","Mesa de Ayuda","Facturación y Cobranza"]),
-         innoReq:0,effReq:0,revenue:Math.round((11500+rand(0,4500))*scale),
-         slots:makeSlots(["any"],"tradicional")};
-    }
-    list.push(p);
-  }
-  return list;
-}
-function makeSlots(pattern,type){
-  // slot: requisito de exp y/o color. Ej: {exp:"Senior",color:"azul"}
-  const slots=[];
-  const colors=["rojo","azul","verde","amarillo"];
-  pattern.forEach(pat=>{
-    if(pat==="any"){ slots.push({exp:pick(EXP),color:null}); }
-    else if(pat==="joven"){ slots.push({exp:"Junior",color:pick(colors)}); }
-    else if(pat==="Senior"){ slots.push({exp:"Senior",color:null}); }
-    else if(pat==="azul"){ slots.push({exp:pick(["Mid","Senior"]),color:"azul"}); }
-    if(Math.random()<0.4) slots.push({exp:pick(EXP),color:pick(colors)});
-  });
-  return slots.map(s=>({...s,filledBy:null}));
+function rangoPorNivel(nivel) {
+  if (nivel >= 10 && nivel <= 30) return "Internship";
+  if (nivel >= 31 && nivel <= 60) return "Ingeniero";
+  if (nivel >= 61 && nivel <= 85) return "Senior";
+  if (nivel >= 86 && nivel <= 100) return "Staff";
+  return "Internship";
 }
 
-/* ================= ESTADO GLOBAL ================= */
-const G={turn:1,teamIdx:0,phase:"decisions",teams:[],projMarkets:[],charts:[],news:[]};
-function pushNews(msg){
-  G.news.unshift({turn:G.turn,msg});
-  if(G.news.length>40) G.news.pop();
-}
-const curTeam=()=>G.teams[G.teamIdx];
-const curProjM=()=>G.projMarkets[G.teamIdx];
-const yearOf=t=>Math.ceil(t/4);
-const trimOf=t=>((t-1)%4)+1;
-
-/* ================= ÍNDICES ================= */
-const avgSat=t=>t.roster.length?Math.round(t.roster.reduce((s,e)=>s+e.sat,0)/t.roster.length):0;
-function innoIndex(t){
-  let pts=0;
-  t.roster.forEach(e=>{
-    const f=e.onboardingLeft>0?0.5:1;
-    let v=ageGroup(e)==="joven"?8:(ageGroup(e)==="mayor"?-3:4);
-    if(e.color==="amarillo") v+=6;
-    pts+=v*f;
-  });
-  return clamp(Math.round(pts),0,100);
-}
-function effIndex(t){
-  let pts=0;
-  t.roster.forEach(e=>{
-    const f=e.onboardingLeft>0?0.5:1;
-    let v=ageGroup(e)==="mayor"?10:(ageGroup(e)==="medio"?5:2);
-    if(e.color==="azul") v+=5;
-    if(e.leadership&&(e.color==="rojo"||e.color==="azul")) v+=3;
-    pts+=v*f;
-  });
-  return clamp(Math.round(pts),0,100);
-}
-function rotIndex(t){
-  const lost=t.lostEmployees+t.retiredCount, base=t.initialSize+(t.hiredCount||0);
-  return clamp(Math.round((lost/base)*100),0,100);
-}
-const marginOf=t=>t.cash-START_CASH;
-
-/* ================= ENVEJECIMIENTO Y RIESGOS ================= */
-function processAging(t,log){
-  // envejecimiento: cada empleado suma 1/4 de año por trimestre (acumulado como edad +1 cada 4 trimestres)
-  t.roster.forEach(e=>{ e.ageFrac=(e.ageFrac||0)+0.25; if(e.ageFrac>=1){ e.age++; e.ageFrac=0; } });
-  const retiring=t.roster.filter(e=>e.age>=RETIRE_AGE);
-  retiring.forEach(r=>{
-    t.roster=t.roster.filter(e=>e.id!==r.id);
-    t.retiredCount++;
-    log(`🌅 ${r.name} se JUBILÓ a los ${r.age} años. La sucesión debe estar planificada con anticipación.`,"info");
-    const pr=t.projects.find(p=>p.slots.some(s=>s.filledBy===r.id));
-    if(pr) log(`⚠️ La jubilación deja un slot vacío en "${pr.name}". Reasigna personal o sufrirás penalizaciones.`,"bad");
-  });
-  t.projects.forEach(p=>{
-    p.slots.forEach(s=>{
-      if(s.filledBy!==null && !t.roster.some(e=>e.id===s.filledBy)) s.filledBy=null;
-    });
-  });
-  // reset contadores de decisión por trimestre
-  t.roster.forEach(e=>{ e.coursesThisTurn=e.coursesThisTurn||0; });
-}
-function checkFrictions(t,log){
-  t.roster.forEach(e=>{
-    e.turnsSinceRaise++; e.turnsSinceTrain++;
-    if(e.color==="rojo"&&e.turnsSinceRaise>=4){ e.sat-=25; log(`⚠️ ${e.name} (Rojo) sin aumento en 4 trimestres: -25% satisfacción.`,"bad"); }
-    if(ageGroup(e)==="joven"&&e.turnsSinceTrain>=3){ e.sat-=25; log(`⚠️ ${e.name} (Joven) sin formación en 3 trimestres: -25% satisfacción.`,"bad"); }
-    if(e.color==="amarillo"&&e.projectId&&e.turnsInProject>4){ e.sat-=12; log(`⚠️ ${e.name} (Amarillo) se aburrió en el proyecto: -12% satisfacción.`,"bad"); }
-    if(e.color==="azul"&&t.recentQuit){ e.sat-=8; }
-  });
-  if(t.recentQuit) log(`⚠️ Perfiles Azules estresados por la rotación reciente.`,"bad");
-  t.roster.forEach(e=>e.sat=clamp(e.sat,0,100));
-}
-function processResignations(t,log){
-  t.recentQuit=false;
-  const quitters=t.roster.filter(e=>e.sat<=30);
-  quitters.forEach(q=>{
-    t.roster=t.roster.filter(e=>e.id!==q.id);
-    t.lostEmployees++; t.recentQuit=true;
-    t.rotCostTotal+=HIRING_FEE; t.cash-=HIRING_FEE;
-    log(`🚪 ${q.name} (${COLOR_NAMES[q.color]}, ${q.age} años) RENUNCIÓ. Reclutamiento: ${fmt(HIRING_FEE)}.`,"bad");
-    if(q.color==="verde"){
-      t.roster.forEach(e=>e.sat=clamp(e.sat-15,0,100));
-      log(`💔 Golpe emocional: la renuncia del Verde ${q.name} baja -15% la satisfacción de toda la plantilla.`,"bad");
-    }
-    t.projects.forEach(p=>p.slots.forEach(s=>{ if(s.filledBy===q.id) s.filledBy=null; }));
-  });
-  // fricción Rojo-Rojo en el mismo proyecto
-  const byProj={};
-  t.roster.forEach(e=>{ if(e.color==="rojo"&&e.projectId){(byProj[e.projectId]=byProj[e.projectId]||[]).push(e);} });
-  Object.values(byProj).forEach(arr=>{
-    if(arr.length>=2){ arr.forEach(e=>e.sat=clamp(e.sat-10,0,100)); log(`⚔️ Fricción: ${arr.length} Rojos en el mismo proyecto se restan satisfacción.`,"bad"); }
-  });
-}
-function checkMentorships(t,log){
-  t.roster.forEach(e=>{
-    if(e.mentorActive&&e.exp==="Junior"&&e.projectId){
-      const hasSenior=t.roster.some(s=>s.exp==="Senior"&&s.projectId===e.projectId);
-      if(hasSenior){
-        e.mentorProg++;
-        if(e.mentorProg>=4){
-          e.exp="Mid"; e.mentorProg=0; e.mentorActive=false;
-          e.salary=Math.round(e.salary*1.25/10)*10;
-          log(`🎓 Mentoría completada: ${e.name} subió a Mid gratis gracias a su mentor Senior.`,"good");
-        }
-      }
-    }
-  });
+function sueldoDeseado(nivel) {
+  var base = 800 + nivel * 45 + entero(-200, 200);
+  return Math.max(500, Math.round(base / 50) * 50);
 }
 
-/* ================= ECONOMÍA TRIMESTRAL ================= */
-function runEconomy(t,log){
-  let rev=BASE_INCOME;
-  t.projects.forEach(p=>{
-    const filled=p.slots.filter(s=>s.filledBy!==null).length;
-    const total=p.slots.length;
-    let quality=0;
-    p.slots.forEach(s=>{
-      if(s.filledBy===null){ quality+=0; return; }
-      const e=t.roster.find(x=>x.id===s.filledBy);
-      if(!e){ quality+=0; return; }
-      const expOK=(!s.exp||EXP.indexOf(e.exp)>=EXP.indexOf(s.exp));
-      const colorOK=(!s.color||e.color===s.color);
-      quality+=(expOK?0.6:0.3)+(colorOK?0.4:0.2);
-    });
-    const coverage=total?quality/total:0;
-    let income=p.revenue*clamp(coverage,0,1.2);
-    if(coverage<0.99){ income*=0.5; log(`📉 "${p.name}": slots vacíos o perfiles desajustados → el proyecto rinde a la mitad.`,"bad"); }
-    const anyAssigned=p.slots.some(s=>s.filledBy!==null&&t.roster.some(e=>e.id===s.filledBy));
-    if(!anyAssigned){ income=0; t.cash-=VACANT_PENALTY; t.rotCostTotal+=VACANT_PENALTY;
-      log(`⛔ "${p.name}" sin personal: penalización de retraso ${fmt(VACANT_PENALTY)}.`,"bad"); }
-    rev+=income;
-  });
-  const salaries=t.roster.reduce((s,e)=>s+e.salary,0);
-  t.cash+=rev-salaries;
-  t.revenueTotal+=rev; t.salaryCostTotal+=salaries;
-  t.roster.forEach(e=>{ if(e.onboardingLeft>0)e.onboardingLeft--; e.turnsInProject=e.projectId?e.turnsInProject+1:0; e.sat=clamp(e.sat+3,0,100); });
-  log(`💰 Ingresos: ${fmt(rev)} | Salarios: ${fmt(salaries)} | Neto: ${fmt(rev-salaries)}`,"info");
-  if(rev-salaries<0){ t.roster.forEach(e=>{ if(ageGroup(e)==="mayor") e.sat=clamp(e.sat-10,0,100); }); log(`⚠️ Pérdidas: los Mayores pierden confianza (-10%).`,"bad"); }
-  // exp natural: cursos técnicos aceleran
-  t.roster.forEach(e=>{
-    if(e.expProgress>=expNeed(e)&&e.exp!=="Senior"){
-      e.exp=EXP[EXP.indexOf(e.exp)+1]; e.expProgress=0;
-      e.salary=Math.round(e.salary*1.2/10)*10;
-      log(`📈 ${e.name} ascendió a ${e.exp} (nuevo salario ${fmt(e.salary)}).`,"good");
-    }
-  });
-  t.history.push({turn:G.turn,cash:t.cash,rev,salaries,rot:t.rotCostTotal});
-  t.avgSatHistory.push(avgSat(t));
+function colorAvatar(disc) {
+  var p = DISC_PERFILES.find(function (x) { return x.letra === disc; });
+  return p ? p.color : "#888";
 }
 
-/* ================= MOTOR DE DECISIONES BOT ================= */
-function botDecide(t,market){
-  const st=t.botStyle.key;
-  const log=(m,c)=>{};
-  const myInno=innoIndex(t), myEff=effIndex(t);
-  const targetSize = st==="tech"?8:(st==="cons"?6:7);
-  if(t.roster.length<targetSize && nationalPool.length){
-    const wantCount=t.roster.length<4?3:Math.min(2,targetSize-t.roster.length);
-    for(let k=0;k<wantCount;k++){
-      let cand=null;
-      if(st==="tech"){ cand=nationalPool.find(c=>c.age<=32&&(c.color==="amarillo"||Math.random()<.6)); }
-      else if(st==="cons"){ cand=nationalPool.find(c=>c.age>=45&&c.color==="azul"); }
-      else { cand=nationalPool.find(c=>t.roster.filter(e=>e.color===c.color).length<2); }
-      if(!cand) cand=nationalPool[0];
-      if(t.cash>=HIRING_FEE+cand.salary){
-        actHire(cand.id);
-        pushNews("📰 "+t.name+" (IA) contrata a "+cand.name+" ("+cand.age+"a, "+cap(cand.color)+").");
-      }
-    }
-  }
-  t.roster.forEach(e=>{
-    if(st==="tech"){
-      if(e.sat<50&&t.cash>5000) actCourse(e.id,"sinergia");
-      if(e.age<=32&&t.cash>20000) actCourse(e.id,"tecnico");
-      if(e.color==="amarillo"&&t.cash>30000) actCourse(e.id,"tecnico");
-      if(e.color==="rojo"&&e.turnsSinceRaise>=3&&t.cash>8000) actRaise(e.id);
-    }else if(st==="cons"){
-      if(e.sat<55&&t.cash>5000) actCourse(e.id,"sinergia");
-      if(ageGroup(e)==="joven"&&e.turnsSinceTrain>=2&&t.cash>5000) actCourse(e.id,"tecnico");
-      if(e.exp==="Junior"&&t.roster.some(x=>x.exp==="Senior")&&t.cash>3000) actCourse(e.id,"mentoria");
-    }else{
-      if(e.sat<50&&t.cash>5000) actCourse(e.id,"sinergia");
-      if(e.exp==="Junior"&&t.cash>10000) actCourse(e.id,"tecnico");
-      if((e.color==="rojo"||e.color==="azul")&&!e.leadership&&t.cash>25000&&Math.random()<.4) actCourse(e.id,"liderazgo");
-      if(e.color==="rojo"&&e.turnsSinceRaise>=3) actRaise(e.id);
-    }
-  });
-  const avgS=avgSat(t);
-  if(st==="mix"&&avgS<70&&t.cash>20000) actClimate();
-  if(st==="cons"&&avgS<60&&t.cash>15000) actClimate();
-  const sorted=[...market].sort((a,b)=>b.revenue-a.revenue);
-  sorted.forEach(p=>{
-    if(t.projects.length>=3)return;
-    const canReq=(!p.innoReq||myInno>=p.innoReq)&&(!p.effReq||myEff>=p.effReq);
-    let wants=false;
-    if(st==="tech") wants=p.type==="innovacion"||p.type==="tradicional";
-    else if(st==="cons") wants=p.type==="complejo"||p.type==="tradicional";
-    else wants=true;
-    if(canReq&&wants){
-      actBid(p.id);
-      pushNews("🏆 "+t.name+" (IA) ha ganado la puja por '"+p.name+"' ("+fmt(p.revenue)+"/trim).");
-    }
-  });
-  autoFillSlots(t,log);
-}
-
-/* ================= FIN DE TRIMESTRE ================= */
-function endTurn(){
-  const t=curTeam(), log=makeLogger();
-  runEconomy(t,log);
-  checkFrictions(t,log);
-  processResignations(t,log);
-  checkMentorships(t,log);
-  if(t.cash<0) log(`🩸 ¡Alerta! ${t.name} en números rojos (${fmt(t.cash)}).`,"bad");
-  const savedIdx=G.teamIdx;
-  const bots=G.teams.filter(x=>x.isBot);
-  bots.forEach(b=>{
-    G.teamIdx=G.teams.indexOf(b);
-    const bMarket=G.projMarkets[G.teamIdx]||makeProjMarket(G.turn);
-    const bLog=(m,c)=>{};
-    const beforeRetired=b.retiredCount;
-    botDecide(b,bMarket);
-    runEconomy(b,bLog);
-    checkFrictions(b,bLog);
-    processResignations(b,bLog);
-    checkMentorships(b,bLog);
-    processAging(b,bLog);
-    if(b.retiredCount>beforeRetired){
-      pushNews("🌅 "+b.name+" (IA) sufre una crisis de jubilaciones ("+(b.retiredCount-beforeRetired)+" este trimestre).");
-    }
-    if(b.roster.length<=2){
-      pushNews("⚠️ "+b.name+" (IA) está en crisis: solo le quedan "+b.roster.length+" empleados.");
-    }
-  });
-  G.teamIdx=savedIdx;
-  G.phase="pass";
-  render();
-  setTimeout(showIntermission,300);
-}
-
-/* ================= LOGGER Y ACCIONES ================= */
-function makeLogger(){
-  const el=document.getElementById("log");
-  el.innerHTML="";
-  return (msg,cls)=>{
-    const d=document.createElement("div");
-    d.className=cls||"info"; d.innerHTML=msg;
-    el.appendChild(d); el.scrollTop=el.scrollHeight;
+function generarCandidato() {
+  var nombre = NOMBRES[entero(0, NOMBRES.length - 1)];
+  var apellido = APELLIDOS[entero(0, APELLIDOS.length - 1)];
+  var disc = DISC_PERFILES[entero(0, 3)];
+  var nivel = entero(10, 100);
+  return {
+    id: "cand-" + Math.random().toString(36).slice(2, 10),
+    nombre: nombre + " " + apellido,
+    edad: entero(18, 65),
+    nivel: nivel,
+    rango: rangoPorNivel(nivel),
+    sueldoDeseado: sueldoDeseado(nivel),
+    disc: disc.letra,
+    discDesc: disc.desc,
+    color: colorAvatar(disc.letra),
+    contratado: false
   };
 }
-function actCourse(empId,courseKey){
-  const t=curTeam(); if(G.phase!=="decisions")return;
-  const e=t.roster.find(x=>x.id===empId); if(!e)return;
-  const c=CATALOG[courseKey];
-  if(t.cash<c.cost){alert("Presupuesto insuficiente.");return;}
-  t.cash-=c.cost; t.trainSpendThisTurn+=c.cost;
-  e.turnsSinceTrain=0;
-  if(courseKey==="tecnico"){ e.expProgress+=2; e.sat=clamp(e.sat+5,0,100); }
-  if(courseKey==="sinergia"){ e.sat=clamp(e.sat+30,0,100); }
-  if(courseKey==="liderazgo"){ e.leadership=true; e.sat=clamp(e.sat+10,0,100); }
-  if(courseKey==="mentoria"){ e.mentorActive=true; }
-  render();
+
+function nuevaRondaMercado() {
+  estado.mercado = [];
+  for (var i = 0; i < 5; i++) {
+    estado.mercado.push(generarCandidato());
+  }
 }
-function actRaise(empId){
-  const t=curTeam(); if(G.phase!=="decisions")return;
-  const e=t.roster.find(x=>x.id===empId); if(!e)return;
-  const raise=Math.round(e.salary*0.1);
-  if(t.cash<raise){alert("Presupuesto insuficiente.");return;}
-  t.cash-=raise; e.salary+=raise; e.turnsSinceRaise=0;
-  e.sat=clamp(e.sat+15,0,100);
-  render();
-}
-function actAssignSlot(projId,slotIdx,empId){
-  const t=curTeam(); if(G.phase!=="decisions")return;
-  const p=t.projects.find(x=>x.id===projId); if(!p)return;
-  const slot=p.slots[slotIdx]; if(!slot)return;
-  // liberar asignación previa del slot
-  if(slot.filledBy!==null){ const old=t.roster.find(e=>e.id===slot.filledBy); if(old){old.projectId=null;old.turnsInProject=0;} }
-  // si el empleado ya estaba en otro slot, quitarlo de ahí
-  t.projects.forEach(pp=>pp.slots.forEach(ss=>{ if(ss.filledBy===Number(empId)) ss.filledBy=null; }));
-  if(empId===""||empId===null){ slot.filledBy=null; render(); return; }
-  const e=t.roster.find(x=>x.id===Number(empId)); if(!e)return;
-  slot.filledBy=e.id; e.projectId=p.id; e.turnsInProject=0;
-  render();
-}
-function actClimate(){
-  const t=curTeam(); if(G.phase!=="decisions")return;
-  if(t.cash<CLIMATE_COST){alert("Presupuesto insuficiente.");return;}
-  t.cash-=CLIMATE_COST; t.climateInvestTotal+=CLIMATE_COST;
-  t.roster.forEach(e=>e.sat=clamp(e.sat+10,0,100));
-  render();
-}
-function actHire(candId){
-  const t=curTeam(); if(G.phase!=="decisions")return;
-  const idx=nationalPool.findIndex(c=>c.id===candId);
-  if(idx<0)return;
-  const c=nationalPool[idx];
-  if(t.cash<HIRING_FEE+c.salary){alert("Presupuesto insuficiente (fee + primer sueldo).");return;}
-  t.cash-=HIRING_FEE; t.hireCostTotal+=HIRING_FEE;
-  c.market=false; c.onboardingLeft=ONBOARD_TURNS; c.projectId=null;
-  c.turnsSinceTrain=0; c.turnsSinceRaise=0;
-  t.roster.push(c); t.hiredCount=(t.hiredCount||0)+1;
-  nationalPool.splice(idx,1);
-  render();
-}
-function actBid(projId){
-  const t=curTeam(); if(G.phase!=="decisions")return;
-  const idx=curProjM().findIndex(p=>p.id===projId);
-  if(idx<0)return;
-  const p=curProjM()[idx];
-  const inno=innoIndex(t), eff=effIndex(t);
-  if(p.innoReq&&inno<p.innoReq){alert(`Innovación insuficiente: ${inno}% < ${p.innoReq}%.`);return;}
-  if(p.effReq&&eff<p.effReq){alert(`Eficiencia insuficiente: ${eff}% < ${p.effReq}%.`);return;}
-  if(t.projects.length>=4){alert("Máximo 4 proyectos activos.");return;}
-  t.projects.push(p); curProjM().splice(idx,1);
-  render();
-}
-/* Avance rápido: procesa el trimestre actual con decisiones automáticas si no hay alertas críticas */
-function fastYear(){
-  const t=curTeam();
-  if(G.phase!=="decisions")return;
-  const alerts=[];
-  t.projects.forEach(p=>p.slots.forEach((s,i)=>{
-    if(s.filledBy===null) alerts.push('"'+p.name+'" slot '+(i+1)+' vacío');
-  }));
-  t.roster.forEach(e=>{ if(e.sat<40) alerts.push(e.name+' con satisfacción crítica ('+Math.round(e.sat)+'%)'); });
-  if(t.cash<0) alerts.push('Presupuesto en números rojos');
-  if(alerts.length){
-    alert("⚠️ No puedes usar Avance Rápido con alertas críticas:\n• "+alerts.slice(0,6).join("\n• ")+"\n\nResuélvelas manualmente y luego avanza.");
+
+/* =========================================================
+   FICHAJES — 3 RONDAS
+   ========================================================= */
+function contratarCandidato(id) {
+  var cand = estado.mercado.find(function (c) { return c.id === id; });
+  if (!cand || cand.contratado) return;
+  if (estado.caja < cand.sueldoDeseado) {
+    alert("Caja insuficiente para firmar a " + cand.nombre + ".");
     return;
   }
-  const logDummy=(m,c)=>{};
-  autoFillSlots(t,logDummy);
-  endTurn();
+  estado.caja -= cand.sueldoDeseado;
+  cand.contratado = true;
+  var ficha = {
+    id: cand.id,
+    nombre: cand.nombre,
+    edad: cand.edad,
+    nivel: cand.nivel,
+    rango: cand.rango,
+    sueldo: cand.sueldoDeseado,
+    disc: cand.disc,
+    discDesc: cand.discDesc,
+    color: cand.color,
+    asignado: null,
+    mesesSinFormacion: 0
+  };
+  estado.plantilla.push(ficha);
+  renderTodo();
 }
-function autoFillSlots(t,log){
-  t.projects.forEach(p=>{
-    p.slots.forEach(s=>{
-      if(s.filledBy!==null)return;
-      const cand=t.roster.filter(e=>!e.projectId||!t.projects.some(pp=>pp.id===e.projectId&&pp!==p&&pp.slots.some(ss=>ss.filledBy===e.id)))
-        .filter(e=>!p.slots.some(ss=>ss.filledBy===e.id));
-      let best=null;
-      cand.forEach(e=>{
-        const expOK=(!s.exp||EXP.indexOf(e.exp)>=EXP.indexOf(s.exp));
-        const colorOK=(!s.color||e.color===s.color);
-        if(expOK&&colorOK){ best=e; }
-      });
-      if(best){ s.filledBy=best.id; best.projectId=p.id; best.turnsInProject=0; }
+
+function siguienteRonda() {
+  if (estado.ronda >= estado.maxRondas) {
+    alert("Has agotado las 3 rondas de fichajes. El mercado queda cerrado.");
+    return;
+  }
+  estado.ronda++;
+  nuevaRondaMercado();
+  renderTodo();
+}
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+function formatear(num) {
+  return num.toLocaleString("es-ES");
+}
+
+function renderBarraEstado() {
+  var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+  document.getElementById("estado-fecha").textContent =
+    meses[estado.fecha.mes] + " " + estado.fecha.anio;
+  document.getElementById("estado-caja").textContent = formatear(estado.caja);
+  document.getElementById("estado-plantilla").textContent = estado.plantilla.length;
+}
+
+function renderDespacho() {
+  document.getElementById("saldo-formacion").textContent = formatear(estado.presupuestos.formacion) + " €";
+  document.getElementById("saldo-viajes").textContent = formatear(estado.presupuestos.viajes) + " €";
+  document.getElementById("saldo-integracion").textContent = formatear(estado.presupuestos.integracion) + " €";
+  document.getElementById("saldo-rewards").textContent = formatear(estado.presupuestos.rewards) + " €";
+}
+
+function renderPlantilla() {
+  var cont = document.getElementById("lista-plantilla");
+  if (estado.plantilla.length === 0) {
+    cont.innerHTML = "<p><i>No hay ingenieros contratados. Visita la pestaña Mercado para reclutar.</i></p>";
+    return;
+  }
+  var html = '<table class="tabla"><tr><th>Avatar</th><th>Nombre</th><th>Edad</th><th>Rango</th><th>Nivel</th><th>Sueldo</th><th>DISC</th><th>Meses sin form.</th><th>Asignación</th><th>Formación</th></tr>';
+  estado.plantilla.forEach(function (ing) {
+    html += "<tr>" +
+      "<td><div class='avatar' style='background:" + ing.color + ";width:32px;height:32px;font-size:12px;'>" + ing.nombre.charAt(0) + "</div></td>" +
+      "<td>" + ing.nombre + "</td>" +
+      "<td>" + ing.edad + "</td>" +
+      "<td>" + ing.rango + "</td>" +
+      "<td style='min-width:110px;'><div class='barra-nivel-caja'><div class='barra-nivel' style='width:" + ing.nivel + "%;'></div></div> " + ing.nivel + "</td>" +
+      "<td>" + formatear(ing.sueldo) + " €</td>" +
+      "<td><span class='disc disc-" + ing.disc + "'>" + ing.disc + " · " + ing.discDesc + "</span></td>" +
+      "<td>" + (ing.mesesSinFormacion || 0) + "/" + limiteSinFormacion(ing.rango) + "</td>" +
+      "<td>" + (ing.asignado || "—") + "</td>" +
+      "<td><button class='boton-2000' style='padding:2px 8px;font-size:10px;' onclick=\"aplicarFormacion('" + ing.id + "')\">Formar (1.500 €)</button></td>" +
+      "</tr>";
+  });
+  html += "</table>";
+  cont.innerHTML = html;
+}
+
+function renderMercado() {
+  document.getElementById("ronda-actual").textContent = estado.ronda;
+  var cont = document.getElementById("lista-candidatos");
+  var html = '<table class="tabla"><tr><th>Avatar</th><th>Nombre</th><th>Edad</th><th>Rango</th><th>Nivel</th><th>Sueldo deseado</th><th>DISC</th><th></th></tr>';
+  estado.mercado.forEach(function (c) {
+    html += "<tr" + (c.contratado ? " style='opacity:0.5;'" : "") + ">" +
+      "<td><div class='avatar' style='background:" + c.color + ";width:32px;height:32px;font-size:12px;'>" + c.nombre.charAt(0) + "</div></td>" +
+      "<td>" + c.nombre + (c.contratado ? " (CONTRATADO)" : "") + "</td>" +
+      "<td>" + c.edad + "</td>" +
+      "<td>" + c.rango + "</td>" +
+      "<td style='min-width:110px;'><div class='barra-nivel-caja'><div class='barra-nivel' style='width:" + c.nivel + "%;'></div></div> " + c.nivel + "</td>" +
+      "<td>" + formatear(c.sueldoDeseado) + " €</td>" +
+      "<td><span class='disc disc-" + c.disc + "'>" + c.disc + " · " + c.discDesc + "</span></td>" +
+      "<td>" + (c.contratado ? "" :
+        "<button class='boton-2000' onclick=\"contratarCandidato('" + c.id + "')\">Firmar</button>") + "</td>" +
+      "</tr>";
+  });
+  html += "</table>";
+  cont.innerHTML = html;
+  document.getElementById("btn-siguiente-ronda").disabled = estado.ronda >= estado.maxRondas;
+}
+
+/* =========================================================
+   NAVEGACIÓN DE PESTAÑAS
+   ========================================================= */
+function activarPestana(nombre) {
+  var pestanas = document.querySelectorAll(".pestana");
+  for (var i = 0; i < pestanas.length; i++) {
+    pestanas[i].classList.toggle("activa", pestanas[i].getAttribute("data-tab") === nombre);
+  }
+  document.getElementById("tab-despacho").classList.toggle("oculto", nombre !== "despacho");
+  document.getElementById("tab-plantilla").classList.toggle("oculto", nombre !== "plantilla");
+  document.getElementById("tab-operaciones").classList.toggle("oculto", nombre !== "operaciones");
+  document.getElementById("tab-mercado").classList.toggle("oculto", nombre !== "mercado");
+}
+
+document.querySelectorAll(".pestana").forEach(function (p) {
+  p.addEventListener("click", function () {
+    activarPestana(p.getAttribute("data-tab"));
+  });
+});
+document.getElementById("btn-siguiente-ronda").addEventListener("click", siguienteRonda);
+
+/* =========================================================
+   MOTOR DE SIMULACIÓN (fase futura — vacío a propósito)
+   ========================================================= */
+function avanzarMes() {
+  mesActual++;
+  simularProyectosCliente();
+  verificarRetencionPersonal();
+  var costeSalarial = 0;
+  estado.plantilla.forEach(function (ing) {
+    costeSalarial += ing.sueldo;
+  });
+  capital -= costeSalarial;
+  if (mesActual > 12) {
+    mesActual = 1;
+    añoActual++;
+    abrirModalPresupuestos();
+  }
+  if (capital < 0) {
+    mostrarGameOver();
+    return;
+  }
+  renderMarcadorCabecera();
+}
+function simularProyectosCliente() {
+  proyectosDisponibles.forEach(function (proy) {
+    if (proy.estadoProy !== "ACTIVO") return;
+    var activo = proy.slots.some(function (s) { return s; });
+    if (!activo) return;
+    proy.mesesTranscurridos++;
+    var ocupados = proy.slots.filter(function (s) { return s; }).length;
+    var factorOcupacion = ocupados / proy.slotsRequeridos;
+    var ingreso = Math.round(proy.ingresoMes * factorOcupacion);
+    capital += ingreso;
+    if (proy.mesesTranscurridos >= proy.duracionMeses) {
+      cerrarProyecto(proy);
+    }
+  });
+}
+
+function cerrarProyecto(proy) {
+  var asignados = [];
+  proy.slots.forEach(function (id) {
+    if (id) {
+      var ing = estado.plantilla.find(function (e) { return e.id === id; });
+      if (ing) asignados.push(ing);
+    }
+  });
+  var msgCierre = ":: CIERRE DE PROYECTO: " + proy.nombre + " ::\n";
+  var valorBase = proy.valorTotal;
+  if (asignados.length > 0) {
+    var nivelMedio = asignados.reduce(function (acc, e) { return acc + e.nivel; }, 0) / asignados.length;
+    var encaje = asignados.filter(function (e) { return e.disc === proy.discRequerido; }).length;
+    var mayoria = encaje > asignados.length / 2;
+    if (nivelMedio >= proy.minNivelExigido && mayoria) {
+      var bonus = Math.round(valorBase * 0.25);
+      capital += bonus;
+      msgCierre += "¡Bonus de Rendimiento Extra del +25%! +" + formatear(bonus) + " €\n" +
+        "Nivel medio " + Math.round(nivelMedio) + " (mín. " + proy.minNivelExigido + "), " +
+        encaje + "/" + asignados.length + " perfiles DISC " + proy.discRequerido + ".\n";
+    } else {
+      msgCierre += "Sin bonus: nivel medio " + Math.round(nivelMedio) +
+        " (mín. " + proy.minNivelExigido + "), " + encaje + "/" + asignados.length +
+        " perfiles DISC " + proy.discRequerido + ".\n";
+    }
+  }
+  var vacios = proy.slots.filter(function (s) { return !s; }).length;
+  if (vacios > 0) {
+    var penalizacion = vacios * 2000;
+    capital -= penalizacion;
+    msgCierre += "Penalización por slots vacíos (" + vacios + " × $2,000): -" + formatear(penalizacion) + " €\n";
+  }
+  asignados.forEach(function (ing) {
+    ing.asignado = "I+D Interno";
+  });
+  proy.slots = proy.slots.map(function () { return null; });
+  proy.estadoProy = "FINALIZADO";
+  var idx = proyectosAsignados.indexOf(proy.id);
+  if (idx >= 0) proyectosAsignados.splice(idx, 1);
+  alert(msgCierre);
+}
+
+/* =========================================================
+   FASE 2 — PROYECTOS Y ASIGNACIONES
+   ========================================================= */
+var NOMBRES_PROYECTOS = [
+  "Fuselaje Alfa-7",
+  "Turbina Halcón",
+  "Aviónica Nébula",
+  "Blindaje Órbita"
+];
+
+function inicializarProyectosAeroespaciales() {
+  proyectosDisponibles = [];
+  for (var i = 0; i < 4; i++) {
+    var disc = DISC_PERFILES[entero(0, 3)];
+    proyectosDisponibles.push({
+      id: "proy-" + i,
+      nombre: NOMBRES_PROYECTOS[i],
+      cliente: "Generic Aerospace",
+      duracionMeses: entero(3, 12),
+      mesesTranscurridos: 0,
+      slotsRequeridos: entero(2, 4),
+      slots: [],
+      ingresoMes: entero(4, 10) * 1000,
+      valorTotal: 0,
+      minNivelExigido: entero(35, 70),
+      estadoProy: "ACTIVO",
+      discRequerido: disc.letra,
+      discDesc: disc.desc,
+      color: colorAvatar(disc.letra)
     });
+    for (var s = 0; s < proyectosDisponibles[i].slotsRequeridos; s++) {
+      proyectosDisponibles[i].slots.push(null);
+    }
+    proyectosDisponibles[i].valorTotal = proyectosDisponibles[i].ingresoMes * proyectosDisponibles[i].duracionMeses;
+  }
+  proyectosAsignados = [];
+}
+
+function asignarIngenieroAProyecto(empleadoId, proyectoId, slotIndex) {
+  var ing = estado.plantilla.find(function (e) { return e.id === empleadoId; });
+  if (!ing) return;
+  if (ing.asignado) {
+    desasignarIngeniero(empleadoId);
+  }
+  if (proyectoId === "id-interno") {
+    ing.asignado = "I+D Interno";
+    renderTodo();
+    return;
+  }
+  var proy = proyectosDisponibles.find(function (p) { return p.id === proyectoId; });
+  if (!proy) return;
+  if (slotIndex === undefined || slotIndex === null) {
+    slotIndex = proy.slots.findIndex(function (s) { return s === null || s === undefined; });
+    if (slotIndex < 0) {
+      alert("Proyecto " + proy.nombre + ": sin slots libres.");
+      return;
+    }
+  }
+  if (proy.slots[slotIndex]) {
+    alert("Ese slot ya está ocupado.");
+    return;
+  }
+  proy.slots[slotIndex] = empleadoId;
+  ing.asignado = proy.nombre + " (slot " + (slotIndex + 1) + ")";
+  if (proyectosAsignados.indexOf(proy.id) < 0) {
+    proyectosAsignados.push(proy.id);
+  }
+  renderTodo();
+}
+
+function desasignarIngeniero(empleadoId) {
+  proyectosDisponibles.forEach(function (proy) {
+    var idx = proy.slots.indexOf(empleadoId);
+    if (idx >= 0) proy.slots[idx] = null;
+  });
+  estado.plantilla.forEach(function (ing) {
+    if (ing.id === empleadoId) ing.asignado = null;
   });
 }
 
-/* ================= RENDER ================= */
-const satColor=s=>s>=70?"var(--green)":(s>=50?"var(--yellow)":"var(--red)");
-function render(){
-  const t=curTeam();
-  document.getElementById("teamBadge").textContent=t.name+" — Año "+yearOf(G.turn)+" · T"+trimOf(G.turn);
-  document.getElementById("kpiTime").textContent=yearOf(G.turn)+"·T"+trimOf(G.turn);
-  const cash=document.getElementById("kpiCash");
-  cash.textContent=fmt(t.cash); cash.className="val "+(t.cash>=START_CASH?"pos":"neg");
-  const mg=document.getElementById("kpiMargin");
-  mg.textContent=(marginOf(t)>=0?"+":"")+fmt(marginOf(t)); mg.className="val "+(marginOf(t)>=0?"pos":"neg");
-  document.getElementById("kpiRot").textContent=rotIndex(t)+"%";
-  document.getElementById("kpiInno").textContent=innoIndex(t)+"%";
-  const sat=document.getElementById("kpiSat");
-  sat.textContent=avgSat(t)+"%"; sat.style.color=satColor(avgSat(t));
-  document.getElementById("rosterCount").textContent=t.roster.length+" empleados activos";
-  document.getElementById("turnPhase").textContent=G.phase==="decisions"?"Fase de decisiones — Año "+yearOf(G.turn)+", Trimestre "+trimOf(G.turn):"Turno confirmado — pasar control";
-  document.getElementById("btnClimate").disabled=(G.phase!=="decisions"||t.cash<CLIMATE_COST);
-  document.getElementById("btnClimate").onclick=actClimate;
-  renderRoster(t); renderActiveProjects(t); renderPoolFilters(); renderPool(); renderProjMarket(t);
-}
-function empCard(e){
-  const t=curTeam();
-  const proj=t.projects.find(p=>p.slots.some(s=>s.filledBy===e.id));
-  const slotInfo=proj?(proj.slots.find(s=>s.filledBy===e.id)):null;
-  const warns=[];
-  if(e.color==="rojo"&&e.turnsSinceRaise>=3) warns.push("Exige aumento pronto");
-  if(ageGroup(e)==="joven"&&e.turnsSinceTrain>=2) warns.push("Necesita formación");
-  if(e.color==="amarillo"&&e.turnsInProject>3) warns.push("Riesgo de aburrimiento");
-  if(e.onboardingLeft>0) warns.push("Onboarding: rinde al 50%");
-  if(e.age>=62) warns.push(`Cerca de jubilarse (${e.age}/65)`);
-  if(e.mentorActive&&e.mentorProg>0) warns.push(`Mentoría: ${e.mentorProg}/4 turnos`);
-  const canAct=G.phase==="decisions";
-  return `<div class="emp ${e.color}">
-    <div class="head"><b>${e.name}</b><span class="fris ${e.color}">${cap(e.color)}</span></div>
-    <div class="meta">
-      <span class="tag">🎂 ${e.age} años (${ageGroup(e)})</span>
-      <span class="tag">🎓 ${e.exp}${e.exp!=="Senior"?` (${e.expProgress}/${expNeed(e)})`:""}</span>
-      <span class="tag">💰 ${fmt(e.salary)}/trim</span>
-      <span class="tag">💼 ${proj?`${proj.name}${slotInfo&&slotInfo.exp&&slotInfo.exp!==e.exp?" (desajuste!)":""}`:"Sin proyecto"}</span>
-      ${e.leadership?'<span class="tag" style="border-color:var(--accent2);color:var(--accent2)">👑 Liderazgo</span>':""}
-    </div>
-    <div style="font-size:.66rem;color:var(--muted)">Satisfacción: ${Math.round(e.sat)}%</div>
-    <div class="sat-bar"><div class="sat-fill" style="width:${e.sat}%;background:${satColor(e.sat)}"></div></div>
-    <div class="course-row">
-      ${Object.entries(CATALOG).map(([k,c])=>`<button class="btn-mini" onclick="actCourse(${e.id},'${k}')" ${canAct&&t.cash>=c.cost?"":"disabled"} title="${c.desc}">${c.name} (${fmt(c.cost)})</button>`).join("")}
-    </div>
-    <div class="actions">
-      <button class="btn-mini" onclick="actRaise(${e.id})" ${canAct&&t.cash>=Math.round(e.salary*0.1)?"":"disabled"}>💵 +10% Salario</button>
-    </div>
-    ${warns.length?`<div class="warn">⚠️ ${warns.join(" · ")}</div>`:""}
-  </div>`;
-}
-function renderRoster(t){
-  document.getElementById("roster").innerHTML=t.roster.map(empCard).join("")||"<p style='color:var(--muted)'>Sin empleados.</p>";
-}
-function renderActiveProjects(t){
-  const el=document.getElementById("activeProjects");
-  if(!t.projects.length){el.innerHTML="<p style='color:var(--muted);font-size:.8rem'>Sin proyectos activos. Captura clientes en el Mercado de Clientes.</p>";return;}
-  el.innerHTML=t.projects.map(p=>{
-    const slotsHtml=p.slots.map((s,i)=>{
-      const assigned=s.filledBy!==null?t.roster.find(e=>e.id===s.filledBy):null;
-      const match=assigned?((!s.exp||EXP.indexOf(assigned.exp)>=EXP.indexOf(s.exp))&&(!s.color||assigned.color===s.color)):false;
-      const cls=assigned?(match?"slot ok":"slot bad"):"slot";
-      const options=`<option value="">— Vacío —</option>`+t.roster.map(e=>{
-        const ok=(!s.exp||EXP.indexOf(e.exp)>=EXP.indexOf(s.exp))&&(!s.color||e.color===s.color);
-        return `<option value="${e.id}" ${s.filledBy===e.id?"selected":""}>${e.name} · ${e.exp} · ${cap(e.color)} · ${e.age}a ${ok?"✓":"⚠️"}</option>`;
-      }).join("");
-      return `<div class="${cls}">
-        <div><b>Slot ${i+1}:</b> ${s.exp?`Requiere ${s.exp}`:"Cualquier nivel"}${s.color?` · Perfil ${cap(s.color)}`:" · Cualquier color"}</div>
-        ${assigned?`<div style="color:${match?"var(--green)":"var(--orange)"};font-size:.7rem">${match?"✓ Encaje perfecto":"⚠️ Perfil desajustado: rinde a la mitad"}</div>`:`<div style="color:var(--orange);font-size:.7rem">Vacío: reduce ingresos del proyecto</div>`}
-        <select onchange="actAssignSlot('${p.id}',${i},this.value)" ${G.phase==="decisions"?"":"disabled"}>${options}</select>
-      </div>`;
-    }).join("");
-    return `<div class="proj">
-      <div class="head"><b>${p.name}</b><span class="tag">${cap(p.type)} · ${fmt(p.revenue)}/trim</span></div>
-      ${slotsHtml}
-    </div>`;
-  }).join("");
-}
-let poolFilter={color:"",exp:"",ageMax:""};
-function renderPoolFilters(){
-  document.getElementById("poolFilters").innerHTML=
-    '<select onchange="poolFilter.color=this.value;renderPool()"><option value="">Todos los colores</option>'+
-    COLORS.map(c=>'<option value="'+c+'" '+(poolFilter.color===c?"selected":"")+'>'+cap(c)+'</option>').join("")+'</select>'+
-    '<select onchange="poolFilter.exp=this.value;renderPool()"><option value="">Toda experiencia</option>'+
-    EXP.map(x=>'<option value="'+x+'" '+(poolFilter.exp===x?"selected":"")+'>'+x+'</option>').join("")+'</select>'+
-    '<input type="number" placeholder="Edad máx." min="20" max="65" style="width:110px" value="'+(poolFilter.ageMax||"")+'" onchange="poolFilter.ageMax=this.value;renderPool()">';
-}
-function renderPool(){
-  const el=document.getElementById("jobMarket");
-  const list=nationalPool.filter(c=>
-    (!poolFilter.color||c.color===poolFilter.color)&&
-    (!poolFilter.exp||c.exp===poolFilter.exp)&&
-    (!poolFilter.ageMax||c.age<=Number(poolFilter.ageMax)));
-  document.getElementById("poolCount").textContent=list.length+" / "+nationalPool.length+" candidatos";
-  el.innerHTML=list.map(c=>`
-    <div class="cand" style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><b>${c.name}</b><span class="fris ${c.color}">${cap(c.color)}</span></div>
-      <div style="font-size:.7rem;color:var(--muted);display:flex;gap:5px;flex-wrap:wrap">
-        <span class="tag">🎂 ${c.age}a</span><span class="tag">🎓 ${c.exp}</span><span class="tag">💰 ${fmt(c.salary)}</span>
-      </div>
-      <button class="btn-accept" style="margin-top:6px;font-size:.72rem" onclick="actHire(${c.id})" ${G.phase==="decisions"?"":"disabled"}>➕ Contratar (${fmt(HIRING_FEE)} fee)</button>
-    </div>`).join("")||"<p style='color:var(--muted)'>Sin resultados con estos filtros.</p>";
-}
-function renderProjMarket(t){
-  const pm=curProjM();
-  const inno=innoIndex(t), eff=effIndex(t);
-  document.getElementById("projMarket").innerHTML=pm.map(p=>{
-    let reqs="",ok=true;
-    if(p.innoReq){const v=inno>=p.innoReq;ok=ok&&v;reqs+=`<span class="req-pill ${v?"ok":"no"}">Innovación ${p.innoReq}% (tienes ${inno}%)</span>`;}
-    if(p.effReq){const v=eff>=p.effReq;ok=ok&&v;reqs+=`<span class="req-pill ${v?"ok":"no"}">Eficiencia ${p.effReq}% (tienes ${eff}%)</span>`;}
-    if(!p.innoReq&&!p.effReq)reqs=`<span class="req-pill ok">Sin requisitos</span>`;
-    const slots=p.slots.map(s=>`<span class="req-pill">${s.exp||"Cualq. nivel"}${s.color?" · "+cap(s.color):""}</span>`).join("");
-    return `<div class="proj">
-      <div class="head"><b>${p.name}</b><span class="tag">${cap(p.type)}</span></div>
-      <div>${reqs}</div>
-      <div style="margin:4px 0;font-size:.7rem;color:var(--muted)">Slots: ${slots}</div>
-      <div style="font-size:.72rem;color:var(--muted)">Ingresos: ${fmt(p.revenue)}/trimestre</div>
-      <button class="btn-main" style="margin-top:6px" onclick="actBid('${p.id}')" ${G.phase==="decisions"&&ok?"":"disabled"}>🏆 Pujar</button>
-    </div>`;
-  }).join("")||"<p style='color:var(--muted)'>Mercado agotado este trimestre.</p>";
-}
-
-/* ================= PANTALLA INTERMEDIA ================= */
-function showIntermission(){
-  const el=document.getElementById("interScreen");
-  el.classList.remove("hidden");
-  const sorted=[...G.teams].sort((a,b)=>b.cash-a.cash);
-  const isYearEnd=trimOf(G.turn)===4;
-  const isEnd=G.turn>=TOTAL_TURNS;
-  el.innerHTML=`<div class="center-box">
-    <h1>${isEnd?"🏁 Simulación completada":isYearEnd?"📅 Fin del Año "+yearOf(G.turn):"📊 Trimestre "+trimOf(G.turn)+" completado"}</h1>
-    <table class="rank"><tr><th>#</th><th>Equipo</th><th>Presupuesto</th><th>Margen</th><th>Gasto Rotación</th><th>Rotación</th><th>Satisf.</th><th>Innovación</th><th>Empleados</th></tr>
-    ${sorted.map((t,i)=>`<tr class="${t.id===curTeam().id?"me":""}"><td>${i+1}</td><td>${t.isBot?t.name+` <span style="font-size:.62rem;color:var(--muted)">(${t.botStyle?t.botStyle.label:"IA"})</span>`:t.name}</td>
-      <td class="${t.cash>=START_CASH?"pos":"neg"}">${fmt(t.cash)}</td>
-      <td class="${marginOf(t)>=0?"pos":"neg"}">${fmt(marginOf(t))}</td>
-      <td>${fmt(t.rotCostTotal)}</td><td>${rotIndex(t)}%</td>
-      <td>${t.avgSatHistory.length?t.avgSatHistory[t.avgSatHistory.length-1]:"—"}%</td>
-      <td>${innoIndex(t)}%</td><td>${t.roster.length}</td></tr>`).join("")}
-    </table>
-    ${isEnd?`<button class="big-btn" onclick="showFinalReport()">🏁 Ver Gran Reporte Final</button>`
-      :`<button class="big-btn" onclick="nextQuarter()">▶️ Comenzar ${trimOf(G.turn)===4?"Año "+(yearOf(G.turn)+1):"Trimestre "+(trimOf(G.turn)+1)}</button>`}
-    <div class="section-title">Feed de Noticias del Mercado</div>
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;max-height:220px;overflow:auto;font-size:.76rem">
-      ${`G.news.slice(0,15).map(n=>"<div style='padding:3px 0;border-bottom:1px dashed rgba(44,58,92,.5)'><span style='color:var(--muted)'>[A"+yearOf(n.turn)+"T"+trimOf(n.turn)+"]</span> "+n.msg+"</div>").join("")||"<span style='color:var(--muted)'>Sin noticias aún.</span>"`}
-    </div>
-  </div>`;
-}
-function nextQuarter(){
-  document.getElementById("interScreen").classList.add("hidden");
-  G.turn++;
-  G.teamIdx=0;
-  G.teams.forEach(t=>{ const log=(m,c)=>{}; processAging(t,log); });
-  G.teams.forEach(t=>{ t.autoYear=false; });
-  refreshNationalPool();
-  G.projMarkets=G.teams.map(()=>makeProjMarket(G.turn));
-  G.phase="decisions";
-  document.getElementById("btnEndTurn").classList.remove("hidden");
-  document.getElementById("btnFastYear").classList.remove("hidden");
-  render(); window.scrollTo(0,0);
-}
-
-/* ================= TABLERO DE COMPETENCIA ================= */
-function showBoard(){
-  const el=document.getElementById("boardScreen");
-  el.classList.remove("hidden");
-  const sorted=[...G.teams].sort((a,b)=>b.cash-a.cash);
-  el.innerHTML=`<div class="center-box">
-    <h1>📊 Tablero de Competencia / Mercado</h1>
-    <p style="color:var(--muted);font-size:.8rem">KPIs en tiempo real de todos los equipos — Año ${yearOf(G.turn)}, Trimestre ${trimOf(G.turn)}</p>
-    <table class="rank"><tr><th>#</th><th>Equipo</th><th>Presupuesto</th><th>Rotación Hist.</th><th>Innovación</th><th>Empleados</th><th>Clientes Activos</th><th>Satisf.</th></tr>
-    ${sorted.map((t,i)=>`<tr class="${t.id===curTeam().id?"me":""}"><td>${i+1}</td><td>${t.isBot?t.name+` <span style="font-size:.62rem;color:var(--muted)">(${t.botStyle?t.botStyle.label:"IA"})</span>`:t.name}</td>
-      <td class="${t.cash>=START_CASH?"pos":"neg"}">${fmt(t.cash)}</td>
-      <td>${rotIndex(t)}%</td><td>${innoIndex(t)}%</td>
-      <td>${t.roster.length}</td><td>${t.projects.length}</td>
-      <td>${avgSat(t)}%</td></tr>`).join("")}
-    </table>
-        <div class="section-title">Feed de Noticias del Mercado</div>
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;max-height:260px;overflow:auto;font-size:.76rem">
-      ${`G.news.slice(0,20).map(n=>"<div style='padding:3px 0;border-bottom:1px dashed rgba(44,58,92,.5)'><span style='color:var(--muted)'>[A"+yearOf(n.turn)+"T"+trimOf(n.turn)+"]</span> "+n.msg+"</div>").join("")||"<span style='color:var(--muted)'>Sin noticias aún.</span>"`}
-    </div>
-    <button class="big-btn" onclick="document.getElementById('boardScreen').classList.add('hidden')">Cerrar</button>
-  </div>`;
-}
-
-/* ================= MANUAL DE AYUDA ================= */
-function showHelp(tab){
-  const el=document.getElementById("helpModal");
-  el.classList.remove("hidden");
-  const tabs={fris:"Colores FRIS",rot:"Coste de la Rotación",cli:"Penalizaciones de Clientes"};
-  let body="";
-  if(tab==="fris"||!tab){
-    body=`<h3>Los 4 Perfiles FRIS</h3>
-    ${Object.entries(COLOR_NAMES).map(([k,n])=>`<p style="margin:8px 0"><span class="color-dot" style="background:${k==="rojo"?"var(--red)":k==="azul"?"var(--accent)":k==="verde"?"var(--green)":"var(--yellow)"}"></span><b>${n}</b> — ${COLOR_MOTIVE[k]}</p>`).join("")}
-    <h3>Efectos especiales</h3>
-    <p>• <b>Rojos juntos:</b> dos Rojos en el mismo proyecto generan fricción y pierden satisfacción.</p>
-    <p>• <b>Azul mentor:</b> los Azules dan +10% de eficiencia a los Juniors de su proyecto.</p>
-    <p>• <b>Verde que renuncia:</b> baja -15% la satisfacción de toda la plantilla.</p>
-    <p>• <b>Amarillo con formación:</b> los cursos duplican su velocidad de ascenso de nivel.</p>
-    <p>• <b>Jóvenes (18-32):</b> +Innovación, pero rotan si no reciben formación cada 2 turnos.</p>
-    <p>• <b>Mayores (48+):</b> +Eficiencia y estables, pero penalizan la Innovación. Se jubilan a los 65.</p>`;
-  }else if(tab==="rot"){
-    body=`<h3>El coste real y oculto de la rotación</h3>
-    <p>• <b>Reclutamiento:</b> tarifa plana de ${fmt(HIRING_FEE)} por cada renuncia.</p>
-    <p>• <b>Onboarding:</b> el nuevo contratado rinde al <b>50%</b> durante ${ONBOARD_TURNS} turnos, pero cobra el <b>100%</b> de su sueldo.</p>
-    <p>• <b>Penalización por vacante:</b> ${fmt(VACANT_PENALTY)} por turno en proyectos con slots vacíos o sin personal.</p>
-    <p>• <b>Efecto dominó:</b> cada renuncia estresa a los Azules (-8%) y los Verdes que se van golpean la moral de todos (-15%).</p>
-    <p>• <b>Pérdida de conocimiento:</b> un Senior que se va (o se jubila) deja slots críticos desajustados, reduciendo ingresos a la mitad.</p>
-    <h3>Cómo prevenir</h3>
-    <p>Cursos técnicos para jóvenes, aumentos para Rojos, Taller de Sinergia para Verdes, rotación de proyectos para Amarillos, y sucesión planificada antes de los 65.</p>`;
-  }else if(tab==="cli"){
-    body=`<h3>Reglas de penalización de los clientes</h3>
-    <p>• <b>Slots vacíos o desajustados:</b> si algún slot del proyecto no tiene el perfil requerido (experiencia/color FRIS), el proyecto <b>rinde a la mitad</b>.</p>
-    <p>• <b>Proyecto sin personal:</b> penalización directa de ${fmt(VACANT_PENALTY)} y cero ingresos.</p>
-    <p>• <b>Requisitos de acceso:</b> los proyectos de Innovación exigen un Índice de Innovación mínimo (jóvenes y Amarillos lo suben); los Complejos exigen Eficiencia (mayores y Azules).</p>
-    <p>• <b>Bonos de encaje:</b> asignar perfiles que encajan con el tipo de proyecto genera hasta un <b>+25% de ingresos</b>. El programa de Liderazgo añade +15% de eficiencia a Rojos y Azules certificados.</p>`;
+/* =========================================================
+   FASE 2 — MODAL PRESUPUESTOS Y GAME OVER
+   ========================================================= */
+function abrirModalPresupuestos() {
+  var total = 40000;
+  var msg = "Año " + añoActual + " — Distribuye el presupuesto anual (máx. " + formatear(total) + " €):\n\n" +
+    "0 = Formación, 1 = Viajes, 2 = Integración, 3 = Rewards\n" +
+    "Introduce cantidades separadas por comas: f,v,i,r";
+  var respuesta = prompt(msg, "10000,10000,10000,10000");
+  if (respuesta === null) return;
+  var partes = respuesta.split(",").map(function (x) { return parseInt(x.trim(), 10) || 0; });
+  if (partes.length !== 4) {
+    alert("Formato incorrecto. Se aplicará reparto por defecto.");
+    partes = [10000, 10000, 10000, 10000];
   }
-  el.innerHTML=`<div class="center-box" style="max-width:760px">
-    <h1>❓ Manual de Gestión</h1>
-    <div>${Object.entries(tabs).map(([k,n])=>`<button class="help-tab ${((tab||"fris")===k)?"on":""}" onclick="showHelp('${k}')">${n}</button>`).join("")}</div>
-    <div class="help-body">${body}</div>
-    <button class="big-btn" style="margin-top:14px" onclick="document.getElementById('helpModal').classList.add('hidden')">Cerrar</button>
-  </div>`;
+  var suma = partes[0] + partes[1] + partes[2] + partes[3];
+  if (suma > total) {
+    alert("Presupuesto excedido. Se aplicará reparto por defecto.");
+    partes = [10000, 10000, 10000, 10000];
+  }
+  presupuestosAnuales = {
+    formacion: partes[0],
+    viajes: partes[1],
+    integracion: partes[2],
+    rewards: partes[3]
+  };
+  estado.presupuestos.formacion = partes[0];
+  estado.presupuestos.viajes = partes[1];
+  estado.presupuestos.integracion = partes[2];
+  estado.presupuestos.rewards = partes[3];
+  renderDespacho();
 }
 
-/* ================= REPORTE FINAL ================= */
-function pedagogicalMessage(t){
-  const rot=rotIndex(t), inno=innoIndex(t);
-  const avgSatH=t.avgSatHistory.length?Math.round(t.avgSatHistory.reduce((a,b)=>a+b,0)/t.avgSatHistory.length):0;
-  if(inno>=60&&rot>=25) return `<b>Estrategia A (Juventud e Innovación):</b> Ganaste los proyectos tecnológicos más caros, pero pagaste caro la rotación (${fmt(t.rotCostTotal)}). La formación continua es el seguro de vida del talento joven.`;
-  if(rot<=15&&inno<45) return `<b>Estrategia B (Experiencia y Estabilidad):</b> Rotación mínima e ingresos constantes, pero fuera del mercado de alta innovación. La estabilidad protege el margen; el crecimiento exige renovar talento.`;
-  if(rot<=25&&inno>=45) return `<b>Estrategia C (Mix Equilibrado):</b> Emparejaste perfiles FRIS con los clientes correctos. El bono de encaje premia a quien gestiona personas como activos estratégicos.`;
-  if(t.cash<START_CASH*0.5) return `<b>Resultado crítico:</b> La rotación (${fmt(t.rotCostTotal)}) y las penalizaciones erosionaron el capital. Prevenir siempre es más barato que curar.`;
-  return `<b>Gestión intermedia:</b> Equipo de perfil mixto. Define una estrategia clara — innovación, estabilidad o mix — y alinea contrataciones, formación y proyectos con ella.`;
+function mostrarGameOver() {
+  alert("===== GAME OVER =====\n\nCapital en negativo. El Director te ha despedido.\nAño " + añoActual + ", Mes " + mesActual);
+  document.getElementById("btn-avanzar-mes").disabled = true;
 }
-function showFinalReport(){
-  document.getElementById("interScreen").classList.add("hidden");
-  const fs=document.getElementById("finalScreen");
-  fs.classList.remove("hidden");
-  const byCash=[...G.teams].sort((a,b)=>b.cash-a.cash);
-  const finW=byCash[0];
-  const satAvg=t=>t.avgSatHistory.length?Math.round(t.avgSatHistory.reduce((a,b)=>a+b,0)/t.avgSatHistory.length):0;
-  const byHuman=[...G.teams].sort((a,b)=>(satAvg(b)-b.lostEmployees)-(satAvg(a)-a.lostEmployees));
-  const humW=byHuman[0];
-  const palette=["#4da3ff","#e74c3c","#2ecc71","#f1c40f","#7c5cff","#e67e22"];
-  const labels=[...Array(TOTAL_TURNS)].map((_,i)=>"A"+Math.ceil((i+1)/4)+"T"+(((i)%4)+1));
-  fs.innerHTML=`<div class="center-box" style="max-width:1100px">
-    <h1>🏁 Gran Reporte de Consultoría — 15 Años completados</h1>
-    <div class="winner-card"><h2>💰 Ganador Financiero: ${finW.name}</h2>
-      <p>Presupuesto final: <b>${fmt(finW.cash)}</b> · Gasto en rotación: <b>${fmt(finW.rotCostTotal)}</b> · Jubilaciones: ${finW.retiredCount}</p></div>
-    <div class="winner-card"><h2>❤️ Ganador en Gestión Humana: ${humW.name}</h2>
-      <p>Satisfacción media ${satAvg(humW)}% · ${humW.lostEmployees} renuncias · ${humW.retiredCount} jubilaciones</p></div>
-    <div class="chart-wrap"><canvas id="chartCash"></canvas></div>
-    <div class="chart-wrap"><canvas id="chartRot"></canvas></div>
-    <div class="chart-wrap"><canvas id="chartSat"></canvas></div>
-    <div class="section-title">Desglose final</div>
-    <table class="rank"><tr><th>#</th><th>Equipo</th><th>Presupuesto</th><th>Gasto Rotación</th><th>Renuncias</th><th>Jubilaciones</th><th>Satisf. Media</th><th>Innovación</th></tr>
-    ${byCash.map((t,i)=>`<tr><td>${i+1}</td><td>${t.isBot?t.name+` <span style="font-size:.62rem;color:var(--muted)">(${t.botStyle?t.botStyle.label:"IA"})</span>`:t.name}</td>
-      <td class="${t.cash>=START_CASH?"pos":"neg"}">${fmt(t.cash)}</td>
-      <td>${fmt(t.rotCostTotal)}</td><td>${t.lostEmployees}</td><td>${t.retiredCount}</td>
-      <td>${satAvg(t)}%</td><td>${innoIndex(t)}%</td></tr>`).join("")}
-    </table>
-    <div class="section-title">Mensajes pedagógicos</div>
-    ${G.teams.map(t=>`<div class="pedag"><b>${t.name}:</b> ${pedagogicalMessage(t)}</div>`).join("")}
-    <button class="big-btn" onclick="location.reload()">🔄 Jugar de nuevo</button>
-  </div>`;
-  const mk=(id,datasets,chartType)=>new Chart(document.getElementById(id),{
-    type:chartType||"line",
-    data:{labels,datasets},
-    options:{responsive:true,animation:false,
-      plugins:{legend:{labels:{color:"#e8edf7",boxWidth:12}}},
-      scales:{x:{ticks:{color:"#93a1c0",maxTicksLimit:20},grid:{color:"rgba(44,58,92,.4)"}},
-              y:{ticks:{color:"#93a1c0"},grid:{color:"rgba(44,58,92,.4)"}}}}
+
+/* =========================================================
+   FASE 3 — RETENCIÓN Y FORMACIÓN
+   ========================================================= */
+function limiteSinFormacion(rango) {
+  switch (rango) {
+    case "Internship": return 6;
+    case "Ingeniero": return 12;
+    case "Senior": return 18;
+    case "Staff": return 24;
+    default: return 12;
+  }
+}
+
+function verificarRetencionPersonal() {
+  var renuncias = [];
+  estado.plantilla.forEach(function (ing) {
+    ing.mesesSinFormacion = (ing.mesesSinFormacion || 0) + 1;
+    var limite = limiteSinFormacion(ing.rango);
+    if (ing.mesesSinFormacion > limite) {
+      renuncias.push(ing);
+    }
   });
-  G.charts.push(
-    mk("chartCash",G.teams.map((t,i)=>({label:t.name,data:t.history.map(h=>h.cash),borderColor:palette[i],backgroundColor:palette[i]+"33",tension:.25,pointRadius:0,fill:false}))),
-    mk("chartRot",G.teams.map((t,i)=>({label:t.name,data:t.history.map(h=>h.rot),backgroundColor:palette[i]})),"bar"),
-    mk("chartSat",G.teams.map((t,i)=>({label:t.name,data:t.avgSatHistory,borderColor:palette[i],backgroundColor:palette[i]+"33",tension:.25,pointRadius:0,fill:false})))
-  );
-}
-
-/* ================= CONFIGURACIÓN INICIAL ================= */
-let selNumTeams=2;
-function renderWelcome(){
-  const nb=document.getElementById("numTeamBtns");
-  nb.innerHTML=[1,2,3,4,5].map(n=>`<button class="${n===selNumTeams?"sel":""}" onclick="selTeams(${n})">${n}</button>`).join("");
-  const pv=document.getElementById("botPreview");
-  pv.innerHTML=[...Array(selNumTeams)].map((_,i)=>{
-    const st=botPickStyle(i);
-    const nm=BOT_NAMES[st.key][i%5];
-    return `<div style="margin:3px 0">${st.tag} <b>${nm}</b> — ${st.desc}</div>`;
-  }).join("");
-}
-function selTeams(n){selNumTeams=n;renderWelcome();}
-function startGame(){
-  G.teams=[];
-  const myName=(document.getElementById("myName").value||"Mi Empresa").trim();
-  const me=makeTeam(1,myName);
-  me.isBot=false;
-  G.teams.push(me);
-  for(let i=0;i<selNumTeams;i++){
-    const st=botPickStyle(i);
-    const nm=botPickName(st.key,i);
-    const b=makeTeam(G.teams.length+1,nm);
-    b.isBot=true; b.botStyle=st;
-    G.teams.push(b);
+  renuncias.forEach(function (ing) {
+    desasignarIngeniero(ing.id);
+    var i = estado.plantilla.indexOf(ing);
+    if (i >= 0) estado.plantilla.splice(i, 1);
+  });
+  if (renuncias.length > 0) {
+    var nombres = renuncias.map(function (r) { return r.nombre + " (" + r.rango + ")"; }).join(", ");
+    alert(":: ABANDONO DE PLANTILLA ::\n\n" + nombres +
+      "\n\nHan renunciado por falta de formación (sin curso dentro de su límite).");
   }
-  refreshNationalPool();
-  G.projMarkets=G.teams.map(()=>makeProjMarket(1));
-  document.getElementById("welcome").classList.add("hidden");
-  document.getElementById("gameHeader").classList.remove("hidden");
-  document.getElementById("mainContent").classList.remove("hidden");
-  document.getElementById("turnControlBar").classList.remove("hidden");
-  document.getElementById("helpBtn").classList.remove("hidden");
-  pushNews("\ud83c\udfae \u00a1Comienza la competici\u00f3n! "+myName+" se enfrenta a "+selNumTeams+" rivales de IA.");
-  render();
 }
 
-/* ================= WIRING ================= */
-document.getElementById("btnEndTurn").onclick=()=>{ if(G.phase==="decisions") endTurn(); };
-document.getElementById("btnFastYear").onclick=fastYear;
-document.getElementById("btnBoard").onclick=showBoard;
-document.getElementById("btnHelp2").onclick=()=>showHelp("fris");
-document.getElementById("helpBtn").onclick=()=>showHelp("fris");
-document.getElementById("btnStart").onclick=startGame;
-renderWelcome();
+function aplicarFormacion(empleadoId) {
+  var ing = estado.plantilla.find(function (e) { return e.id === empleadoId; });
+  if (!ing) return;
+  var COSTE_FORMACION = 1500;
+  if (estado.presupuestos.formacion < COSTE_FORMACION) {
+    alert("Presupuesto de Formación insuficiente (" +
+      formatear(estado.presupuestos.formacion) + " € disponibles, se necesitan " +
+      formatear(COSTE_FORMACION) + " €).");
+    return;
+  }
+  estado.presupuestos.formacion -= COSTE_FORMACION;
+  presupuestosAnuales.formacion = estado.presupuestos.formacion;
+  var subida = entero(5, 12);
+  ing.nivel = Math.min(100, ing.nivel + subida);
+  ing.rango = rangoPorNivel(ing.nivel);
+  ing.mesesSinFormacion = 0;
+  alert(ing.nombre + " completa un curso de formación: +" + subida +
+    " puntos de Nivel Técnico (ahora " + ing.nivel + ", rango " + ing.rango + ").");
+  renderTodo();
+  renderOperaciones();
+}
+
+/* =========================================================
+   FASE 3 — RENDER OPERACIONES
+   ========================================================= */
+function renderOperaciones() {
+  var cont = document.getElementById("cuadricula-operaciones");
+  if (!cont) return;
+  var html = "";
+  proyectosDisponibles.forEach(function (proy) {
+    html += "<div class='celda-tactica'><h5>" + proy.nombre +
+      (proy.estadoProy === "FINALIZADO" ? " [FINALIZADO]" : "") + "</h5>";
+    html += "<div style='font-size:10px;margin-bottom:4px;'>'" +
+      "Cliente: " + proy.cliente +
+      " · DISC <span class='disc disc-" + proy.discRequerido + "'>" + proy.discRequerido + "</span>" +
+      " · Nivel mín. " + proy.minNivelExigido + "<br>";
+    html += "Duración: " + proy.duracionMeses + " meses (restan " +
+      Math.max(0, proy.duracionMeses - proy.mesesTranscurridos) + ") · " +
+      formatear(proy.ingresoMes) + " €/mes · Total " + formatear(proy.valorTotal) + " €";
+    html += "</div>";
+    for (var s = 0; s < proy.slotsRequeridos; s++) {
+      var idIng = proy.slots[s];
+      var ing = idIng ? estado.plantilla.find(function (e) { return e.id === idIng; }) : null;
+      if (ing) {
+        html += "<div style='border:1px solid #888;margin:2px 0;padding:2px 4px;background:#eef2f8;'>" +
+          "<b>" + ing.nombre + "</b> (Nv " + ing.nivel + ", <span class='disc disc-" + ing.disc + "'>" + ing.disc + "</span>) " +
+          (proy.estadoProy === "ACTIVO" ?
+            "<button class='boton-2000' style='padding:1px 6px;font-size:10px;' onclick=\"asignarIngenieroAProyecto('" + ing.id + "','id-interno')\">Liberar</button>" :
+            "") +
+          "</div>";
+      } else {
+        html += "<div style='border:1px dashed #999;margin:2px 0;padding:2px 4px;color:#777;'>SLOT " + (s + 1) + " — Vacío";
+        if (proy.estadoProy === "ACTIVO") {
+          html += " <select style='font-size:10px;' onchange=\"if(this.value){asignarIngenieroAProyecto(this.value,'" + proy.id + "'," + s + ");}\">";
+          html += "<option value=''>Asignar...</option>";
+          estado.plantilla.forEach(function (libre) {
+            if (!libre.asignado || libre.asignado === "I+D Interno") {
+              html += "<option value='" + libre.id + "'>" + libre.nombre + " (Nv " + libre.nivel + ", " + libre.disc + ")</option>";
+            }
+          });
+          html += "</select>";
+        }
+        html += "</div>";
+      }
+    }
+    html += "</div>";
+  });
+  html += "<div class='celda-tactica'><h5>I+D INTERNO</h5>";
+  estado.plantilla.forEach(function (ing) {
+    if (ing.asignado === "I+D Interno" || !ing.asignado) {
+      html += "<div style='border:1px solid #888;margin:2px 0;padding:2px 4px;background:#eef2f8;'>" +
+        "<b>" + ing.nombre + "</b> (Nv " + ing.nivel + ", <span class='disc disc-" + ing.disc + "'>" + ing.disc + "</span>)</div>";
+    }
+  });
+  html += "</div>";
+  cont.innerHTML = html;
+}
+
+function renderTodo() {
+  renderBarraEstado();
+  renderDespacho();
+  renderPlantilla();
+  renderMercado();
+  renderOperaciones();
+}
+
+function renderMarcadorCabecera() {
+  var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+  document.getElementById("estado-fecha").textContent =
+    meses[Math.max(0, mesActual - 1)] + " Año " + añoActual;
+  document.getElementById("estado-caja").textContent = formatear(Math.max(0, capital));
+  estado.caja = capital;
+}
+
+/* =========================================================
+   INICIALIZACIÓN
+   ========================================================= */
+nuevaRondaMercado();
+inicializarProyectosAeroespaciales();
+renderMarcadorCabecera();
+renderTodo();
+
+document.getElementById("btn-avanzar-mes").addEventListener("click", function () {
+  avanzarMes();
+  renderTodo();
+});
 </script>
 </body>
 </html>
