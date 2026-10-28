@@ -2254,8 +2254,8 @@ function renderOperaciones() {
       var idIng = proy.slots[s];
       var ing = idIng ? estado.plantilla.find(function (e) { return e.id === idIng; }) : null;
       if (ing) {
-        html += "<div style='border:1px solid #888;margin:2px 0;padding:2px 4px;background:#eef2f8;'>" +
-          "<b>" + ing.nombre + "</b> (Nv " + ing.nivel + ", <span class='disc disc-" + ing.disc + "'>" + ing.disc + "</span>)" +
+        html += "<div style='border:1px solid rgba(43,58,85,0.9);margin:3px 0;padding:4px 8px;background:rgba(30,41,59,0.7);border-radius:6px;color:#f8fafc;display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap;'>" +
+          "<span><b>" + ing.nombre + "</b> <span style='color:#94a3b8;'>(Lv " + ing.nivel + ")</span> <span class='disc disc-" + ing.disc + "'>" + ing.disc + "</span></span>" +
           (ing.enFormacion ? " <b style='color:#fbbf24;'>[IN TRAINING — no aporta]</b>" : "") + " " +
           (proy.estadoProy === "ACTIVO" ?
             "<button class='boton-2000' style='padding:1px 6px;font-size:10px;' onclick=\"asignarIngenieroAProyecto('" + ing.id + "','id-interno')\">Release</button>" :
@@ -2281,8 +2281,9 @@ function renderOperaciones() {
   html += "<div class='celda-tactica'><h5>INTERNAL R&D</h5>";
   estado.plantilla.forEach(function (ing) {
     if (ing.asignado === "Internal R&D" || !ing.asignado) {
-      html += "<div style='border:1px solid #888;margin:2px 0;padding:2px 4px;background:#eef2f8;'>" +
-        "<b>" + ing.nombre + "</b> (Nv " + ing.nivel + ", <span class='disc disc-" + ing.disc + "'>" + ing.disc + "</span>)</div>";
+      html += "<div style='border:1px solid rgba(43,58,85,0.9);margin:3px 0;padding:4px 8px;background:rgba(30,41,59,0.7);border-radius:6px;color:#f8fafc;display:flex;align-items:center;justify-content:space-between;gap:6px;'>" +
+        "<span><b>" + ing.nombre + "</b> <span style='color:#94a3b8;'>(Lv " + ing.nivel + ")</span></span>" +
+        "<span class='disc disc-" + ing.disc + "'>" + ing.disc + " · " + ing.discDesc + "</span></div>";
     }
   });
   html += "</div>";
