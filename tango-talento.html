@@ -706,7 +706,7 @@
     <div id="tab-mercado" class="panel oculto">
       <h3>:: HIRING MARKET ::</h3>
       <div class="cuerpo">
-        <div class="ronda-info">Initial signing rounds: <span id="ronda-actual">1</span> / 3 — then quarterly market (Months 3, 6, 9 and 12)</div>
+        <div class="ronda-info">Initial signing rounds: <span id="ronda-actual">1</span> / 3 — the market stays empty afterwards. New candidates only via On-Demand Search (2,000 PLN) or Continuous Search (500 PLN/month). Every candidate expires after 3 months.</div>
         <div id="lista-candidatos"></div>
         <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
           <button class="boton-2000" id="btn-siguiente-ronda">Next Round</button>
@@ -835,7 +835,8 @@ function generarCandidato() {
     disc: disc.letra,
     discDesc: disc.desc,
     color: colorAvatar(disc.letra),
-    contratado: false
+    contratado: false,
+    mesesRestantesMercado: 3
   };
 }
 
@@ -868,6 +869,7 @@ function contratarCandidato(id) {
   }
   estado.caja -= cand.sueldoDeseado;
   cand.contratado = true;
+  estado.mercado = estado.mercado.filter(function (c) { return c.id !== cand.id; });
   var ficha = {
     id: cand.id,
     nombre: cand.nombre,
@@ -1032,8 +1034,11 @@ function renderPlantilla() {
 function renderMercado() {
   document.getElementById("ronda-actual").textContent = estado.ronda;
   var cont = document.getElementById("lista-candidatos");
-  var html = '<table class="tabla"><tr><th>Avatar</th><th>Name</th><th>Age</th><th>Rank</th><th>Level</th><th>Expected salary</th><th>DISC</th><th></th></tr>';
+  var html = '<table class="tabla"><tr><th>Avatar</th><th>Name</th><th>Age</th><th>Rank</th><th>Level</th><th>Expected salary</th><th>DISC</th><th>Offer window</th><th></th></tr>';
   estado.mercado.forEach(function (c) {
+    var restantes = c.mesesRestantesMercado === undefined ? 3 : c.mesesRestantesMercado;
+    var colorVentana = restantes <= 1 ? "#fb7185" : (restantes === 2 ? "#fbbf24" : "#4ade80");
+    var etiquetaVentana = c.contratado ? "—" : "⏳ " + restantes + " month" + (restantes === 1 ? "" : "s");
     html += "<tr" + (c.contratado ? " style='opacity:0.5;'" : "") + ">" +
       "<td><div class='avatar' style='background:" + c.color + ";width:32px;height:32px;font-size:12px;'>" + c.nombre.charAt(0) + "</div></td>" +
       "<td>" + c.nombre + (c.contratado ? " (HIRED)" : "") + "</td>" +
@@ -1042,6 +1047,7 @@ function renderMercado() {
       "<td style='min-width:110px;'><div class='barra-nivel-caja'><div class='barra-nivel' style='width:" + c.nivel + "%;'></div></div> " + c.nivel + "</td>" +
       "<td>" + formatear(c.sueldoDeseado) + " PLN</td>" +
       "<td><span class='disc disc-" + c.disc + "'>" + c.disc + " · " + c.discDesc + "</span></td>" +
+      "<td style='color:" + colorVentana + ";font-weight:700;white-space:nowrap;'>" + etiquetaVentana + "</td>" +
       "<td>" + (c.contratado ? "" :
         "<button class='boton-2000' onclick=\"contratarCandidato('" + c.id + "')\">Sign</button>") + "</td>" +
       "</tr>";
@@ -1867,13 +1873,31 @@ function eventosMensuales() {
       ordenes6m[entero(0, ordenes6m.length - 1)] + "<br><br>" +
       "<i style='color:#94a3b8;'>The game is paused until you read the order.</i>", "info");
   }
+  var expirados = estado.mercado.filter(function (c) {
+    return !c.contratado && (c.mesesRestantesMercado || 0) <= 1;
+  });
+  if (expirados.length > 0) {
+    estado.mercado = estado.mercado.filter(function (c) {
+      return c.contratado || (c.mesesRestantesMercado || 0) > 1;
+    });
+    notificar("info", "CANDIDATES EXPIRED",
+      expirados.length + " candidate(s) left the Hiring Market without an offer " +
+      "(3-month window elapsed): " +
+      expirados.map(function (c) { return c.nombre; }).slice(0, 5).join(", ") +
+      (expirados.length > 5 ? "…" : "") + ". Sign faster next time.");
+    renderMercado();
+  } else {
+    estado.mercado.forEach(function (c) {
+      if (!c.contratado && (c.mesesRestantesMercado || 0) > 1) c.mesesRestantesMercado--;
+    });
+  }
   if (colaOnDemandPendiente > 0) {
     colaOnDemandPendiente--;
     if (colaOnDemandPendiente === 0) {
       nuevaRondaMercado();
       notificar("exito", "ON-DEMAND SEARCH DELIVERED",
         "The surgical search (paid last month) has completed: a batch of 5 candidates " +
-        "is now available in the Hiring Market. Sign them before they accept other offers.");
+        "is now available in the Hiring Market. You have 3 months to make an offer before they expire.");
       renderMercado();
     }
   }
@@ -1881,7 +1905,7 @@ function eventosMensuales() {
     estado.mercado.push(generarCandidato());
     estado.mercado.push(generarCandidato());
     notificar("info", "CONTINUOUS SEARCH BATCH",
-      "The continuous talent pipeline delivered 2 new candidates to the Hiring Market.");
+      "The continuous talent pipeline delivered 2 new candidates to the Hiring Market (3-month offer window).");
     renderMercado();
   }
   mesesEmergenciaUsados = mesesEmergenciaUsados.filter(function (m) { return m >= mesActual - 1 && m !== mesActual; });
