@@ -492,6 +492,20 @@
     border: 1px solid var(--gris-borde);
     border-radius: 6px;
     padding: 4px 6px;
+    font-family: inherit;
+    font-size: 10.5px;
+    cursor: pointer;
+  }
+  .celda-tactica select option,
+  .celda-tactica select optgroup {
+    color: #f8fafc;
+    background: #131c2e;
+    font-family: inherit;
+    padding: 4px;
+  }
+  .celda-tactica select option:checked {
+    background: #1d4ed8;
+    color: #fff;
   }
   .celda-tactica button { color: #fff; }
 
@@ -522,6 +536,21 @@
     border-radius: 6px;
   }
   .oculto { display: none; }
+
+  /* ===== Selects nativos: tema oscuro en todas las plataformas ===== */
+  select {
+    color: #f8fafc;
+    background-color: #131c2e;
+    border: 1px solid #2b3a55;
+  }
+  select option,
+  select optgroup {
+    color: #f8fafc;
+    background-color: #131c2e;
+  }
+  select option:checked { background-color: #1d4ed8; color: #ffffff; }
+  select:focus { border-color: rgba(125, 211, 252, 0.6); outline: none; }
+  select:focus-visible { outline: 2px solid #38bdf8; outline-offset: 1px; }
 
   /* ===== Responsive refinements ===== */
   @media (max-width: 900px) {
